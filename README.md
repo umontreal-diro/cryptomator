@@ -8,6 +8,18 @@
 [![Latest Release](https://img.shields.io/github/release/cryptomator/cryptomator.svg)](https://github.com/cryptomator/cryptomator/releases/latest)
 [![Community](https://img.shields.io/badge/help-Community-orange.svg)](https://community.cryptomator.org)
 
+-----
+
+## Instructions pour le cours IFT3913
+
+Vous pouvez build le projet et générer les rapports jacoco covergae en exécutant la commande suivante.
+
+```
+mvn verify -Pcoverage
+```
+
+-----
+
 ## Supporting Cryptomator
 
 Cryptomator is provided free of charge as an open-source project despite the high development effort and is therefore dependent on donations. If you are also interested in further development, we offer you the opportunity to support us:
