@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-@DisplayName("Environment Variables Test")
+@DisplayName("Test - Environment Variables Test")
 public class EnvironmentTest {
 
 	private Environment env;
