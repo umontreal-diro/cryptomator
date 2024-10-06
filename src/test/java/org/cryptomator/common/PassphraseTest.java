@@ -66,11 +66,13 @@ public class PassphraseTest {
 
 		@Test
 		public void testEqualsSelf() {
+			// A Passphrase should return true when comparing to itself.
 			Assertions.assertEquals(pw1, pw1);
 		}
 
 		@Test
 		public void testNotEqualsNull() {
+			// A Passphrase should return false when comparing to null.
 			Assertions.assertNotEquals(pw1, null);
 		}
 
@@ -78,6 +80,7 @@ public class PassphraseTest {
 		public void testNotEqualsDifferentClass() {
 			String randomStr = new String("random");
 
+			// A Passphrase should return false when comparing to an object of different class.
 			Assertions.assertNotEquals(pw1, randomStr);
 		}
 
