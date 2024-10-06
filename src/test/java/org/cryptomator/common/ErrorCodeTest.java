@@ -18,6 +18,8 @@ public class ErrorCodeTest {
 	private final StackTraceElement foo = new StackTraceElement("ErrorCodeTest", "foo", null, 0);
 	private final StackTraceElement bar = new StackTraceElement("ErrorCodeTest", "bar", null, 0);
 	private final StackTraceElement baz = new StackTraceElement("ErrorCodeTest", "baz", null, 0);
+	private final StackTraceElement foobar = new StackTraceElement("ErrorCodeTest", "foobar", null, 0);
+	private final StackTraceElement foobaz = new StackTraceElement("ErrorCodeTest", "foobaz", null, 0);
 	private final Exception fooException = Mockito.mock(NullPointerException.class, "fooException");
 
 	@Test
@@ -93,6 +95,18 @@ public class ErrorCodeTest {
 		int result = ErrorCode.countTopmostFrames(allFrames, bottomFrames);
 
 		Assertions.assertEquals(0, result);
+	}
+
+	@Test
+	@DisplayName("countUniqueFrames() with more bottomFrames than allFrames")
+	public void testCountUniqueFrames4() {
+		var allFrames = new StackTraceElement[]{bar, foobaz};
+		var bottomFrames = new StackTraceElement[]{foo, bar, baz, foobar, foobaz};
+
+		int result = ErrorCode.countTopmostFrames(allFrames, bottomFrames);
+
+		// When the count of bottomFrames is bigger than allFrames, return the count of allFrames
+		Assertions.assertEquals(2, result);
 	}
 
 	@DisplayName("when different exception with same root cause")
