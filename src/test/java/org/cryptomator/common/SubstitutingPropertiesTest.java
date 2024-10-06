@@ -53,6 +53,18 @@ public class SubstitutingPropertiesTest {
 			Assertions.assertEquals(expected, result);
 		}
 
+		@Test
+		@DisplayName("@{userhome} is replaced with an empty string")
+		public void testPropSubstitutionsWithEmptyString() {
+			var props = Mockito.spy(new Properties());
+			Mockito.doReturn(null).when(props).getProperty(Mockito.anyString());
+			inTest = new SubstitutingProperties(props, Map.of());
+
+			var result = inTest.process("before @{userhome} after");
+
+			Assertions.assertEquals("before  after", result);
+		}
+
 	}
 
 
