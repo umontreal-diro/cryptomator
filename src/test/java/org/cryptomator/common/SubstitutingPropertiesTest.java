@@ -95,6 +95,20 @@ public class SubstitutingPropertiesTest {
 		}
 
 		@Test
+		@DisplayName("Non-null property starting with \"cryptomator.\" is processed and default value is ignored")
+		public void testProcessingAndIgnoreDefaultValue() {
+			var props = new Properties();
+			props.setProperty("cryptomator.prop", "someValue");
+			inTest = Mockito.spy(new SubstitutingProperties(props, Map.of()));
+			Mockito.doReturn("someValue").when(inTest).process(Mockito.anyString());
+
+			String result = inTest.getProperty("cryptomator.prop", "a default");
+
+			Mockito.verify(inTest).process("someValue");
+			Assertions.assertEquals("someValue", result);
+		}
+
+		@Test
 		@DisplayName("Default value is not processed")
 		public void testNoProcessingDefault() {
 			var props = Mockito.mock(Properties.class);
