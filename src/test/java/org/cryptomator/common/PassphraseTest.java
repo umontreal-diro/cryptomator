@@ -65,6 +65,23 @@ public class PassphraseTest {
 		}
 
 		@Test
+		public void testEqualsSelf() {
+			Assertions.assertEquals(pw1, pw1);
+		}
+
+		@Test
+		public void testNotEqualsNull() {
+			Assertions.assertNotEquals(pw1, null);
+		}
+
+		@Test
+		public void testNotEqualsDifferentClass() {
+			String randomStr = new String("random");
+
+			Assertions.assertNotEquals(pw1, randomStr);
+		}
+
+		@Test
 		public void testHashcode() {
 			Assertions.assertEquals(pw1.hashCode(), pw2.hashCode());
 		}
