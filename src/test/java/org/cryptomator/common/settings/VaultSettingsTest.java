@@ -98,11 +98,13 @@ public class VaultSettingsTest {
 	@Test
 	public void testMountName1() {
 		var json = new VaultSettingsJson();
-		json.displayName = "some string";
+		json.displayName = "some\\string";
+		json.path = "./somePath";
 
 		var vaultSettings = new VaultSettings(json);
 
-		Assertions.assertEquals("some string", vaultSettings.mountName.get());
+		// VaultSettings sets its property mountName with the normalized value of displayName.
+		Assertions.assertEquals("some_string", vaultSettings.mountName.get());
 	}
 
 	@Test
@@ -112,6 +114,7 @@ public class VaultSettingsTest {
 
 		var vaultSettings = new VaultSettings(json);
 
+		// VaultSettings sets its property mountName with the normalized value of path.
 		Assertions.assertEquals("somePath", vaultSettings.mountName.get());
 	}
 
