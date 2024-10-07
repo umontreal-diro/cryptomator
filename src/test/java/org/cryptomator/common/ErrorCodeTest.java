@@ -96,7 +96,9 @@ public class ErrorCodeTest {
 
 		Assertions.assertEquals(0, result);
 	}
-
+        
+    // This test verifies that when the number of bottomFrames is greater than the number of allFrames,
+    // the countTopmostFrames method returns the count of allFrames as the maximum unique frames.
 	@Test
 	@DisplayName("countUniqueFrames() with more bottomFrames than allFrames")
 	public void testCountUniqueFrames4() {

@@ -53,6 +53,8 @@ public class SubstitutingPropertiesTest {
 			Assertions.assertEquals(expected, result);
 		}
 
+                // This test verifies that when the placeholder @{userhome} is encountered in the input string,
+                // it is replaced with an empty string, resulting in the string being transformed correctly.
 		@Test
 		@DisplayName("@{userhome} is replaced with an empty string")
 		public void testPropSubstitutionsWithEmptyString() {
@@ -94,6 +96,8 @@ public class SubstitutingPropertiesTest {
 			Mockito.verify(inTest, Mockito.never()).process(Mockito.anyString());
 		}
 
+                // This test verifies that when a non-null property that starts with "cryptomator." is accessed,
+                // it triggers the processing of its value correctly.
 		@Test
 		@DisplayName("Non-null property starting with \"cryptomator.\" is processed")
 		public void testProcessing() {

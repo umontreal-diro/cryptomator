@@ -29,15 +29,18 @@ public class VaultSettingsTest {
 			"a\ta,a\u0020a",
 			"'\t\n\r',_"
 	})
+        // Check if the normalized value matches the expected output.
 	public void testNormalize(String test, String expected) {
+                // Handle null input by converting it to an empty string before normalization.
 		assertEquals(expected, VaultSettings.normalizeDisplayName(test == null ? "" : test));
 	}
 
+        // Test for equality of two VaultSettings with the same id.
 	@Test
 	public void testEqualsSameId() {
 		var json1 = new VaultSettingsJson();
 		var json2 = new VaultSettingsJson();
-		json1.id = "some_id";
+		json1.id = "some_id";// Setting the same ID for both objects.
 		json2.id = "some_id";
 
 		var vaultSettings1 = new VaultSettings(json1);
@@ -48,7 +51,8 @@ public class VaultSettingsTest {
 		Assertions.assertEquals(vaultSettings1, vaultSettings2);
 	}
 
-	@Test
+	// Test for inequality of two VaultSettings with different ids.
+        @Test
 	public void testNotEqualsSameId() {
 		var json1 = new VaultSettingsJson();
 		var json2 = new VaultSettingsJson();
@@ -63,12 +67,14 @@ public class VaultSettingsTest {
 		Assertions.assertNotEquals(vaultSettings1, vaultSettings2);
 	}
 
+        // A subclass of VaultSettings for testing purposes.
 	private class VaultSettings2 extends VaultSettings {
 		VaultSettings2(VaultSettingsJson json) {
 			super(json);
 		}
 	}
 
+        // Test for inequality when comparing with a subclass of VaultSettings
 	@Test
 	public void testNotEqualsObjectClass1() {
 		var json1 = new VaultSettingsJson();
@@ -83,6 +89,7 @@ public class VaultSettingsTest {
 		Assertions.assertNotEquals(vaultSettings1, vaultSettings2);
 	}
 
+        // Test for inequality when comparing with an object of a different class.
 	@Test
 	public void testNotEqualsObjectClass2() {
 		var json1 = new VaultSettingsJson();
@@ -95,6 +102,7 @@ public class VaultSettingsTest {
 		Assertions.assertNotEquals(vaultSettings1, randomObject);
 	}
 
+        // Test for normalized mount name based on displayName.
 	@Test
 	public void testMountName1() {
 		var json = new VaultSettingsJson();
@@ -107,6 +115,7 @@ public class VaultSettingsTest {
 		Assertions.assertEquals("some_string", vaultSettings.mountName.get());
 	}
 
+        // Test for normalized mount name based on path when displayName is not provided.
 	@Test
 	public void testMountName2() {
 		var json = new VaultSettingsJson();
