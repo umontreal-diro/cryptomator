@@ -1,6 +1,5 @@
 package org.cryptomator.common.keychain;
 
-
 import org.cryptomator.integrations.keychain.KeychainAccessException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
@@ -16,45 +15,63 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-
 public class KeychainManagerTest {
 
-	@Test
-	public void testStoreAndLoad() throws KeychainAccessException {
-		KeychainManager keychainManager = new KeychainManager(new SimpleObjectProperty<>(new MapKeychainAccess()));
-		keychainManager.storePassphrase("test", "Test", "asd");
-		Assertions.assertArrayEquals("asd".toCharArray(), keychainManager.loadPassphrase("test"));
-	}
+    @Test
+    public void testStoreAndLoad() throws KeychainAccessException {
+        KeychainManager keychainManager = new KeychainManager(new SimpleObjectProperty<>(new MapKeychainAccess()));
+        keychainManager.storePassphrase("test", "Test", "asd");
+        Assertions.assertArrayEquals("asd".toCharArray(), keychainManager.loadPassphrase("test"));
+    }
 
-	@Nested
-	public static class WhenObservingProperties {
+    //Alex DL ajout 
+    @Test
+    public void testDeletePassphrase() throws KeychainAccessException {
+        KeychainManager keychainManager = new KeychainManager(new SimpleObjectProperty<>(new MapKeychainAccess()));
+        keychainManager.storePassphrase("test", "Test", "password");
+        keychainManager.deletePassphrase("test");
+        Assertions.assertNull(keychainManager.loadPassphrase("test"));
+        Assertions.assertFalse(keychainManager.isPassphraseStored("test"), "Expected passphrase to NOT be stored for testKey after deletion.");
+    }
+    //Alex DL ajout 
+    @Test
+    public void testChangePassphrase() throws KeychainAccessException {
+        KeychainManager keychainManager = new KeychainManager(new SimpleObjectProperty<>(new MapKeychainAccess()));
+        keychainManager.storePassphrase("test", "Test", "oldPass");
+        keychainManager.changePassphrase("test", "Test", "newPass");
+        Assertions.assertArrayEquals("newPass".toCharArray(), keychainManager.loadPassphrase("test"));
+    }
 
-		@BeforeAll
-		public static void startup() throws InterruptedException {
-			CountDownLatch latch = new CountDownLatch(1);
-			Platform.startup(latch::countDown);
-			var javafxStarted = latch.await(5, TimeUnit.SECONDS);
-			Assumptions.assumeTrue(javafxStarted);
-		}
 
-		@Test
-		public void testPropertyChangesWhenStoringPassword() throws KeychainAccessException, InterruptedException {
-			KeychainManager keychainManager = new KeychainManager(new SimpleObjectProperty<>(new MapKeychainAccess()));
-			ReadOnlyBooleanProperty property = keychainManager.getPassphraseStoredProperty("test");
-			Assertions.assertFalse(property.get());
+    @Nested
+    public static class WhenObservingProperties {
 
-			keychainManager.storePassphrase("test", null,"bar");
+        @BeforeAll
+        public static void startup() throws InterruptedException {
+            CountDownLatch latch = new CountDownLatch(1);
+            Platform.startup(latch::countDown);
+            var javafxStarted = latch.await(5, TimeUnit.SECONDS);
+            Assumptions.assumeTrue(javafxStarted);
+        }
 
-			AtomicBoolean result = new AtomicBoolean(false);
-			CountDownLatch latch = new CountDownLatch(1);
-			Platform.runLater(() -> {
-				result.set(property.get());
-				latch.countDown();
-			});
-			Assertions.assertTimeoutPreemptively(Duration.ofSeconds(1), () -> latch.await());
-			Assertions.assertTrue(result.get());
-		}
+        @Test
+        public void testPropertyChangesWhenStoringPassword() throws KeychainAccessException, InterruptedException {
+            KeychainManager keychainManager = new KeychainManager(new SimpleObjectProperty<>(new MapKeychainAccess()));
+            ReadOnlyBooleanProperty property = keychainManager.getPassphraseStoredProperty("test");
+            Assertions.assertFalse(property.get());
 
-	}
+            keychainManager.storePassphrase("test", null, "bar");
+
+            AtomicBoolean result = new AtomicBoolean(false);
+            CountDownLatch latch = new CountDownLatch(1);
+            Platform.runLater(() -> {
+                result.set(property.get());
+                latch.countDown();
+            });
+            Assertions.assertTimeoutPreemptively(Duration.ofSeconds(1), () -> latch.await());
+            Assertions.assertTrue(result.get());
+        }
+
+    }
 
 }
