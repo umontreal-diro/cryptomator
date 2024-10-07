@@ -24,11 +24,13 @@ public class VaultSettingsTest {
 			": \\,_ _",
 			"汉语,汉语",
 			"..,_",
+			".,_",
+			",_",
 			"a\ta,a\u0020a",
 			"'\t\n\r',_"
 	})
 	public void testNormalize(String test, String expected) {
-		assertEquals(expected, VaultSettings.normalizeDisplayName(test));
+		assertEquals(expected, VaultSettings.normalizeDisplayName(test == null ? "" : test));
 	}
 
 	@Test
@@ -91,6 +93,26 @@ public class VaultSettingsTest {
 
 		// VaultSettings returns false when comparing with another object class.
 		Assertions.assertNotEquals(vaultSettings1, randomObject);
+	}
+
+	@Test
+	public void testMountName1() {
+		var json = new VaultSettingsJson();
+		json.displayName = "some string";
+
+		var vaultSettings = new VaultSettings(json);
+
+		Assertions.assertEquals("some string", vaultSettings.mountName.get());
+	}
+
+	@Test
+	public void testMountName2() {
+		var json = new VaultSettingsJson();
+		json.path = "./somePath";
+
+		var vaultSettings = new VaultSettings(json);
+
+		Assertions.assertEquals("somePath", vaultSettings.mountName.get());
 	}
 
 }
