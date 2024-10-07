@@ -30,19 +30,26 @@ public class PasswordStrengthUtilTest {
         Assertions.assertEquals(4, result2);
     }
 
-    //Alex DL ajout 
+    // ajout
+    // This test verifies the behavior of the computeRate method in the PasswordStrengthUtil class.
+    // It checks that an invalid password returns -1, and that the strength comparison between weak and strong passwords is correct.
     @Test
     public void testComputeRate() {
         // Arrange
+        // Create an instance of PasswordStrengthUtil with mocked dependencies.
         PasswordStrengthUtil util = new PasswordStrengthUtil(Mockito.mock(ResourceBundle.class),
                 Mockito.mock(Environment.class));
 
-        String weakPassword = "123";
-        String strongPassword = "VeryStrongPassword123!";
-        String emptyPassword = null;
+        // Define test password scenarios.
+        String weakPassword = "123"; // Weak password example.
+        String strongPassword = "VeryStrongPassword123!"; // Strong password example.
+        String emptyPassword = null; // Represents an invalid password case.
 
         // Act & Assert
+        // Assert that the rate computed for an empty password is -1, indicating it's invalid.
         Assertions.assertEquals(-1, util.computeRate(emptyPassword)); // Invalid case
+
+        // Assert that the computed rate for the weak password is less than that for the strong password.
         Assertions.assertTrue(util.computeRate(weakPassword) < util.computeRate(strongPassword)); // Strength comparison
     }
 
