@@ -96,8 +96,6 @@ public class SubstitutingPropertiesTest {
 			Mockito.verify(inTest, Mockito.never()).process(Mockito.anyString());
 		}
 
-                // This test verifies that when a non-null property that starts with "cryptomator." is accessed,
-                // it triggers the processing of its value correctly.
 		@Test
 		@DisplayName("Non-null property starting with \"cryptomator.\" is processed")
 		public void testProcessing() {
@@ -110,6 +108,8 @@ public class SubstitutingPropertiesTest {
 			Mockito.verify(inTest).process("someValue");
 		}
 
+		// This test verifies that when a non-null property that starts with "cryptomator." is accessed,
+		// it triggers the processing of its value correctly, and the default value is ignored.
 		@Test
 		@DisplayName("Non-null property starting with \"cryptomator.\" is processed and default value is ignored")
 		public void testProcessingAndIgnoreDefaultValue() {
