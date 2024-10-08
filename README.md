@@ -20,6 +20,7 @@ mvn verify -Pcoverage
 
 -----
 
+
 ## Supporting Cryptomator
 
 Cryptomator is provided free of charge as an open-source project despite the high development effort and is therefore dependent on donations. If you are also interested in further development, we offer you the opportunity to support us:
