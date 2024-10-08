@@ -26,6 +26,18 @@ public class KeychainManagerTest {
 		Assertions.assertArrayEquals("asd".toCharArray(), keychainManager.loadPassphrase("test"));
 	}
 
+	@Test
+	public void testStoreAndLoadAfterChangePassphrase() throws KeychainAccessException{
+		KeychainManager keychainManager = new KeychainManager(new SimpleObjectProperty<>(new MapKeychainAccess()));
+		keychainManager.storePassphrase("test", "Test", "asd");
+
+		keychainManager.changePassphrase("test", "LBJ23", "ItsWorking");
+		Assertions.assertArrayEquals("ItsWorking".toCharArray(), keychainManager.loadPassphrase("test"));
+
+
+
+	}
+
 	@Nested
 	public static class WhenObservingProperties {
 
