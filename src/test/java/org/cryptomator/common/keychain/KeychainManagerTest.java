@@ -2,11 +2,13 @@ package org.cryptomator.common.keychain;
 
 
 import org.cryptomator.integrations.keychain.KeychainAccessException;
+import org.cryptomator.integrations.keychain.KeychainAccessProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -37,6 +39,31 @@ public class KeychainManagerTest {
 
 
 	}
+
+	@Test
+	public void catchKeychainAccessException() {
+		boolean exceptionCatched = false;
+
+		
+		KeychainAccessProvider mockKeychain = Mockito.mock(KeychainAccessProvider.class);
+		try {
+
+			Mockito.doThrow(new KeychainAccessException("Test exception")).when(mockKeychain).deletePassphrase(Mockito.anyString());
+
+
+			KeychainManager keychainManager = new KeychainManager(new SimpleObjectProperty<>(mockKeychain));
+
+
+			keychainManager.deletePassphrase("I'm not a key");
+		} catch (KeychainAccessException exception) {
+			exceptionCatched = true;
+		}
+
+
+		Assertions.assertTrue(exceptionCatched);
+	}
+
+
 
 	@Nested
 	public static class WhenObservingProperties {
