@@ -5,7 +5,6 @@ import javafx.stage.Stage;
 
 import dagger.Lazy;
 import org.cryptomator.common.vaults.Vault;
-import org.cryptomator.integrations.mount.UnmountFailedException;
 import org.cryptomator.ui.common.FxmlFile;
 import org.cryptomator.ui.common.FxmlScene;
 import org.cryptomator.ui.fxapp.FxApplicationWindows;
@@ -25,22 +24,12 @@ import static org.mockito.Mockito.*;
 @DisplayName("LockWorkflow Tests")
 class LockWorkflowTest {
 
-    @Mock
-    private Stage lockWindow;
-    @Mock
+	@Mock
     private Vault vault;
     @Mock
     private AtomicReference<CompletableFuture<Boolean>> forceRetryDecision;
-    @Mock
-    @FxmlScene(FxmlFile.LOCK_FORCED)
-    private Lazy<Scene> lockForcedScene;
-    @Mock
-    @FxmlScene(FxmlFile.LOCK_FAILED)
-    private Lazy<Scene> lockFailedScene;
-    @Mock
-    private FxApplicationWindows appWindows;
 
-    @InjectMocks
+	@InjectMocks
     private LockWorkflow lockWorkflow;
 
     @BeforeEach
