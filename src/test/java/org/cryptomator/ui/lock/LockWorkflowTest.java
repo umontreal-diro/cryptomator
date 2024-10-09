@@ -1,13 +1,6 @@
 package org.cryptomator.ui.lock;
 
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-
-import dagger.Lazy;
 import org.cryptomator.common.vaults.Vault;
-import org.cryptomator.ui.common.FxmlFile;
-import org.cryptomator.ui.common.FxmlScene;
-import org.cryptomator.ui.fxapp.FxApplicationWindows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
