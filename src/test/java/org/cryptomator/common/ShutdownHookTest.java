@@ -1,14 +1,9 @@
 package org.cryptomator.common;
 
-import com.google.common.util.concurrent.Runnables;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
-import org.mockito.Mockito;
 
-import java.util.concurrent.PriorityBlockingQueue;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 class ShutdownHookTest {
@@ -31,7 +26,7 @@ class ShutdownHookTest {
 		shutdownHook.runOnShutdown(ShutdownHook.PRIO_FIRST, task1);
 		shutdownHook.runOnShutdown(ShutdownHook.PRIO_DEFAULT, task2);
 		shutdownHook.runOnShutdown(ShutdownHook.PRIO_LAST, task3);
-		shutdownHook.run();
+		shutdownHook.start();
 
 		// Assert
 		InOrder inOrder = inOrder(task1, task2, task3);
@@ -48,7 +43,7 @@ class ShutdownHookTest {
 		shutdownHook.runOnShutdown(task);
 
 		// Act
-		shutdownHook.run();
+		shutdownHook.start();
 
 		// Assert
 		verify(task).run();
