@@ -41,7 +41,7 @@ public class KeychainManagerTest {
 	}
 
 	@Test
-	public void catchKeychainAccesException() {
+	public void catchKeychainAccessException() {
 		boolean exceptionCatched = false;
 
 		
