@@ -38,6 +38,30 @@ public class KeychainManagerTest {
 
 	}
 
+	@Test
+	public void catchKeychainAccesException() throws KeychainAccessException {
+		boolean exceptionCatched = false;
+
+		KeychainManager keychainManager = new KeychainManager(new SimpleObjectProperty<>(new MapKeychainAccess()));
+		keychainManager.storePassphrase("test", "Test", "asd");
+
+		try{
+			keychainManager.deletePassphrase("I'm not a key");
+		}
+		catch (KeychainAccessException exception){
+			exceptionCatched = true;
+		}
+
+
+		Assertions.assertTrue(exceptionCatched);
+
+
+		
+
+	}
+
+
+
 	@Nested
 	public static class WhenObservingProperties {
 
