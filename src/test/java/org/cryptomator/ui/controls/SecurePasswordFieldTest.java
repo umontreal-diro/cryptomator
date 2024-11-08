@@ -174,4 +174,21 @@ public class SecurePasswordFieldTest {
 		Assertions.assertEquals("normal\00\01\02", result1.toString());
 	}
 
+	/**
+	 * Teste la méthode wipe() pour s'assurer qu'elle efface correctement le champ de mot de passe.
+	 */
+	@Test
+	@DisplayName("La méthode wipe() doit effacer le champ de mot de passe")
+	public void wipeShouldClearPasswordField() {
+		// Préparation : Configure le champ de mot de passe SecurePasswordField avec un mot de passe connu
+		pwField.setPassword("topSecret");
+
+		// Action : Appelle la méthode wipe() pour effacer le contenu du champ de mot de passe
+		pwField.wipe();
+
+		// Vérification : S'assure que le champ de mot de passe est bien effacé
+		CharSequence result = pwField.getCharacters();
+		Assertions.assertEquals("", result.toString(), "Le champ de mot de passe doit être vide après effacement");
+	}
+
 }

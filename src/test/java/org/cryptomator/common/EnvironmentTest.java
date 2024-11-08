@@ -123,4 +123,24 @@ public class EnvironmentTest {
 		}
 	}
 
+
+	/**
+	 * Le test suivant a pour but de vérifier que la méthode getMinPwLength() renvoie
+	 * la valeur par défaut 8 quand la propriété système cryptomator.minPwLength
+	 * n'est pas définie.
+	 */
+	@Test
+	@DisplayName("getMinPwLength should return default value when property is not set")
+	public void testGetMinPwLength_DefaultValue() {
+		// Arrange: Supprime la propriété pour garantir que la valeur par défaut est utilisée
+		System.clearProperty("cryptomator.minPwLength");
+
+		// Act: Appelle la méthode à tester
+		int minPwLength = env.getMinPwLength();
+
+		// Assert: Vérifie que la longueur minimale par défaut est renvoyée
+		Assertions.assertEquals(8, minPwLength, "The default minimum password length should be 8");
+	}
+
+
 }
