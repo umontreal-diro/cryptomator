@@ -25,7 +25,12 @@ jobs:
           cache: 'maven'
       - name: Build and Test
         run: |
-          export MAVEN_OPTS="-XX:+UnlockDiagnosticVMOptions -XX:+BytecodeVerificationLocal -XX:+DebugNonSafepoints -XX:+PrintFlagsFinal -Xmx512m -XX:+UseStringDeduplication"
+          export MAVEN_OPTS="-XX:+UnlockDiagnosticVMOptions \
+                             -XX:+BytecodeVerificationLocal \
+                             -XX:+DebugNonSafepoints \
+                             -XX:+PrintFlagsFinal \
+                             -Xmx512m \
+                             -XX:+UseStringDeduplication"
           xvfb-run mvn -B verify -Djavafx.platform=linux jacoco:report -Pcoverage
           unset MAVEN_OPTS
 
