@@ -21,9 +21,9 @@ jobs:
       matrix:
         jvm_opts:
           - "-Xmx512m"                 
-          - "-XX:+UseStringDeduplication"
-          - "-XX:+UseG1GC"             
-          - "-XX:+UseParallelGC"       
+          - "-XX:+PrintGCDetails"
+          - "-XX:+UseCompressedOops"             
+          - "-XX:MaxMetaspaceSize=256m"       
           - "-XX:+UnlockDiagnosticVMOptions"
 
     steps:
