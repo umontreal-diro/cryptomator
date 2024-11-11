@@ -20,12 +20,11 @@ jobs:
     strategy:
       matrix:
         jvm_opts:
-          - "-XX:+UnlockDiagnosticVMOptions"
-          - "-XX:+BytecodeVerificationLocal"
-          - "-XX:+DebugNonSafepoints"
-          - "-XX:+PrintFlagsFinal"
-          - "-Xmx512m"
+          - "-Xmx512m"                 
           - "-XX:+UseStringDeduplication"
+          - "-XX:+UseG1GC"             
+          - "-XX:+UseParallelGC"       
+          - "-XX:+UnlockDiagnosticVMOptions"
 
     steps:
       - name: Checkout Code
