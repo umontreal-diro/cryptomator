@@ -25,8 +25,8 @@ jobs:
           cache: 'maven'
       - name: Build and Test
         run: |
-          export MAVEN_OPTS="-Xms512m -XX:+UseG1GC -XX:+PrintGCDetails -XX:+HeapDumpOnOutOfMemoryError -XX:+UseCompressedOops"
           echo "Using MAVEN_OPTS: $MAVEN_OPTS"
+          export MAVEN_OPTS="-Xms512m -XX:+UseG1GC -XX:+PrintGCDetails -XX:+HeapDumpOnOutOfMemoryError -XX:+UseCompressedOops"
           xvfb-run mvn -B verify -Djavafx.platform=linux jacoco:report -Pcoverage
           unset MAVEN_OPTS
       - name: Get JaCoCo Coverage
