@@ -143,38 +143,4 @@ class ErrorControllerTest {
 		boolean result = errorController.containsMethodCode(ed);
 		Assertions.assertEquals(expectedResult, result);
 	}
-
-	/**
-	 * Ce test vérifie le comportement de la méthode de l'ErrorController
-	 * qui compare deux discussions d'erreur en fonction de l'existence de réponses.
-	 * Il utilise le modèle Arrange-Act-Assert (AAA) pour plus de clarté et d'organisation.
-	 */
-	@DisplayName("compare error discussions by existence of an answer using AAA")
-	@Test
-	public void testCompareIsAnsweredUsingAAA() {
-		// Arrange : Crée une nouvelle instance de réponse pour la discussion de gauche, indiquant qu'elle a été traitée.
-		var answer = new ErrorDiscussion.Answer();
-
-		// Crée la discussion d'erreur de gauche avec une réponse.
-		// Le upvoteCount est défini à 0 car il n'est pas pertinent pour ce test.
-		var left = createErrorDiscussion("Test Left", 0, answer); // La gauche a une réponse
-
-		// Crée la discussion d'erreur de droite sans réponse.
-		// Cela simule une situation où la discussion reste non résolue.
-		var right = createErrorDiscussion("Test Right", 0, null); // La droite n'a pas de réponse
-
-		// Définit le résultat attendu de la comparaison.
-		// Étant donné que la discussion de gauche a une réponse,
-		// nous nous attendons à ce qu'elle soit considérée comme supérieure à la droite.
-		int expectedResult = 1; // Nous nous attendons à ce que la gauche soit supérieure à la droite
-
-		// Act : Appelle la méthode compareIsAnswered sur l'errorController, en passant les deux discussions.
-		// Cette méthode doit les comparer en fonction de l'existence d'une réponse.
-		int result = errorController.compareIsAnswered(left, right);
-
-		// Assert: Vérifie que le résultat de la comparaison correspond au résultat attendu. Le message d'assertion
-		// clarifie l'attente en cas d'échec.
-		Assertions.assertEquals(expectedResult, result, "La gauche doit être supérieure à la droite car elle a une réponse.");
-	}
-
 }

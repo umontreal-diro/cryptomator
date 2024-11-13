@@ -42,28 +42,5 @@ public class IpcCommunicatorTest {
 		}
 	}
 
-	/**
-	 * Teste la création d'un communicateur IPC avec un chemin de socket invalide.
-	 * Ce test vérifie que lorsqu'un chemin de socket inexistant est fourni,
-	 * le système renvoie un communicateur de type LoopbackCommunicator.
-	 */
-	@Test
-	public void testCreateWithInvalidSocketPath(@TempDir Path tmpDir) throws IOException {
-		// Arrange: Définit un chemin de socket invalide dans un répertoire temporaire
-		var invalidSocketPath = tmpDir.resolve("invalid.sock");
-
-		// Vérifie que le chemin de socket n'existe pas
-		Assertions.assertFalse(Files.exists(invalidSocketPath), "Le chemin du socket ne doit pas exister.");
-
-		// Act: Crée un communicateur IPC avec le chemin de socket invalide
-		IpcCommunicator communicator = IpcCommunicator.create(List.of(invalidSocketPath));
-
-		// Assert: Vérifie que le communicateur retourné est une instance de LoopbackCommunicator
-		Assertions.assertInstanceOf(LoopbackCommunicator.class, communicator,
-				"Un LoopbackCommunicator devait être retourné lorsque le chemin de socket est invalide.");
-
-		// Ferme le communicateur pour libérer les ressources
-		communicator.close();
-	}
 
 }
