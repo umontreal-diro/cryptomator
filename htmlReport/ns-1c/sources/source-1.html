@@ -1,0 +1,185 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AutoCompleter</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.recoverykey</a>
+</div>
+
+<h1>Coverage Summary for Class: AutoCompleter (org.cryptomator.ui.recoverykey)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AutoCompleter</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/22)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.recoverykey;
+&nbsp;
+&nbsp;import com.google.common.base.Strings;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Collection;
+&nbsp;import java.util.Collections;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+<b class="nc">&nbsp;public class AutoCompleter {</b>
+&nbsp;
+&nbsp;	private final List&lt;String&gt; dictionary;
+&nbsp;
+<b class="nc">&nbsp;	public AutoCompleter(Collection&lt;String&gt; dictionary) {</b>
+<b class="nc">&nbsp;		this.dictionary = unmodifiableSortedRandomAccessList(dictionary);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private static &lt;T extends Comparable&lt;T&gt;&gt; List&lt;T&gt; unmodifiableSortedRandomAccessList(Collection&lt;T&gt; items) {
+<b class="nc">&nbsp;		List&lt;T&gt; result = new ArrayList&lt;&gt;(items);</b>
+<b class="nc">&nbsp;		Collections.sort(result);</b>
+<b class="nc">&nbsp;		return Collections.unmodifiableList(result);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Optional&lt;String&gt; autocomplete(String prefix) {
+<b class="nc">&nbsp;		if (Strings.isNullOrEmpty(prefix)) {</b>
+<b class="nc">&nbsp;			return Optional.empty();</b>
+&nbsp;		}
+<b class="nc">&nbsp;		int potentialMatchIdx = findIndexOfLexicographicallyPreceding(0, dictionary.size(), prefix);</b>
+<b class="nc">&nbsp;		if (potentialMatchIdx &lt; dictionary.size()) {</b>
+<b class="nc">&nbsp;			String potentialMatch = dictionary.get(potentialMatchIdx);</b>
+<b class="nc">&nbsp;			return potentialMatch.startsWith(prefix) ? Optional.of(potentialMatch) : Optional.empty();</b>
+&nbsp;		} else {
+<b class="nc">&nbsp;			return Optional.empty();</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Find the index of the first word in {@link #dictionary} that starts with a given prefix.
+&nbsp;	 * &lt;p&gt;
+&nbsp;	 * This method performs an &quot;unsuccessful&quot; binary search (it doesn&#39;t return when encountering an exact match).
+&nbsp;	 * Instead it continues searching in the left half (which includes the exact match) until only one element is left.
+&nbsp;	 * &lt;p&gt;
+&nbsp;	 * If the dictionary doesn&#39;t contain a word &quot;left&quot; of the given prefix, this method returns an invalid index, though.
+&nbsp;	 *
+&nbsp;	 * @param begin Index of first element (inclusive)
+&nbsp;	 * @param end Index of last element (exclusive)
+&nbsp;	 * @param prefix
+&nbsp;	 * @return index between [0, dictLen], i.e. index can exceed the upper bounds of {@link #dictionary}.
+&nbsp;	 */
+&nbsp;	private int findIndexOfLexicographicallyPreceding(int begin, int end, String prefix) {
+<b class="nc">&nbsp;		if (begin &gt;= end) {</b>
+<b class="nc">&nbsp;			return begin; // this is usually where a binary search ends &quot;unsuccessful&quot;</b>
+&nbsp;		}
+&nbsp;
+<b class="nc">&nbsp;		int mid = (begin + end) / 2;</b>
+<b class="nc">&nbsp;		String word = dictionary.get(mid);</b>
+<b class="nc">&nbsp;		if (prefix.compareTo(word) &lt;= 0) { // prefix precedes or matches word</b>
+&nbsp;			// proceed in left half
+<b class="nc">&nbsp;			assert mid &lt; end;</b>
+<b class="nc">&nbsp;			return findIndexOfLexicographicallyPreceding(0, mid, prefix);</b>
+&nbsp;		} else {
+&nbsp;			// proceed in right half
+<b class="nc">&nbsp;			assert mid &gt;= begin;</b>
+<b class="nc">&nbsp;			return findIndexOfLexicographicallyPreceding(mid + 1, end, prefix);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

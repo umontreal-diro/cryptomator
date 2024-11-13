@@ -1,0 +1,347 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Settings</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.common.settings</a>
+</div>
+
+<h1>Coverage Summary for Class: Settings (org.cryptomator.common.settings)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Settings</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    55,6%
+  </span>
+  <span class="absValue">
+    (5/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    25%
+  </span>
+  <span class="absValue">
+    (6/24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    56,4%
+  </span>
+  <span class="absValue">
+    (62/110)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/*******************************************************************************
+&nbsp; * Copyright (c) 2014, 2017 Sebastian Stenzel
+&nbsp; * All rights reserved.
+&nbsp; * This program and the accompanying materials are made available under the terms of the accompanying LICENSE file.
+&nbsp; *
+&nbsp; * Contributors:
+&nbsp; *     Sebastian Stenzel - initial API and implementation
+&nbsp; ******************************************************************************/
+&nbsp;package org.cryptomator.common.settings;
+&nbsp;
+&nbsp;import org.apache.commons.lang3.SystemUtils;
+&nbsp;import org.cryptomator.common.Environment;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import javafx.beans.Observable;
+&nbsp;import javafx.beans.property.BooleanProperty;
+&nbsp;import javafx.beans.property.IntegerProperty;
+&nbsp;import javafx.beans.property.ObjectProperty;
+&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+&nbsp;import javafx.beans.property.SimpleIntegerProperty;
+&nbsp;import javafx.beans.property.SimpleObjectProperty;
+&nbsp;import javafx.beans.property.SimpleStringProperty;
+&nbsp;import javafx.beans.property.StringProperty;
+&nbsp;import javafx.collections.FXCollections;
+&nbsp;import javafx.collections.ObservableList;
+&nbsp;import javafx.geometry.NodeOrientation;
+&nbsp;import java.time.Instant;
+&nbsp;import java.util.function.Consumer;
+&nbsp;
+&nbsp;public class Settings {
+&nbsp;
+<b class="fc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(Settings.class);</b>
+&nbsp;
+&nbsp;	static final boolean DEFAULT_ASKED_FOR_UPDATE_CHECK = false;
+&nbsp;	static final boolean DEFAULT_CHECK_FOR_UPDATES = false;
+&nbsp;	static final boolean DEFAULT_START_HIDDEN = false;
+&nbsp;	static final boolean DEFAULT_AUTO_CLOSE_VAULTS = false;
+&nbsp;	static final boolean DEFAULT_USE_KEYCHAIN = true;
+&nbsp;	static final boolean DEFAULT_USE_QUICKACCESS = true;
+&nbsp;	static final int DEFAULT_PORT = 42427;
+&nbsp;	static final int DEFAULT_NUM_TRAY_NOTIFICATIONS = 3;
+&nbsp;	static final boolean DEFAULT_DEBUG_MODE = false;
+<b class="fc">&nbsp;	static final UiTheme DEFAULT_THEME = UiTheme.LIGHT;</b>
+&nbsp;	@Deprecated // to be changed to &quot;whatever is available&quot; eventually
+<b class="pc">&nbsp;	static final String DEFAULT_KEYCHAIN_PROVIDER = SystemUtils.IS_OS_WINDOWS ? &quot;org.cryptomator.windows.keychain.WindowsProtectedKeychainAccess&quot; : //</b>
+<b class="pc">&nbsp;			SystemUtils.IS_OS_MAC ? &quot;org.cryptomator.macos.keychain.MacSystemKeychainAccess&quot; : //</b>
+<b class="nc">&nbsp;					&quot;org.cryptomator.linux.keychain.SecretServiceKeychainAccess&quot;;</b>
+<b class="pc">&nbsp;	static final String DEFAULT_QUICKACCESS_SERVICE = SystemUtils.IS_OS_WINDOWS ? &quot;org.cryptomator.windows.quickaccess.ExplorerQuickAccessService&quot; : //</b>
+<b class="pc">&nbsp;			SystemUtils.IS_OS_LINUX ? &quot;org.cryptomator.linux.quickaccess.NautilusBookmarks&quot; : null;</b>
+&nbsp;
+<b class="fc">&nbsp;	static final String DEFAULT_USER_INTERFACE_ORIENTATION = NodeOrientation.LEFT_TO_RIGHT.name();</b>
+&nbsp;	static final boolean DEFAULT_SHOW_MINIMIZE_BUTTON = false;
+<b class="fc">&nbsp;	public static final Instant DEFAULT_TIMESTAMP = Instant.parse(&quot;2000-01-01T00:00:00Z&quot;);</b>
+&nbsp;	public final ObservableList&lt;VaultSettings&gt; directories;
+&nbsp;	public final BooleanProperty askedForUpdateCheck;
+&nbsp;	public final BooleanProperty checkForUpdates;
+&nbsp;	public final BooleanProperty startHidden;
+&nbsp;	public final BooleanProperty autoCloseVaults;
+&nbsp;	public final BooleanProperty useKeychain;
+&nbsp;	public final IntegerProperty port;
+&nbsp;	public final IntegerProperty numTrayNotifications;
+&nbsp;	public final BooleanProperty debugMode;
+&nbsp;	public final ObjectProperty&lt;UiTheme&gt; theme;
+&nbsp;	public final StringProperty keychainProvider;
+&nbsp;	public final BooleanProperty useQuickAccess;
+&nbsp;	public final StringProperty quickAccessService;
+&nbsp;	public final ObjectProperty&lt;NodeOrientation&gt; userInterfaceOrientation;
+&nbsp;	public final StringProperty licenseKey;
+&nbsp;	public final BooleanProperty showMinimizeButton;
+&nbsp;	public final BooleanProperty showTrayIcon;
+&nbsp;	public final IntegerProperty windowXPosition;
+&nbsp;	public final IntegerProperty windowYPosition;
+&nbsp;	public final IntegerProperty windowWidth;
+&nbsp;	public final IntegerProperty windowHeight;
+&nbsp;	public final StringProperty language;
+&nbsp;	public final StringProperty mountService;
+&nbsp;	public final ObjectProperty&lt;Instant&gt; lastSuccessfulUpdateCheck;
+&nbsp;
+&nbsp;	private Consumer&lt;Settings&gt; saveCmd;
+&nbsp;
+&nbsp;	public static Settings create(Environment env) {
+<b class="nc">&nbsp;		var defaults = new SettingsJson();</b>
+<b class="nc">&nbsp;		defaults.showTrayIcon = env.showTrayIcon();</b>
+<b class="nc">&nbsp;		return new Settings(defaults);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Recreate settings from json
+&nbsp;	 *
+&nbsp;	 * @param json The parsed settings.json
+&nbsp;	 */
+<b class="fc">&nbsp;	Settings(SettingsJson json) {</b>
+<b class="fc">&nbsp;		this.directories = FXCollections.observableArrayList(VaultSettings::observables);</b>
+<b class="fc">&nbsp;		this.askedForUpdateCheck = new SimpleBooleanProperty(this, &quot;askedForUpdateCheck&quot;, json.askedForUpdateCheck);</b>
+<b class="fc">&nbsp;		this.checkForUpdates = new SimpleBooleanProperty(this, &quot;checkForUpdates&quot;, json.checkForUpdatesEnabled);</b>
+<b class="fc">&nbsp;		this.startHidden = new SimpleBooleanProperty(this, &quot;startHidden&quot;, json.startHidden);</b>
+<b class="fc">&nbsp;		this.autoCloseVaults = new SimpleBooleanProperty(this, &quot;autoCloseVaults&quot;, json.autoCloseVaults);</b>
+<b class="fc">&nbsp;		this.useKeychain = new SimpleBooleanProperty(this, &quot;useKeychain&quot;, json.useKeychain);</b>
+<b class="fc">&nbsp;		this.useQuickAccess = new SimpleBooleanProperty(this, &quot;addToQuickAccess&quot;, json.useQuickAccess);</b>
+<b class="fc">&nbsp;		this.port = new SimpleIntegerProperty(this, &quot;webDavPort&quot;, json.port);</b>
+<b class="fc">&nbsp;		this.numTrayNotifications = new SimpleIntegerProperty(this, &quot;numTrayNotifications&quot;, json.numTrayNotifications);</b>
+<b class="fc">&nbsp;		this.debugMode = new SimpleBooleanProperty(this, &quot;debugMode&quot;, json.debugMode);</b>
+<b class="fc">&nbsp;		this.theme = new SimpleObjectProperty&lt;&gt;(this, &quot;theme&quot;, json.theme);</b>
+<b class="fc">&nbsp;		this.keychainProvider = new SimpleStringProperty(this, &quot;keychainProvider&quot;, json.keychainProvider);</b>
+<b class="fc">&nbsp;		this.userInterfaceOrientation = new SimpleObjectProperty&lt;&gt;(this, &quot;userInterfaceOrientation&quot;, parseEnum(json.uiOrientation, NodeOrientation.class, NodeOrientation.LEFT_TO_RIGHT));</b>
+<b class="fc">&nbsp;		this.licenseKey = new SimpleStringProperty(this, &quot;licenseKey&quot;, json.licenseKey);</b>
+<b class="fc">&nbsp;		this.showMinimizeButton = new SimpleBooleanProperty(this, &quot;showMinimizeButton&quot;, json.showMinimizeButton);</b>
+<b class="fc">&nbsp;		this.showTrayIcon = new SimpleBooleanProperty(this, &quot;showTrayIcon&quot;, json.showTrayIcon);</b>
+<b class="fc">&nbsp;		this.windowXPosition = new SimpleIntegerProperty(this, &quot;windowXPosition&quot;, json.windowXPosition);</b>
+<b class="fc">&nbsp;		this.windowYPosition = new SimpleIntegerProperty(this, &quot;windowYPosition&quot;, json.windowYPosition);</b>
+<b class="fc">&nbsp;		this.windowWidth = new SimpleIntegerProperty(this, &quot;windowWidth&quot;, json.windowWidth);</b>
+<b class="fc">&nbsp;		this.windowHeight = new SimpleIntegerProperty(this, &quot;windowHeight&quot;, json.windowHeight);</b>
+<b class="fc">&nbsp;		this.language = new SimpleStringProperty(this, &quot;language&quot;, json.language);</b>
+<b class="fc">&nbsp;		this.mountService = new SimpleStringProperty(this, &quot;mountService&quot;, json.mountService);</b>
+<b class="fc">&nbsp;		this.quickAccessService = new SimpleStringProperty(this, &quot;quickAccessService&quot;, json.quickAccessService);</b>
+<b class="fc">&nbsp;		this.lastSuccessfulUpdateCheck = new SimpleObjectProperty&lt;&gt;(this, &quot;lastSuccessfulUpdateCheck&quot;, json.lastSuccessfulUpdateCheck);</b>
+&nbsp;
+<b class="fc">&nbsp;		this.directories.addAll(json.directories.stream().map(VaultSettings::new).toList());</b>
+&nbsp;
+<b class="fc">&nbsp;		migrateLegacySettings(json);</b>
+&nbsp;
+<b class="fc">&nbsp;		directories.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		askedForUpdateCheck.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		checkForUpdates.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		startHidden.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		autoCloseVaults.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		useKeychain.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		useQuickAccess.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		port.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		numTrayNotifications.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		debugMode.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		theme.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		keychainProvider.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		userInterfaceOrientation.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		licenseKey.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		showMinimizeButton.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		showTrayIcon.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		windowXPosition.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		windowYPosition.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		windowWidth.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		windowHeight.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		language.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		mountService.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		quickAccessService.addListener(this::somethingChanged);</b>
+<b class="fc">&nbsp;		lastSuccessfulUpdateCheck.addListener(this::somethingChanged);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@SuppressWarnings(&quot;deprecation&quot;)
+&nbsp;	private void migrateLegacySettings(SettingsJson json) {
+&nbsp;		// implicit migration of 1.6.x legacy setting &quot;preferredVolumeImpl&quot;:
+<b class="pc">&nbsp;		if (this.mountService.get() == null &amp;&amp; json.preferredVolumeImpl != null) {</b>
+<b class="nc">&nbsp;			this.mountService.set(switch (json.preferredVolumeImpl) {</b>
+<b class="nc">&nbsp;				case &quot;Dokany&quot; -&gt; &quot;org.cryptomator.frontend.dokany.mount.DokanyMountProvider&quot;;</b>
+&nbsp;				case &quot;FUSE&quot; -&gt; {
+<b class="nc">&nbsp;					if (SystemUtils.IS_OS_WINDOWS) {</b>
+<b class="nc">&nbsp;						yield &quot;org.cryptomator.frontend.fuse.mount.WinFspNetworkMountProvider&quot;;</b>
+<b class="nc">&nbsp;					} else if (SystemUtils.IS_OS_MAC) {</b>
+<b class="nc">&nbsp;						yield &quot;org.cryptomator.frontend.fuse.mount.MacFuseMountProvider&quot;;</b>
+&nbsp;					} else {
+<b class="nc">&nbsp;						yield &quot;org.cryptomator.frontend.fuse.mount.LinuxFuseMountProvider&quot;;</b>
+&nbsp;					}
+&nbsp;				}
+&nbsp;				default -&gt; {
+<b class="nc">&nbsp;					if (SystemUtils.IS_OS_WINDOWS) {</b>
+<b class="nc">&nbsp;						yield &quot;org.cryptomator.frontend.webdav.mount.WindowsMounter&quot;;</b>
+<b class="nc">&nbsp;					} else if (SystemUtils.IS_OS_MAC) {</b>
+<b class="nc">&nbsp;						yield &quot;org.cryptomator.frontend.webdav.mount.MacAppleScriptMounter&quot;;</b>
+&nbsp;					} else {
+<b class="nc">&nbsp;						yield &quot;org.cryptomator.frontend.webdav.mount.LinuxGioMounter&quot;;</b>
+&nbsp;					}
+&nbsp;				}
+&nbsp;			});
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	SettingsJson serialized() {
+<b class="nc">&nbsp;		var json = new SettingsJson();</b>
+<b class="nc">&nbsp;		json.directories = directories.stream().map(VaultSettings::serialized).toList();</b>
+<b class="nc">&nbsp;		json.askedForUpdateCheck = askedForUpdateCheck.get();</b>
+<b class="nc">&nbsp;		json.checkForUpdatesEnabled = checkForUpdates.get();</b>
+<b class="nc">&nbsp;		json.startHidden = startHidden.get();</b>
+<b class="nc">&nbsp;		json.autoCloseVaults = autoCloseVaults.get();</b>
+<b class="nc">&nbsp;		json.useKeychain = useKeychain.get();</b>
+<b class="nc">&nbsp;		json.useQuickAccess = useQuickAccess.get();</b>
+<b class="nc">&nbsp;		json.port = port.get();</b>
+<b class="nc">&nbsp;		json.numTrayNotifications = numTrayNotifications.get();</b>
+<b class="nc">&nbsp;		json.debugMode = debugMode.get();</b>
+<b class="nc">&nbsp;		json.theme = theme.get();</b>
+<b class="nc">&nbsp;		json.keychainProvider = keychainProvider.get();</b>
+<b class="nc">&nbsp;		json.uiOrientation = userInterfaceOrientation.get().name();</b>
+<b class="nc">&nbsp;		json.licenseKey = licenseKey.get();</b>
+<b class="nc">&nbsp;		json.showMinimizeButton = showMinimizeButton.get();</b>
+<b class="nc">&nbsp;		json.showTrayIcon = showTrayIcon.get();</b>
+<b class="nc">&nbsp;		json.windowXPosition = windowXPosition.get();</b>
+<b class="nc">&nbsp;		json.windowYPosition = windowYPosition.get();</b>
+<b class="nc">&nbsp;		json.windowWidth = windowWidth.get();</b>
+<b class="nc">&nbsp;		json.windowHeight = windowHeight.get();</b>
+<b class="nc">&nbsp;		json.language = language.get();</b>
+<b class="nc">&nbsp;		json.mountService = mountService.get();</b>
+<b class="nc">&nbsp;		json.quickAccessService = quickAccessService.get();</b>
+<b class="nc">&nbsp;		json.lastSuccessfulUpdateCheck = lastSuccessfulUpdateCheck.get();</b>
+<b class="nc">&nbsp;		return json;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private &lt;E extends Enum&lt;E&gt;&gt; E parseEnum(String value, Class&lt;E&gt; clazz, E defaultValue) {
+&nbsp;		try {
+<b class="fc">&nbsp;			return Enum.valueOf(clazz, value.toUpperCase());</b>
+<b class="nc">&nbsp;		} catch (IllegalArgumentException e) {</b>
+<b class="nc">&nbsp;			LOG.warn(&quot;No value {}.{}. Defaulting to {}.&quot;, clazz.getSimpleName(), value, defaultValue);</b>
+<b class="nc">&nbsp;			return defaultValue;</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;
+&nbsp;	// TODO rename to setChangeListener
+&nbsp;	void setSaveCmd(Consumer&lt;Settings&gt; saveCmd) {
+<b class="fc">&nbsp;		this.saveCmd = saveCmd;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void somethingChanged(@SuppressWarnings(&quot;unused&quot;) Observable observable) {
+<b class="nc">&nbsp;		this.save();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	void save() {
+<b class="nc">&nbsp;		if (saveCmd != null) {</b>
+<b class="nc">&nbsp;			saveCmd.accept(this);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

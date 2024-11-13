@@ -1,0 +1,380 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Mounter</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.common.mount</a>
+</div>
+
+<h1>Coverage Summary for Class: Mounter (org.cryptomator.common.mount)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Mounter</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/22)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Mounter$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">Mounter$MountHandle</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">Mounter$SettledMounter</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/59)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/53)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/61)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/77)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.common.mount;
+&nbsp;
+&nbsp;import org.cryptomator.common.Environment;
+&nbsp;import org.cryptomator.common.settings.Settings;
+&nbsp;import org.cryptomator.common.settings.VaultSettings;
+&nbsp;import org.cryptomator.integrations.mount.Mount;
+&nbsp;import org.cryptomator.integrations.mount.MountBuilder;
+&nbsp;import org.cryptomator.integrations.mount.MountFailedException;
+&nbsp;import org.cryptomator.integrations.mount.MountService;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import javax.inject.Inject;
+&nbsp;import javax.inject.Named;
+&nbsp;import javax.inject.Singleton;
+&nbsp;import javafx.beans.value.ObservableValue;
+&nbsp;import java.io.IOException;
+&nbsp;import java.nio.file.Files;
+&nbsp;import java.nio.file.Path;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;import static org.cryptomator.integrations.mount.MountCapability.MOUNT_AS_DRIVE_LETTER;
+&nbsp;import static org.cryptomator.integrations.mount.MountCapability.MOUNT_TO_EXISTING_DIR;
+&nbsp;import static org.cryptomator.integrations.mount.MountCapability.MOUNT_TO_SYSTEM_CHOSEN_PATH;
+&nbsp;import static org.cryptomator.integrations.mount.MountCapability.MOUNT_WITHIN_EXISTING_PARENT;
+&nbsp;import static org.cryptomator.integrations.mount.MountCapability.UNMOUNT_FORCED;
+&nbsp;
+&nbsp;@Singleton
+&nbsp;public class Mounter {
+&nbsp;
+<b class="nc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(Mounter.class);</b>
+&nbsp;
+&nbsp;	// mount providers (key) can not be used if any of the conflicting mount providers (values) are already in use
+<b class="nc">&nbsp;	private static final Map&lt;String, Set&lt;String&gt;&gt; CONFLICTING_MOUNT_SERVICES = Map.of(</b>
+<b class="nc">&nbsp;			&quot;org.cryptomator.frontend.fuse.mount.MacFuseMountProvider&quot;, Set.of(&quot;org.cryptomator.frontend.fuse.mount.FuseTMountProvider&quot;),</b>
+<b class="nc">&nbsp;			&quot;org.cryptomator.frontend.fuse.mount.FuseTMountProvider&quot;, Set.of(&quot;org.cryptomator.frontend.fuse.mount.MacFuseMountProvider&quot;)</b>
+&nbsp;	);
+&nbsp;
+&nbsp;	private final Environment env;
+&nbsp;	private final Settings settings;
+&nbsp;	private final WindowsDriveLetters driveLetters;
+&nbsp;	private final List&lt;MountService&gt; mountProviders;
+&nbsp;	private final Set&lt;MountService&gt; usedMountServices;
+&nbsp;	private final ObservableValue&lt;MountService&gt; defaultMountService;
+&nbsp;
+&nbsp;	@Inject
+&nbsp;	public Mounter(Environment env, //
+&nbsp;				   Settings settings, //
+&nbsp;				   WindowsDriveLetters driveLetters, //
+&nbsp;				   List&lt;MountService&gt; mountProviders, //
+&nbsp;				   @Named(&quot;usedMountServices&quot;) Set&lt;MountService&gt; usedMountServices, //
+<b class="nc">&nbsp;				   ObservableValue&lt;MountService&gt; defaultMountService) {</b>
+<b class="nc">&nbsp;		this.env = env;</b>
+<b class="nc">&nbsp;		this.settings = settings;</b>
+<b class="nc">&nbsp;		this.driveLetters = driveLetters;</b>
+<b class="nc">&nbsp;		this.mountProviders = mountProviders;</b>
+<b class="nc">&nbsp;		this.usedMountServices = usedMountServices;</b>
+<b class="nc">&nbsp;		this.defaultMountService = defaultMountService;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private class SettledMounter {
+&nbsp;
+&nbsp;		private final MountService service;
+&nbsp;		private final MountBuilder builder;
+&nbsp;		private final VaultSettings vaultSettings;
+&nbsp;
+<b class="nc">&nbsp;		public SettledMounter(MountService service, MountBuilder builder, VaultSettings vaultSettings) {</b>
+<b class="nc">&nbsp;			this.service = service;</b>
+<b class="nc">&nbsp;			this.builder = builder;</b>
+<b class="nc">&nbsp;			this.vaultSettings = vaultSettings;</b>
+&nbsp;		}
+&nbsp;
+&nbsp;		Runnable prepare() throws IOException {
+<b class="nc">&nbsp;			for (var capability : service.capabilities()) {</b>
+<b class="nc">&nbsp;				switch (capability) {</b>
+<b class="nc">&nbsp;					case FILE_SYSTEM_NAME -&gt; builder.setFileSystemName(&quot;cryptoFs&quot;);</b>
+&nbsp;					case LOOPBACK_PORT -&gt; {
+<b class="nc">&nbsp;						if (vaultSettings.mountService.getValue() == null) {</b>
+<b class="nc">&nbsp;							builder.setLoopbackPort(settings.port.get());</b>
+&nbsp;						} else {
+<b class="nc">&nbsp;							builder.setLoopbackPort(vaultSettings.port.get());</b>
+&nbsp;						}
+&nbsp;					}
+<b class="nc">&nbsp;					case LOOPBACK_HOST_NAME -&gt; env.getLoopbackAlias().ifPresent(builder::setLoopbackHostName);</b>
+<b class="nc">&nbsp;					case READ_ONLY -&gt; builder.setReadOnly(vaultSettings.usesReadOnlyMode.get());</b>
+&nbsp;					case MOUNT_FLAGS -&gt; {
+<b class="nc">&nbsp;						var mountFlags = vaultSettings.mountFlags.get();</b>
+<b class="nc">&nbsp;						if (mountFlags == null || mountFlags.isBlank()) {</b>
+<b class="nc">&nbsp;							builder.setMountFlags(service.getDefaultMountFlags());</b>
+&nbsp;						} else {
+<b class="nc">&nbsp;							builder.setMountFlags(mountFlags);</b>
+&nbsp;						}
+&nbsp;					}
+<b class="nc">&nbsp;					case VOLUME_ID -&gt; builder.setVolumeId(vaultSettings.id);</b>
+<b class="nc">&nbsp;					case VOLUME_NAME -&gt; builder.setVolumeName(vaultSettings.mountName.get());</b>
+&nbsp;				}
+&nbsp;			}
+&nbsp;
+<b class="nc">&nbsp;			return prepareMountPoint();</b>
+&nbsp;		}
+&nbsp;
+&nbsp;		private Runnable prepareMountPoint() throws IOException {
+<b class="nc">&nbsp;			Runnable cleanup = () -&gt; {};</b>
+<b class="nc">&nbsp;			var userChosenMountPoint = vaultSettings.mountPoint.get();</b>
+<b class="nc">&nbsp;			var defaultMountPointBase = env.getMountPointsDir().orElseThrow();</b>
+<b class="nc">&nbsp;			var canMountToDriveLetter = service.hasCapability(MOUNT_AS_DRIVE_LETTER);</b>
+<b class="nc">&nbsp;			var canMountToParent = service.hasCapability(MOUNT_WITHIN_EXISTING_PARENT);</b>
+<b class="nc">&nbsp;			var canMountToDir = service.hasCapability(MOUNT_TO_EXISTING_DIR);</b>
+<b class="nc">&nbsp;			var canMountToSystem = service.hasCapability(MOUNT_TO_SYSTEM_CHOSEN_PATH);</b>
+&nbsp;
+<b class="nc">&nbsp;			if (userChosenMountPoint == null) {</b>
+<b class="nc">&nbsp;				if (canMountToSystem) {</b>
+&nbsp;					// no need to set a mount point
+<b class="nc">&nbsp;				} else if (canMountToDriveLetter) {</b>
+<b class="nc">&nbsp;					builder.setMountpoint(driveLetters.getFirstDesiredAvailable().orElseThrow()); //TODO: catch exception and translate</b>
+<b class="nc">&nbsp;				} else if (canMountToParent) {</b>
+<b class="nc">&nbsp;					Files.createDirectories(defaultMountPointBase);</b>
+<b class="nc">&nbsp;					builder.setMountpoint(defaultMountPointBase);</b>
+<b class="nc">&nbsp;				} else if (canMountToDir) {</b>
+<b class="nc">&nbsp;					var mountPoint = defaultMountPointBase.resolve(vaultSettings.mountName.get());</b>
+<b class="nc">&nbsp;					Files.createDirectories(mountPoint);</b>
+<b class="nc">&nbsp;					builder.setMountpoint(mountPoint);</b>
+&nbsp;				}
+&nbsp;			} else {
+<b class="nc">&nbsp;				var mpIsDriveLetter = userChosenMountPoint.toString().matches(&quot;[A-Z]:\\\\&quot;);</b>
+<b class="nc">&nbsp;				if (mpIsDriveLetter) {</b>
+<b class="nc">&nbsp;					if (driveLetters.getOccupied().contains(userChosenMountPoint)) {</b>
+<b class="nc">&nbsp;						throw new MountPointInUseException(userChosenMountPoint);</b>
+&nbsp;					}
+<b class="nc">&nbsp;				} else if (canMountToParent &amp;&amp; !canMountToDir) {</b>
+<b class="nc">&nbsp;					MountWithinParentUtil.prepareParentNoMountPoint(userChosenMountPoint);</b>
+<b class="nc">&nbsp;					cleanup = () -&gt; MountWithinParentUtil.cleanup(userChosenMountPoint);</b>
+&nbsp;				}
+&nbsp;				try {
+<b class="nc">&nbsp;					builder.setMountpoint(userChosenMountPoint);</b>
+<b class="nc">&nbsp;				} catch (IllegalArgumentException | UnsupportedOperationException e) {</b>
+<b class="nc">&nbsp;					var configNotSupported = (!canMountToDriveLetter &amp;&amp; mpIsDriveLetter) //mounting as driveletter, albeit not supported</b>
+&nbsp;							|| (!canMountToDir &amp;&amp; !mpIsDriveLetter) //mounting to directory, albeit not supported
+&nbsp;							|| (!canMountToParent &amp;&amp; !mpIsDriveLetter) //
+&nbsp;							|| (!canMountToDir &amp;&amp; !canMountToParent &amp;&amp; !canMountToSystem &amp;&amp; !canMountToDriveLetter);
+<b class="nc">&nbsp;					if (configNotSupported) {</b>
+<b class="nc">&nbsp;						throw new MountPointNotSupportedException(userChosenMountPoint, e.getMessage());</b>
+<b class="nc">&nbsp;					} else if (canMountToDir &amp;&amp; !canMountToParent &amp;&amp; !Files.exists(userChosenMountPoint)) {</b>
+&nbsp;						//mountpoint must exist
+<b class="nc">&nbsp;						throw new MountPointNotExistingException(userChosenMountPoint, e.getMessage());</b>
+&nbsp;					} else {
+&nbsp;						//TODO: add specific exception for !canMountToDir &amp;&amp; canMountToParent &amp;&amp; !Files.notExists(userChosenMountPoint)
+<b class="nc">&nbsp;						throw new IllegalMountPointException(userChosenMountPoint, e.getMessage());</b>
+&nbsp;					}
+&nbsp;				}
+&nbsp;			}
+<b class="nc">&nbsp;			return cleanup;</b>
+&nbsp;		}
+&nbsp;
+&nbsp;	}
+&nbsp;
+&nbsp;	public MountHandle mount(VaultSettings vaultSettings, Path cryptoFsRoot) throws IOException, MountFailedException {
+<b class="nc">&nbsp;		var mountService = mountProviders.stream().filter(s -&gt; s.getClass().getName().equals(vaultSettings.mountService.getValue())).findFirst().orElse(defaultMountService.getValue());</b>
+&nbsp;
+<b class="nc">&nbsp;		if (isConflictingMountService(mountService)) {</b>
+<b class="nc">&nbsp;			var msg = STR.&quot;\{mountService.getClass()} unavailable due to conflict with either of \{CONFLICTING_MOUNT_SERVICES.get(mountService.getClass().getName())}&quot;;</b>
+<b class="nc">&nbsp;			throw new ConflictingMountServiceException(msg);</b>
+&nbsp;		}
+&nbsp;
+<b class="nc">&nbsp;		usedMountServices.add(mountService);</b>
+&nbsp;
+<b class="nc">&nbsp;		var builder = mountService.forFileSystem(cryptoFsRoot);</b>
+<b class="nc">&nbsp;		var internal = new SettledMounter(mountService, builder, vaultSettings); // FIXME: no need for an inner class</b>
+<b class="nc">&nbsp;		var cleanup = internal.prepare();</b>
+<b class="nc">&nbsp;		return new MountHandle(builder.mount(), mountService.hasCapability(UNMOUNT_FORCED), cleanup);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isConflictingMountService(MountService service) {
+<b class="nc">&nbsp;		var conflictingServices = CONFLICTING_MOUNT_SERVICES.getOrDefault(service.getClass().getName(), Set.of());</b>
+<b class="nc">&nbsp;		return usedMountServices.stream().map(MountService::getClass).map(Class::getName).anyMatch(conflictingServices::contains);</b>
+&nbsp;	}
+&nbsp;
+<b class="nc">&nbsp;	public record MountHandle(Mount mountObj, boolean supportsUnmountForced, Runnable specialCleanup) {</b>
+&nbsp;
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

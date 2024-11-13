@@ -1,0 +1,314 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > MountWithinParentUtil</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.common.mount</a>
+</div>
+
+<h1>Coverage Summary for Class: MountWithinParentUtil (org.cryptomator.common.mount)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MountWithinParentUtil</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/44)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/69)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">MountWithinParentUtil$MountPointState</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/44)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/73)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.common.mount;
+&nbsp;
+&nbsp;import org.apache.commons.lang3.SystemUtils;
+&nbsp;import org.jetbrains.annotations.VisibleForTesting;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.nio.file.FileAlreadyExistsException;
+&nbsp;import java.nio.file.Files;
+&nbsp;import java.nio.file.LinkOption;
+&nbsp;import java.nio.file.Path;
+&nbsp;import java.nio.file.attribute.BasicFileAttributes;
+&nbsp;
+<b class="nc">&nbsp;public final class MountWithinParentUtil {</b>
+&nbsp;
+<b class="nc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(Mounter.class);</b>
+&nbsp;	private static final String HIDEAWAY_PREFIX = &quot;.~$&quot;;
+&nbsp;	private static final String HIDEAWAY_SUFFIX = &quot;.tmp&quot;;
+&nbsp;	private static final String WIN_HIDDEN_ATTR = &quot;dos:hidden&quot;;
+&nbsp;
+&nbsp;	private MountWithinParentUtil() {}
+&nbsp;
+&nbsp;	static void prepareParentNoMountPoint(Path mountPoint) throws IllegalMountPointException, IOException {
+<b class="nc">&nbsp;		Path hideaway = getHideaway(mountPoint);</b>
+<b class="nc">&nbsp;		var mpState = getMountPointState(mountPoint);</b>
+<b class="nc">&nbsp;		var hideExists = Files.exists(hideaway, LinkOption.NOFOLLOW_LINKS);</b>
+&nbsp;
+<b class="nc">&nbsp;		if (mpState == MountPointState.BROKEN_JUNCTION) {</b>
+<b class="nc">&nbsp;			LOG.info(&quot;Mountpoint \&quot;{}\&quot; is still a junction. Deleting it.&quot;, mountPoint);</b>
+<b class="nc">&nbsp;			Files.delete(mountPoint); //Throws if mountPoint is also a non-empty folder</b>
+<b class="nc">&nbsp;			mpState = MountPointState.NOT_EXISTING;</b>
+&nbsp;		}
+&nbsp;
+<b class="nc">&nbsp;		if (mpState == MountPointState.NOT_EXISTING &amp;&amp; !hideExists) { //neither mountpoint nor hideaway exist</b>
+<b class="nc">&nbsp;			throw new MountPointNotExistingException(mountPoint);</b>
+<b class="nc">&nbsp;		} else if (mpState == MountPointState.NOT_EXISTING) { //only hideaway exists</b>
+<b class="nc">&nbsp;			checkIsHideawayDirectory(mountPoint, hideaway);</b>
+<b class="nc">&nbsp;			LOG.info(&quot;Mountpoint {} seems to be not properly cleaned up. Will be fixed on unmount.&quot;, mountPoint);</b>
+<b class="nc">&nbsp;			if (SystemUtils.IS_OS_WINDOWS) {</b>
+<b class="nc">&nbsp;				Files.setAttribute(hideaway, WIN_HIDDEN_ATTR, true, LinkOption.NOFOLLOW_LINKS);</b>
+&nbsp;			}
+&nbsp;		} else {
+<b class="nc">&nbsp;			assert mpState == MountPointState.EMPTY_DIR;</b>
+&nbsp;			try {
+<b class="nc">&nbsp;				if (hideExists) { //... with hideaway</b>
+<b class="nc">&nbsp;					removeResidualHideaway(mountPoint, hideaway);</b>
+&nbsp;				}
+&nbsp;
+&nbsp;				//... (now) without hideaway
+<b class="nc">&nbsp;				Files.move(mountPoint, hideaway);</b>
+<b class="nc">&nbsp;				if (SystemUtils.IS_OS_WINDOWS) {</b>
+<b class="nc">&nbsp;					Files.setAttribute(hideaway, WIN_HIDDEN_ATTR, true, LinkOption.NOFOLLOW_LINKS);</b>
+&nbsp;				}
+<b class="nc">&nbsp;				int attempts = 0;</b>
+<b class="nc">&nbsp;				while (!Files.notExists(mountPoint)) {</b>
+<b class="nc">&nbsp;					if (attempts &gt;= 10) {</b>
+<b class="nc">&nbsp;						throw new MountPointCleanupFailedException(mountPoint);</b>
+&nbsp;					}
+<b class="nc">&nbsp;					Thread.sleep(1000);</b>
+<b class="nc">&nbsp;					attempts++;</b>
+&nbsp;				}
+<b class="nc">&nbsp;			} catch (InterruptedException e) {</b>
+<b class="nc">&nbsp;				Thread.currentThread().interrupt();</b>
+<b class="nc">&nbsp;				throw new RuntimeException(e);</b>
+&nbsp;			}
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	@VisibleForTesting
+&nbsp;	static MountPointState getMountPointState(Path path) throws IOException, IllegalMountPointException {
+<b class="nc">&nbsp;		if (Files.notExists(path, LinkOption.NOFOLLOW_LINKS)) {</b>
+<b class="nc">&nbsp;			return MountPointState.NOT_EXISTING;</b>
+&nbsp;		}
+<b class="nc">&nbsp;		if (!Files.readAttributes(path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS).isOther()) {</b>
+<b class="nc">&nbsp;			checkIsMountPointDirectory(path);</b>
+<b class="nc">&nbsp;			checkIsMountPointEmpty(path);</b>
+<b class="nc">&nbsp;			return MountPointState.EMPTY_DIR;</b>
+&nbsp;		}
+<b class="nc">&nbsp;		if (Files.exists(path /* FOLLOW_LINKS */)) { //Both junction and target exist</b>
+<b class="nc">&nbsp;			throw new MountPointInUseException(path);</b>
+&nbsp;		}
+<b class="nc">&nbsp;		return MountPointState.BROKEN_JUNCTION;</b>
+&nbsp;	}
+&nbsp;
+<b class="nc">&nbsp;	@VisibleForTesting</b>
+&nbsp;	enum MountPointState {
+&nbsp;
+<b class="nc">&nbsp;		NOT_EXISTING,</b>
+&nbsp;
+<b class="nc">&nbsp;		EMPTY_DIR,</b>
+&nbsp;
+<b class="nc">&nbsp;		BROKEN_JUNCTION;</b>
+&nbsp;
+&nbsp;	}
+&nbsp;
+&nbsp;	@VisibleForTesting
+&nbsp;	static void removeResidualHideaway(Path mountPoint, Path hideaway) throws IOException {
+<b class="nc">&nbsp;		checkIsHideawayDirectory(mountPoint, hideaway);</b>
+<b class="nc">&nbsp;		Files.delete(hideaway); //Fails if not empty</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	static void cleanup(Path mountPoint) {
+<b class="nc">&nbsp;		Path hideaway = getHideaway(mountPoint);</b>
+&nbsp;		try {
+<b class="nc">&nbsp;			waitForMountpointRestoration(mountPoint);</b>
+<b class="nc">&nbsp;			if (Files.notExists(hideaway, LinkOption.NOFOLLOW_LINKS)) {</b>
+<b class="nc">&nbsp;				LOG.error(&quot;Unable to restore hidden directory to mountpoint \&quot;{}\&quot;: Directory does not exist.&quot;, mountPoint);</b>
+&nbsp;				return;
+&nbsp;			}
+&nbsp;
+<b class="nc">&nbsp;			Files.move(hideaway, mountPoint);</b>
+<b class="nc">&nbsp;			if (SystemUtils.IS_OS_WINDOWS) {</b>
+<b class="nc">&nbsp;				Files.setAttribute(mountPoint, WIN_HIDDEN_ATTR, false);</b>
+&nbsp;			}
+<b class="nc">&nbsp;		} catch (IOException e) {</b>
+<b class="nc">&nbsp;			LOG.error(&quot;Unable to restore hidden directory to mountpoint \&quot;{}\&quot;.&quot;, mountPoint, e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	//on Windows removing the mountpoint takes some time, so we poll for at most 3 seconds
+&nbsp;	private static void waitForMountpointRestoration(Path mountPoint) throws FileAlreadyExistsException {
+<b class="nc">&nbsp;		int attempts = 0;</b>
+<b class="nc">&nbsp;		while (!Files.notExists(mountPoint, LinkOption.NOFOLLOW_LINKS)) {</b>
+<b class="nc">&nbsp;			attempts++;</b>
+<b class="nc">&nbsp;			if (attempts &gt;= 5) {</b>
+<b class="nc">&nbsp;				throw new FileAlreadyExistsException(&quot;Timeout waiting for mountpoint cleanup for &quot; + mountPoint + &quot; .&quot;);</b>
+&nbsp;			}
+&nbsp;
+&nbsp;			try {
+<b class="nc">&nbsp;				Thread.sleep(300);</b>
+<b class="nc">&nbsp;			} catch (InterruptedException e) {</b>
+<b class="nc">&nbsp;				Thread.currentThread().interrupt();</b>
+<b class="nc">&nbsp;				throw new FileAlreadyExistsException(&quot;Interrupted before mountpoint &quot; + mountPoint + &quot; was cleared&quot;);</b>
+&nbsp;			}
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private static void checkIsMountPointDirectory(Path toCheck) throws IllegalMountPointException {
+<b class="nc">&nbsp;		if (!Files.isDirectory(toCheck, LinkOption.NOFOLLOW_LINKS)) {</b>
+<b class="nc">&nbsp;			throw new MountPointNotEmptyDirectoryException(toCheck, &quot;Mountpoint is not a directory: &quot; + toCheck);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private static void checkIsHideawayDirectory(Path mountPoint, Path hideawayToCheck) {
+<b class="nc">&nbsp;		if (!Files.isDirectory(hideawayToCheck, LinkOption.NOFOLLOW_LINKS)) {</b>
+<b class="nc">&nbsp;			throw new HideawayNotDirectoryException(mountPoint, hideawayToCheck);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private static void checkIsMountPointEmpty(Path toCheck) throws IllegalMountPointException, IOException {
+<b class="nc">&nbsp;		try (var dirStream = Files.list(toCheck)) {</b>
+<b class="nc">&nbsp;			if (dirStream.findFirst().isPresent()) {</b>
+<b class="nc">&nbsp;				throw new MountPointNotEmptyDirectoryException(toCheck, &quot;Mountpoint directory is not empty: &quot; + toCheck);</b>
+&nbsp;			}
+<b class="nc">&nbsp;		}</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@VisibleForTesting
+&nbsp;	static Path getHideaway(Path mountPoint) {
+<b class="nc">&nbsp;		return mountPoint.resolveSibling(HIDEAWAY_PREFIX + mountPoint.getFileName().toString() + HIDEAWAY_SUFFIX);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

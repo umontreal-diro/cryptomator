@@ -1,0 +1,314 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > VaultListManager</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.common.vaults</a>
+</div>
+
+<h1>Coverage Summary for Class: VaultListManager (org.cryptomator.common.vaults)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">VaultListManager</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/31)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/67)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">VaultListManager$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/31)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/69)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/*******************************************************************************
+&nbsp; * Copyright (c) 2016, 2017 Sebastian Stenzel and others.
+&nbsp; * All rights reserved.
+&nbsp; * This program and the accompanying materials are made available under the terms of the accompanying LICENSE file.
+&nbsp; *
+&nbsp; * Contributors:
+&nbsp; *     Sebastian Stenzel - initial API and implementation
+&nbsp; *******************************************************************************/
+&nbsp;package org.cryptomator.common.vaults;
+&nbsp;
+&nbsp;import org.apache.commons.lang3.SystemUtils;
+&nbsp;import org.cryptomator.common.settings.Settings;
+&nbsp;import org.cryptomator.common.settings.VaultSettings;
+&nbsp;import org.cryptomator.cryptofs.CryptoFileSystemProvider;
+&nbsp;import org.cryptomator.cryptofs.DirStructure;
+&nbsp;import org.cryptomator.cryptofs.migration.Migrators;
+&nbsp;import org.cryptomator.integrations.mount.MountService;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import javax.inject.Inject;
+&nbsp;import javax.inject.Singleton;
+&nbsp;import javafx.collections.ObservableList;
+&nbsp;import java.io.IOException;
+&nbsp;import java.nio.file.Files;
+&nbsp;import java.nio.file.NoSuchFileException;
+&nbsp;import java.nio.file.Path;
+&nbsp;import java.util.Collection;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;
+&nbsp;import static org.cryptomator.common.Constants.MASTERKEY_FILENAME;
+&nbsp;import static org.cryptomator.common.Constants.VAULTCONFIG_FILENAME;
+&nbsp;import static org.cryptomator.common.vaults.VaultState.Value.ERROR;
+&nbsp;import static org.cryptomator.common.vaults.VaultState.Value.LOCKED;
+&nbsp;
+<b class="nc">&nbsp;@Singleton</b>
+&nbsp;public class VaultListManager {
+&nbsp;
+<b class="nc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(VaultListManager.class);</b>
+&nbsp;
+&nbsp;	private final AutoLocker autoLocker;
+&nbsp;	private final List&lt;MountService&gt; mountServices;
+&nbsp;	private final VaultComponent.Factory vaultComponentFactory;
+&nbsp;	private final ObservableList&lt;Vault&gt; vaultList;
+&nbsp;	private final String defaultVaultName;
+&nbsp;
+&nbsp;	@Inject
+&nbsp;	public VaultListManager(ObservableList&lt;Vault&gt; vaultList, //
+&nbsp;							AutoLocker autoLocker, //
+&nbsp;							List&lt;MountService&gt; mountServices,
+&nbsp;							VaultComponent.Factory vaultComponentFactory,
+&nbsp;							ResourceBundle resourceBundle,
+<b class="nc">&nbsp;							Settings settings) {</b>
+<b class="nc">&nbsp;		this.vaultList = vaultList;</b>
+<b class="nc">&nbsp;		this.autoLocker = autoLocker;</b>
+<b class="nc">&nbsp;		this.mountServices = mountServices;</b>
+<b class="nc">&nbsp;		this.vaultComponentFactory = vaultComponentFactory;</b>
+<b class="nc">&nbsp;		this.defaultVaultName = resourceBundle.getString(&quot;defaults.vault.vaultName&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;		addAll(settings.directories);</b>
+<b class="nc">&nbsp;		vaultList.addListener(new VaultListChangeListener(settings.directories));</b>
+<b class="nc">&nbsp;		autoLocker.init();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Vault add(Path pathToVault) throws IOException {
+<b class="nc">&nbsp;		Path normalizedPathToVault = pathToVault.normalize().toAbsolutePath();</b>
+<b class="nc">&nbsp;		if (CryptoFileSystemProvider.checkDirStructureForVault(normalizedPathToVault, VAULTCONFIG_FILENAME, MASTERKEY_FILENAME) == DirStructure.UNRELATED) {</b>
+<b class="nc">&nbsp;			throw new NoSuchFileException(normalizedPathToVault.toString(), null, &quot;Not a vault directory&quot;);</b>
+&nbsp;		}
+&nbsp;
+<b class="nc">&nbsp;		return get(normalizedPathToVault) //</b>
+<b class="nc">&nbsp;				.orElseGet(() -&gt; {</b>
+<b class="nc">&nbsp;					Vault newVault = create(newVaultSettings(normalizedPathToVault));</b>
+<b class="nc">&nbsp;					vaultList.add(newVault);</b>
+<b class="nc">&nbsp;					return newVault;</b>
+&nbsp;				});
+&nbsp;	}
+&nbsp;
+&nbsp;	private VaultSettings newVaultSettings(Path path) {
+<b class="nc">&nbsp;		VaultSettings vaultSettings = VaultSettings.withRandomId();</b>
+<b class="nc">&nbsp;		vaultSettings.path.set(path);</b>
+<b class="nc">&nbsp;		if (path.getFileName() != null) {</b>
+<b class="nc">&nbsp;			vaultSettings.displayName.set(path.getFileName().toString());</b>
+&nbsp;		} else {
+<b class="nc">&nbsp;			vaultSettings.displayName.set(defaultVaultName);</b>
+&nbsp;		}
+&nbsp;
+&nbsp;		//due to https://github.com/cryptomator/cryptomator/issues/2880#issuecomment-1680313498
+<b class="nc">&nbsp;		var nameOfWinfspLocalMounter = &quot;org.cryptomator.frontend.fuse.mount.WinFspMountProvider&quot;;</b>
+<b class="nc">&nbsp;		if (SystemUtils.IS_OS_WINDOWS //</b>
+<b class="nc">&nbsp;				&amp;&amp; vaultSettings.path.get().toString().contains(&quot;Dropbox&quot;) //</b>
+<b class="nc">&nbsp;				&amp;&amp; mountServices.stream().anyMatch(s -&gt; s.getClass().getName().equals(nameOfWinfspLocalMounter))) {</b>
+<b class="nc">&nbsp;			vaultSettings.mountService.setValue(nameOfWinfspLocalMounter);</b>
+&nbsp;		}
+&nbsp;
+<b class="nc">&nbsp;		return vaultSettings;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void addAll(Collection&lt;VaultSettings&gt; vaultSettings) {
+<b class="nc">&nbsp;		Collection&lt;Vault&gt; vaults = vaultSettings.stream().map(this::create).toList();</b>
+<b class="nc">&nbsp;		vaultList.addAll(vaults);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private Optional&lt;Vault&gt; get(Path vaultPath) {
+<b class="nc">&nbsp;		assert vaultPath.isAbsolute();</b>
+<b class="nc">&nbsp;		assert vaultPath.normalize().equals(vaultPath);</b>
+<b class="nc">&nbsp;		return vaultList.stream() //</b>
+<b class="nc">&nbsp;				.filter(v -&gt; vaultPath.equals(v.getPath())) //</b>
+<b class="nc">&nbsp;				.findAny();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private Vault create(VaultSettings vaultSettings) {
+<b class="nc">&nbsp;		var wrapper = new VaultConfigCache(vaultSettings);</b>
+&nbsp;		try {
+<b class="nc">&nbsp;			var vaultState = determineVaultState(vaultSettings.path.get());</b>
+<b class="nc">&nbsp;			if (vaultState == LOCKED) { //for legacy reasons: pre v8 vault do not have a config, but they are in the NEEDS_MIGRATION state</b>
+<b class="nc">&nbsp;				wrapper.reloadConfig();</b>
+&nbsp;			}
+<b class="nc">&nbsp;			return vaultComponentFactory.create(vaultSettings, wrapper, vaultState, null).vault();</b>
+<b class="nc">&nbsp;		} catch (IOException e) {</b>
+<b class="nc">&nbsp;			LOG.warn(&quot;Failed to determine vault state for &quot; + vaultSettings.path.get(), e);</b>
+<b class="nc">&nbsp;			return vaultComponentFactory.create(vaultSettings, wrapper, ERROR, e).vault();</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	public static VaultState.Value redetermineVaultState(Vault vault) {
+<b class="nc">&nbsp;		VaultState state = vault.stateProperty();</b>
+<b class="nc">&nbsp;		VaultState.Value previousState = state.getValue();</b>
+<b class="nc">&nbsp;		return switch (previousState) {</b>
+&nbsp;			case LOCKED, NEEDS_MIGRATION, MISSING -&gt; {
+&nbsp;				try {
+<b class="nc">&nbsp;					var determinedState = determineVaultState(vault.getPath());</b>
+<b class="nc">&nbsp;					if (determinedState == LOCKED) {</b>
+<b class="nc">&nbsp;						vault.getVaultConfigCache().reloadConfig();</b>
+&nbsp;					}
+<b class="nc">&nbsp;					state.set(determinedState);</b>
+<b class="nc">&nbsp;					yield determinedState;</b>
+<b class="nc">&nbsp;				} catch (IOException e) {</b>
+<b class="nc">&nbsp;					LOG.warn(&quot;Failed to determine vault state for &quot; + vault.getPath(), e);</b>
+<b class="nc">&nbsp;					state.set(ERROR);</b>
+<b class="nc">&nbsp;					vault.setLastKnownException(e);</b>
+<b class="nc">&nbsp;					yield ERROR;</b>
+&nbsp;				}
+&nbsp;			}
+<b class="nc">&nbsp;			case ERROR, UNLOCKED, PROCESSING -&gt; previousState;</b>
+&nbsp;		};
+&nbsp;	}
+&nbsp;
+&nbsp;	private static VaultState.Value determineVaultState(Path pathToVault) throws IOException {
+<b class="nc">&nbsp;		if (!Files.exists(pathToVault)) {</b>
+<b class="nc">&nbsp;			return VaultState.Value.MISSING;</b>
+&nbsp;		}
+<b class="nc">&nbsp;		return switch (CryptoFileSystemProvider.checkDirStructureForVault(pathToVault, VAULTCONFIG_FILENAME, MASTERKEY_FILENAME)) {</b>
+<b class="nc">&nbsp;			case VAULT -&gt; VaultState.Value.LOCKED;</b>
+<b class="nc">&nbsp;			case UNRELATED -&gt; VaultState.Value.MISSING;</b>
+<b class="nc">&nbsp;			case MAYBE_LEGACY -&gt; Migrators.get().needsMigration(pathToVault, VAULTCONFIG_FILENAME, MASTERKEY_FILENAME) ? //</b>
+<b class="nc">&nbsp;					VaultState.Value.NEEDS_MIGRATION //</b>
+<b class="nc">&nbsp;					: VaultState.Value.MISSING;</b>
+&nbsp;		};
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

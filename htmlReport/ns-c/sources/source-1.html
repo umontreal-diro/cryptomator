@@ -1,0 +1,187 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Animations</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.common</a>
+</div>
+
+<h1>Coverage Summary for Class: Animations (org.cryptomator.ui.common)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Animations</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/20)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Animations$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/23)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.common;
+&nbsp;
+&nbsp;import javafx.animation.Animation;
+&nbsp;import javafx.animation.Interpolator;
+&nbsp;import javafx.animation.KeyFrame;
+&nbsp;import javafx.animation.KeyValue;
+&nbsp;import javafx.animation.RotateTransition;
+&nbsp;import javafx.animation.SequentialTransition;
+&nbsp;import javafx.animation.Timeline;
+&nbsp;import javafx.beans.value.WritableValue;
+&nbsp;import javafx.scene.Node;
+&nbsp;import javafx.stage.Window;
+&nbsp;import javafx.util.Duration;
+&nbsp;import java.util.stream.IntStream;
+&nbsp;
+<b class="nc">&nbsp;public class Animations {</b>
+&nbsp;
+&nbsp;	public static Timeline createShakeWindowAnimation(Window window) {
+<b class="nc">&nbsp;		WritableValue&lt;Double&gt; writableWindowX = new WritableValue&lt;&gt;() {</b>
+&nbsp;			@Override
+&nbsp;			public Double getValue() {
+<b class="nc">&nbsp;				return window.getX();</b>
+&nbsp;			}
+&nbsp;
+&nbsp;			@Override
+&nbsp;			public void setValue(Double value) {
+<b class="nc">&nbsp;				window.setX(value);</b>
+&nbsp;			}
+&nbsp;		};
+<b class="nc">&nbsp;		return new Timeline( //</b>
+<b class="nc">&nbsp;				new KeyFrame(Duration.ZERO, new KeyValue(writableWindowX, window.getX())), //</b>
+<b class="nc">&nbsp;				new KeyFrame(new Duration(100), new KeyValue(writableWindowX, window.getX() - 22.0)), //</b>
+<b class="nc">&nbsp;				new KeyFrame(new Duration(200), new KeyValue(writableWindowX, window.getX() + 18.0)), //</b>
+<b class="nc">&nbsp;				new KeyFrame(new Duration(300), new KeyValue(writableWindowX, window.getX() - 14.0)), //</b>
+<b class="nc">&nbsp;				new KeyFrame(new Duration(400), new KeyValue(writableWindowX, window.getX() + 10.0)), //</b>
+<b class="nc">&nbsp;				new KeyFrame(new Duration(500), new KeyValue(writableWindowX, window.getX() - 6.0)), //</b>
+<b class="nc">&nbsp;				new KeyFrame(new Duration(600), new KeyValue(writableWindowX, window.getX() + 2.0)), //</b>
+<b class="nc">&nbsp;				new KeyFrame(new Duration(700), new KeyValue(writableWindowX, window.getX())) //</b>
+&nbsp;		);
+&nbsp;	}
+&nbsp;
+&nbsp;	public static SequentialTransition createDiscrete360Rotation(Node toAnimate) {
+<b class="nc">&nbsp;		var animation = new SequentialTransition(IntStream.range(0, 8).mapToObj(i -&gt; Animations.createDiscrete45Rotation()).toArray(Animation[]::new));</b>
+<b class="nc">&nbsp;		animation.setCycleCount(Animation.INDEFINITE);</b>
+<b class="nc">&nbsp;		animation.setNode(toAnimate);</b>
+<b class="nc">&nbsp;		return animation;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private static RotateTransition createDiscrete45Rotation() {
+<b class="nc">&nbsp;		var animation = new RotateTransition(Duration.millis(100));</b>
+<b class="nc">&nbsp;		animation.setInterpolator(Interpolator.DISCRETE);</b>
+<b class="nc">&nbsp;		animation.setByAngle(45);</b>
+<b class="nc">&nbsp;		animation.setCycleCount(1);</b>
+<b class="nc">&nbsp;		return animation;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

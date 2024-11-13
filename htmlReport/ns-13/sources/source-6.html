@@ -1,0 +1,257 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > CheckListController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.health</a>
+</div>
+
+<h1>Coverage Summary for Class: CheckListController (org.cryptomator.ui.health)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CheckListController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/42)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.health;
+&nbsp;
+&nbsp;import com.google.common.base.Preconditions;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;import org.cryptomator.ui.fxapp.FxApplicationWindows;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import javax.inject.Inject;
+&nbsp;import javafx.beans.binding.Bindings;
+&nbsp;import javafx.beans.binding.BooleanBinding;
+&nbsp;import javafx.beans.binding.IntegerBinding;
+&nbsp;import javafx.beans.property.ObjectProperty;
+&nbsp;import javafx.collections.FXCollections;
+&nbsp;import javafx.collections.ObservableList;
+&nbsp;import javafx.collections.transformation.FilteredList;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.scene.control.ListView;
+&nbsp;import javafx.scene.control.SelectionMode;
+&nbsp;import javafx.stage.Stage;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@HealthCheckScoped
+&nbsp;public class CheckListController implements FxController {
+&nbsp;
+<b class="nc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(CheckListController.class);</b>
+&nbsp;
+&nbsp;	private final Stage window;
+&nbsp;	private final ObservableList&lt;Check&gt; checks;
+&nbsp;	private final CheckExecutor checkExecutor;
+&nbsp;	private final FilteredList&lt;Check&gt; chosenChecks;
+&nbsp;	private final ReportWriter reportWriter;
+&nbsp;	private final ObjectProperty&lt;Check&gt; selectedCheck;
+&nbsp;	private final BooleanBinding mainRunStarted; //TODO: rerunning not considered for now
+&nbsp;	private final BooleanBinding somethingsRunning;
+&nbsp;	private final FxApplicationWindows appWindows;
+&nbsp;	private final IntegerBinding chosenTaskCount;
+&nbsp;	private final BooleanBinding anyCheckSelected;
+&nbsp;	private final CheckListCellFactory listCellFactory;
+&nbsp;
+&nbsp;	/* FXML */
+&nbsp;	public ListView&lt;Check&gt; checksListView;
+&nbsp;
+&nbsp;	@Inject
+<b class="nc">&nbsp;	public CheckListController(@HealthCheckWindow Stage window, List&lt;Check&gt; checks, CheckExecutor checkExecutor, ReportWriter reportWriteTask, ObjectProperty&lt;Check&gt; selectedCheck, FxApplicationWindows appWindows, CheckListCellFactory listCellFactory) {</b>
+<b class="nc">&nbsp;		this.window = window;</b>
+<b class="nc">&nbsp;		this.checks = FXCollections.observableList(checks, Check::observables);</b>
+<b class="nc">&nbsp;		this.checkExecutor = checkExecutor;</b>
+<b class="nc">&nbsp;		this.listCellFactory = listCellFactory;</b>
+<b class="nc">&nbsp;		this.chosenChecks = this.checks.filtered(Check::isChosenForExecution);</b>
+<b class="nc">&nbsp;		this.reportWriter = reportWriteTask;</b>
+<b class="nc">&nbsp;		this.selectedCheck = selectedCheck;</b>
+<b class="nc">&nbsp;		this.appWindows = appWindows;</b>
+<b class="nc">&nbsp;		this.chosenTaskCount = Bindings.size(this.chosenChecks);</b>
+<b class="nc">&nbsp;		this.mainRunStarted = Bindings.isEmpty(this.checks.filtered(c -&gt; c.getState() == Check.CheckState.RUNNABLE));</b>
+<b class="nc">&nbsp;		this.somethingsRunning = Bindings.isNotEmpty(this.checks.filtered(c -&gt; c.getState() == Check.CheckState.SCHEDULED || c.getState() == Check.CheckState.RUNNING));</b>
+<b class="nc">&nbsp;		this.anyCheckSelected = selectedCheck.isNotNull();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void initialize() {
+<b class="nc">&nbsp;		checksListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);</b>
+<b class="nc">&nbsp;		checksListView.setItems(checks);</b>
+<b class="nc">&nbsp;		checksListView.setCellFactory(listCellFactory);</b>
+<b class="nc">&nbsp;		selectedCheck.bind(checksListView.getSelectionModel().selectedItemProperty());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void selectAllChecks() {
+<b class="nc">&nbsp;		checks.forEach(t -&gt; t.chosenForExecutionProperty().set(true));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void deselectAllChecks() {
+<b class="nc">&nbsp;		checks.forEach(t -&gt; t.chosenForExecutionProperty().set(false));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void runSelectedChecks() {
+<b class="nc">&nbsp;		Preconditions.checkState(!mainRunStarted.get());</b>
+<b class="nc">&nbsp;		Preconditions.checkState(!somethingsRunning.get());</b>
+<b class="nc">&nbsp;		Preconditions.checkState(!chosenChecks.isEmpty());</b>
+&nbsp;
+<b class="nc">&nbsp;		checks.filtered(c -&gt; !c.isChosenForExecution()).forEach(c -&gt; c.setState(Check.CheckState.SKIPPED));</b>
+<b class="nc">&nbsp;		checkExecutor.executeBatch(chosenChecks);</b>
+<b class="nc">&nbsp;		checksListView.getSelectionModel().select(chosenChecks.get(0));</b>
+<b class="nc">&nbsp;		checksListView.refresh();</b>
+<b class="nc">&nbsp;		window.sizeToScene();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public synchronized void cancelRun() {
+<b class="nc">&nbsp;		Preconditions.checkState(somethingsRunning.get());</b>
+<b class="nc">&nbsp;		checkExecutor.cancel();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void exportResults() {
+&nbsp;		try {
+<b class="nc">&nbsp;			reportWriter.writeReport(chosenChecks);</b>
+<b class="nc">&nbsp;		} catch (IOException e) {</b>
+<b class="nc">&nbsp;			LOG.error(&quot;Failed to write health check report.&quot;, e);</b>
+<b class="nc">&nbsp;			appWindows.showErrorWindow(e, window, window.getScene());</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/* Getter/Setter */
+&nbsp;	public boolean isRunning() {
+<b class="nc">&nbsp;		return somethingsRunning.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BooleanBinding runningProperty() {
+<b class="nc">&nbsp;		return somethingsRunning;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isAnyCheckSelected() {
+<b class="nc">&nbsp;		return anyCheckSelected.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BooleanBinding anyCheckSelectedProperty() {
+<b class="nc">&nbsp;		return anyCheckSelected;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isMainRunStarted() {
+<b class="nc">&nbsp;		return mainRunStarted.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BooleanBinding mainRunStartedProperty() {
+<b class="nc">&nbsp;		return mainRunStarted;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public int getChosenTaskCount() {
+<b class="nc">&nbsp;		return chosenTaskCount.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public IntegerBinding chosenTaskCountProperty() {
+<b class="nc">&nbsp;		return chosenTaskCount;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

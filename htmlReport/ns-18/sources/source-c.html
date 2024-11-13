@@ -1,0 +1,366 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > VaultDetailUnlockedController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.mainwindow</a>
+</div>
+
+<h1>Coverage Summary for Class: VaultDetailUnlockedController (org.cryptomator.ui.mainwindow)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">VaultDetailUnlockedController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/29)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/26)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/86)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.mainwindow;
+&nbsp;
+&nbsp;import com.google.common.base.Preconditions;
+&nbsp;import com.google.common.cache.CacheBuilder;
+&nbsp;import com.google.common.cache.CacheLoader;
+&nbsp;import com.google.common.cache.LoadingCache;
+&nbsp;import com.tobiasdiez.easybind.EasyBind;
+&nbsp;import org.apache.commons.lang3.SystemUtils;
+&nbsp;import org.cryptomator.common.vaults.Vault;
+&nbsp;import org.cryptomator.integrations.mount.Mountpoint;
+&nbsp;import org.cryptomator.integrations.revealpath.RevealFailedException;
+&nbsp;import org.cryptomator.integrations.revealpath.RevealPathService;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;import org.cryptomator.ui.common.VaultService;
+&nbsp;import org.cryptomator.ui.fxapp.FxApplicationWindows;
+&nbsp;import org.cryptomator.ui.stats.VaultStatisticsComponent;
+&nbsp;import org.cryptomator.ui.wrongfilealert.WrongFileAlertComponent;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import javax.inject.Inject;
+&nbsp;import javafx.application.Platform;
+&nbsp;import javafx.beans.property.BooleanProperty;
+&nbsp;import javafx.beans.property.ObjectProperty;
+&nbsp;import javafx.beans.property.ReadOnlyObjectProperty;
+&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+&nbsp;import javafx.beans.value.ObservableValue;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.scene.control.Button;
+&nbsp;import javafx.scene.input.Clipboard;
+&nbsp;import javafx.scene.input.ClipboardContent;
+&nbsp;import javafx.scene.input.DataFormat;
+&nbsp;import javafx.scene.input.DragEvent;
+&nbsp;import javafx.scene.input.TransferMode;
+&nbsp;import javafx.stage.FileChooser;
+&nbsp;import javafx.stage.Stage;
+&nbsp;import java.io.File;
+&nbsp;import java.io.IOException;
+&nbsp;import java.nio.file.Path;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Optional;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;import java.util.concurrent.CompletableFuture;
+&nbsp;import java.util.concurrent.TimeUnit;
+&nbsp;
+&nbsp;@MainWindowScoped
+&nbsp;public class VaultDetailUnlockedController implements FxController {
+&nbsp;
+<b class="nc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(VaultDetailUnlockedController.class);</b>
+&nbsp;	private static final String ACTIVE_CLASS = &quot;active&quot;;
+&nbsp;
+&nbsp;	private final ReadOnlyObjectProperty&lt;Vault&gt; vault;
+&nbsp;	private final FxApplicationWindows appWindows;
+&nbsp;	private final VaultService vaultService;
+&nbsp;	private final WrongFileAlertComponent.Builder wrongFileAlert;
+&nbsp;	private final Stage mainWindow;
+&nbsp;	private final Optional&lt;RevealPathService&gt; revealPathService;
+&nbsp;	private final ResourceBundle resourceBundle;
+&nbsp;	private final LoadingCache&lt;Vault, VaultStatisticsComponent&gt; vaultStats;
+&nbsp;	private final VaultStatisticsComponent.Builder vaultStatsBuilder;
+&nbsp;	private final ObservableValue&lt;Boolean&gt; accessibleViaPath;
+&nbsp;	private final ObservableValue&lt;Boolean&gt; accessibleViaUri;
+&nbsp;	private final ObservableValue&lt;String&gt; mountPoint;
+<b class="nc">&nbsp;	private final BooleanProperty draggingOver = new SimpleBooleanProperty();</b>
+<b class="nc">&nbsp;	private final BooleanProperty ciphertextPathsCopied = new SimpleBooleanProperty();</b>
+&nbsp;
+&nbsp;	//FXML
+&nbsp;	public Button dropZone;
+&nbsp;
+&nbsp;	@Inject
+<b class="nc">&nbsp;	public VaultDetailUnlockedController(ObjectProperty&lt;Vault&gt; vault, FxApplicationWindows appWindows, VaultService vaultService, VaultStatisticsComponent.Builder vaultStatsBuilder, WrongFileAlertComponent.Builder wrongFileAlert, @MainWindow Stage mainWindow, Optional&lt;RevealPathService&gt; revealPathService, ResourceBundle resourceBundle) {</b>
+<b class="nc">&nbsp;		this.vault = vault;</b>
+<b class="nc">&nbsp;		this.appWindows = appWindows;</b>
+<b class="nc">&nbsp;		this.vaultService = vaultService;</b>
+<b class="nc">&nbsp;		this.wrongFileAlert = wrongFileAlert;</b>
+<b class="nc">&nbsp;		this.mainWindow = mainWindow;</b>
+<b class="nc">&nbsp;		this.revealPathService = revealPathService;</b>
+<b class="nc">&nbsp;		this.resourceBundle = resourceBundle;</b>
+<b class="nc">&nbsp;		this.vaultStats = CacheBuilder.newBuilder().weakValues().build(CacheLoader.from(this::buildVaultStats));</b>
+<b class="nc">&nbsp;		this.vaultStatsBuilder = vaultStatsBuilder;</b>
+<b class="nc">&nbsp;		var mp = vault.flatMap(Vault::mountPointProperty);</b>
+<b class="nc">&nbsp;		this.accessibleViaPath = mp.map(m -&gt; m instanceof Mountpoint.WithPath).orElse(false);</b>
+<b class="nc">&nbsp;		this.accessibleViaUri = mp.map(m -&gt; m instanceof Mountpoint.WithUri).orElse(false);</b>
+<b class="nc">&nbsp;		this.mountPoint = mp.map(m -&gt; {</b>
+<b class="nc">&nbsp;			if (m instanceof Mountpoint.WithPath mwp) {</b>
+<b class="nc">&nbsp;				return mwp.path().toString();</b>
+&nbsp;			} else {
+<b class="nc">&nbsp;				return m.uri().toASCIIString();</b>
+&nbsp;			}
+&nbsp;		});
+&nbsp;	}
+&nbsp;
+&nbsp;	public void initialize() {
+<b class="nc">&nbsp;		dropZone.setOnDragEntered(this::handleDragEvent);</b>
+<b class="nc">&nbsp;		dropZone.setOnDragOver(this::handleDragEvent);</b>
+<b class="nc">&nbsp;		dropZone.setOnDragDropped(this::handleDragEvent);</b>
+<b class="nc">&nbsp;		dropZone.setOnDragExited(this::handleDragEvent);</b>
+&nbsp;
+<b class="nc">&nbsp;		EasyBind.includeWhen(dropZone.getStyleClass(), ACTIVE_CLASS, draggingOver);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void handleDragEvent(DragEvent event) {
+<b class="nc">&nbsp;		if (DragEvent.DRAG_OVER.equals(event.getEventType()) &amp;&amp; event.getGestureSource() == null &amp;&amp; event.getDragboard().hasFiles()) {</b>
+<b class="nc">&nbsp;			if(SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_MAC) {</b>
+<b class="nc">&nbsp;				event.acceptTransferModes(TransferMode.LINK);</b>
+&nbsp;			} else {
+<b class="nc">&nbsp;				event.acceptTransferModes(TransferMode.ANY);</b>
+&nbsp;			}
+<b class="nc">&nbsp;			draggingOver.set(true);</b>
+<b class="nc">&nbsp;		} else if (DragEvent.DRAG_DROPPED.equals(event.getEventType()) &amp;&amp; event.getGestureSource() == null &amp;&amp; event.getDragboard().hasFiles()) {</b>
+<b class="nc">&nbsp;			List&lt;Path&gt; ciphertextPaths = event.getDragboard().getFiles().stream().map(File::toPath).map(this::getCiphertextPath).flatMap(Optional::stream).toList();</b>
+<b class="nc">&nbsp;			if (ciphertextPaths.isEmpty()) {</b>
+<b class="nc">&nbsp;				wrongFileAlert.build().showWrongFileAlertWindow();</b>
+&nbsp;			} else {
+<b class="nc">&nbsp;				revealOrCopyPaths(ciphertextPaths);</b>
+&nbsp;			}
+<b class="nc">&nbsp;			event.setDropCompleted(!ciphertextPaths.isEmpty());</b>
+<b class="nc">&nbsp;			event.consume();</b>
+<b class="nc">&nbsp;		} else if (DragEvent.DRAG_EXITED.equals(event.getEventType())) {</b>
+<b class="nc">&nbsp;			draggingOver.set(false);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private VaultStatisticsComponent buildVaultStats(Vault vault) {
+<b class="nc">&nbsp;		return vaultStatsBuilder.vault(vault).build();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void revealAccessLocation() {
+<b class="nc">&nbsp;		vaultService.reveal(vault.get());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void copyMountUri() {
+<b class="nc">&nbsp;		ClipboardContent clipboardContent = new ClipboardContent();</b>
+<b class="nc">&nbsp;		clipboardContent.putString(mountPoint.getValue());</b>
+<b class="nc">&nbsp;		Clipboard.getSystemClipboard().setContent(clipboardContent);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void lock() {
+<b class="nc">&nbsp;		appWindows.startLockWorkflow(vault.get(), mainWindow);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void showVaultStatistics() {
+<b class="nc">&nbsp;		vaultStats.getUnchecked(vault.get()).showVaultStatisticsWindow();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void chooseFileAndReveal() {
+<b class="nc">&nbsp;		Preconditions.checkState(accessibleViaPath.getValue());</b>
+<b class="nc">&nbsp;		var fileChooser = new FileChooser();</b>
+<b class="nc">&nbsp;		fileChooser.setTitle(resourceBundle.getString(&quot;main.vaultDetail.filePickerTitle&quot;));</b>
+<b class="nc">&nbsp;		fileChooser.setInitialDirectory(Path.of(mountPoint.getValue()).toFile());</b>
+<b class="nc">&nbsp;		var cleartextFile = fileChooser.showOpenDialog(mainWindow);</b>
+<b class="nc">&nbsp;		if (cleartextFile != null) {</b>
+<b class="nc">&nbsp;			var ciphertextPaths = getCiphertextPath(cleartextFile.toPath()).stream().toList();</b>
+<b class="nc">&nbsp;			revealOrCopyPaths(ciphertextPaths);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private boolean startsWithVaultAccessPoint(Path path) {
+<b class="nc">&nbsp;		return path.startsWith(Path.of(mountPoint.getValue()));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private Optional&lt;Path&gt; getCiphertextPath(Path path) {
+<b class="nc">&nbsp;		if (!startsWithVaultAccessPoint(path)) {</b>
+<b class="nc">&nbsp;			LOG.debug(&quot;Path does not start with access point of selected vault: {}&quot;, path);</b>
+<b class="nc">&nbsp;			return Optional.empty();</b>
+&nbsp;		}
+&nbsp;		try {
+<b class="nc">&nbsp;			return Optional.of(vault.get().getCiphertextPath(path));</b>
+<b class="nc">&nbsp;		} catch (IOException e) {</b>
+<b class="nc">&nbsp;			LOG.warn(&quot;Unable to get ciphertext path from path: {}&quot;, path, e);</b>
+<b class="nc">&nbsp;			return Optional.empty();</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private void revealOrCopyPaths(List&lt;Path&gt; paths) {
+<b class="nc">&nbsp;		revealPathService.ifPresentOrElse(svc -&gt; revealPaths(svc, paths), () -&gt; {</b>
+<b class="nc">&nbsp;			LOG.warn(&quot;No service provider to reveal files found.&quot;);</b>
+<b class="nc">&nbsp;			copyPathsToClipboard(paths);</b>
+&nbsp;		});
+&nbsp;	}
+&nbsp;
+&nbsp;	private void revealPaths(RevealPathService service, List&lt;Path&gt; paths) {
+<b class="nc">&nbsp;		paths.forEach(path -&gt; {</b>
+&nbsp;			try {
+<b class="nc">&nbsp;				LOG.debug(&quot;Revealing {}&quot;, path);</b>
+<b class="nc">&nbsp;				service.reveal(path);</b>
+<b class="nc">&nbsp;			} catch (RevealFailedException e) {</b>
+<b class="nc">&nbsp;				LOG.error(&quot;Revealing ciphertext file failed.&quot;, e);</b>
+&nbsp;			}
+&nbsp;		});
+&nbsp;	}
+&nbsp;
+&nbsp;	private void copyPathsToClipboard(List&lt;Path&gt; paths) {
+<b class="nc">&nbsp;		StringBuilder clipboardString = new StringBuilder();</b>
+<b class="nc">&nbsp;		paths.forEach(p -&gt; clipboardString.append(p.toString()).append(&quot;\n&quot;));</b>
+<b class="nc">&nbsp;		Clipboard.getSystemClipboard().setContent(Map.of(DataFormat.PLAIN_TEXT, clipboardString.toString()));</b>
+<b class="nc">&nbsp;		ciphertextPathsCopied.setValue(true);</b>
+<b class="nc">&nbsp;		CompletableFuture.delayedExecutor(2, TimeUnit.SECONDS, Platform::runLater).execute(() -&gt; {</b>
+<b class="nc">&nbsp;			ciphertextPathsCopied.set(false);</b>
+&nbsp;		});
+&nbsp;	}
+&nbsp;
+&nbsp;	/* Getter/Setter */
+&nbsp;
+&nbsp;	public ReadOnlyObjectProperty&lt;Vault&gt; vaultProperty() {
+<b class="nc">&nbsp;		return vault;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Vault getVault() {
+<b class="nc">&nbsp;		return vault.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObservableValue&lt;Boolean&gt; accessibleViaPathProperty() {
+<b class="nc">&nbsp;		return accessibleViaPath;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isAccessibleViaPath() {
+<b class="nc">&nbsp;		return accessibleViaPath.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObservableValue&lt;Boolean&gt; accessibleViaUriProperty() {
+<b class="nc">&nbsp;		return accessibleViaUri;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isAccessibleViaUri() {
+<b class="nc">&nbsp;		return accessibleViaUri.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObservableValue&lt;String&gt; mountPointProperty() {
+<b class="nc">&nbsp;		return mountPoint;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public String getMountPoint() {
+<b class="nc">&nbsp;		return mountPoint.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BooleanProperty ciphertextPathsCopiedProperty() {
+<b class="nc">&nbsp;		return ciphertextPathsCopied;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isCiphertextPathsCopied() {
+<b class="nc">&nbsp;		return ciphertextPathsCopied.get();</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

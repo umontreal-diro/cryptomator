@@ -1,0 +1,197 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > SemVerComparator</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.common</a>
+</div>
+
+<h1>Coverage Summary for Class: SemVerComparator (org.cryptomator.common)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SemVerComparator</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/31)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/*******************************************************************************
+&nbsp; * Copyright (c) 2016, 2017 Sebastian Stenzel and others.
+&nbsp; * All rights reserved.
+&nbsp; * This program and the accompanying materials are made available under the terms of the accompanying LICENSE file.
+&nbsp; *
+&nbsp; * Contributors:
+&nbsp; *     Sebastian Stenzel - initial API and implementation
+&nbsp; *******************************************************************************/
+&nbsp;package org.cryptomator.common;
+&nbsp;
+&nbsp;import org.apache.commons.lang3.StringUtils;
+&nbsp;
+&nbsp;import java.util.Comparator;
+&nbsp;
+&nbsp;/**
+&nbsp; * Compares version strings according to &lt;a href=&quot;http://semver.org/spec/v2.0.0.html&quot;&gt;SemVer 2.0.0&lt;/a&gt;.
+&nbsp; */
+<b class="nc">&nbsp;public class SemVerComparator implements Comparator&lt;String&gt; {</b>
+&nbsp;
+&nbsp;	private static final char VERSION_SEP = &#39;.&#39;; // http://semver.org/spec/v2.0.0.html#spec-item-2
+&nbsp;	private static final String PRE_RELEASE_SEP = &quot;-&quot;; // http://semver.org/spec/v2.0.0.html#spec-item-9
+&nbsp;	private static final String BUILD_SEP = &quot;+&quot;; // http://semver.org/spec/v2.0.0.html#spec-item-10
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public int compare(String version1, String version2) {
+&nbsp;		// &quot;Build metadata SHOULD be ignored when determining version precedence.
+&nbsp;		// Thus two versions that differ only in the build metadata, have the same precedence.&quot;
+<b class="nc">&nbsp;		String v1WithoutBuildMetadata = StringUtils.substringBefore(version1, BUILD_SEP);</b>
+<b class="nc">&nbsp;		String v2WithoutBuildMetadata = StringUtils.substringBefore(version2, BUILD_SEP);</b>
+&nbsp;
+<b class="nc">&nbsp;		if (v1WithoutBuildMetadata.equals(v2WithoutBuildMetadata)) {</b>
+<b class="nc">&nbsp;			return 0;</b>
+&nbsp;		}
+&nbsp;
+<b class="nc">&nbsp;		String v1MajorMinorPatch = StringUtils.substringBefore(v1WithoutBuildMetadata, PRE_RELEASE_SEP);</b>
+<b class="nc">&nbsp;		String v2MajorMinorPatch = StringUtils.substringBefore(v2WithoutBuildMetadata, PRE_RELEASE_SEP);</b>
+<b class="nc">&nbsp;		String v1PreReleaseVersion = StringUtils.substringAfter(v1WithoutBuildMetadata, PRE_RELEASE_SEP);</b>
+<b class="nc">&nbsp;		String v2PreReleaseVersion = StringUtils.substringAfter(v2WithoutBuildMetadata, PRE_RELEASE_SEP);</b>
+<b class="nc">&nbsp;		return compare(v1MajorMinorPatch, v1PreReleaseVersion, v2MajorMinorPatch, v2PreReleaseVersion);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private int compare(String v1MajorMinorPatch, String v1PreReleaseVersion, String v2MajorMinorPatch, String v2PreReleaseVersion) {
+<b class="nc">&nbsp;		int comparisonResult = compareNumericallyThenLexicographically(v1MajorMinorPatch, v2MajorMinorPatch);</b>
+<b class="nc">&nbsp;		if (comparisonResult == 0) {</b>
+<b class="nc">&nbsp;			if (v1PreReleaseVersion.isEmpty()) {</b>
+<b class="nc">&nbsp;				return 1; // 1.0.0 &gt; 1.0.0-BETA</b>
+<b class="nc">&nbsp;			} else if (v2PreReleaseVersion.isEmpty()) {</b>
+<b class="nc">&nbsp;				return -1; // 1.0.0-BETA &lt; 1.0.0</b>
+&nbsp;			} else {
+<b class="nc">&nbsp;				return compareNumericallyThenLexicographically(v1PreReleaseVersion, v2PreReleaseVersion);</b>
+&nbsp;			}
+&nbsp;		} else {
+<b class="nc">&nbsp;			return comparisonResult;</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private int compareNumericallyThenLexicographically(String version1, String version2) {
+<b class="nc">&nbsp;		final String[] vComps1 = StringUtils.split(version1, VERSION_SEP);</b>
+<b class="nc">&nbsp;		final String[] vComps2 = StringUtils.split(version2, VERSION_SEP);</b>
+<b class="nc">&nbsp;		final int commonCompCount = Math.min(vComps1.length, vComps2.length);</b>
+&nbsp;
+<b class="nc">&nbsp;		for (int i = 0; i &lt; commonCompCount; i++) {</b>
+<b class="nc">&nbsp;			int subversionComparisonResult = 0;</b>
+&nbsp;			try {
+<b class="nc">&nbsp;				final int v1 = Integer.parseInt(vComps1[i]);</b>
+<b class="nc">&nbsp;				final int v2 = Integer.parseInt(vComps2[i]);</b>
+<b class="nc">&nbsp;				subversionComparisonResult = v1 - v2;</b>
+<b class="nc">&nbsp;			} catch (NumberFormatException ex) {</b>
+&nbsp;				// ok, lets compare this fragment lexicographically
+<b class="nc">&nbsp;				subversionComparisonResult = vComps1[i].compareTo(vComps2[i]);</b>
+&nbsp;			}
+<b class="nc">&nbsp;			if (subversionComparisonResult != 0) {</b>
+<b class="nc">&nbsp;				return subversionComparisonResult;</b>
+&nbsp;			}
+&nbsp;		}
+&nbsp;
+&nbsp;		// all in common so far? longest version string is considered the higher version:
+<b class="nc">&nbsp;		return vComps1.length - vComps2.length;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

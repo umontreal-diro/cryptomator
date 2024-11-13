@@ -1,0 +1,343 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > JWEHelper</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.keyloading.hub</a>
+</div>
+
+<h1>Coverage Summary for Class: JWEHelper (org.cryptomator.ui.keyloading.hub)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JWEHelper</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/58)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">JWEHelper$InvalidJweKeyException</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">JWEHelper$KeyDecodeFailedException</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/60)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.keyloading.hub;
+&nbsp;
+&nbsp;import com.google.common.base.Preconditions;
+&nbsp;import com.nimbusds.jose.EncryptionMethod;
+&nbsp;import com.nimbusds.jose.JOSEException;
+&nbsp;import com.nimbusds.jose.JWEAlgorithm;
+&nbsp;import com.nimbusds.jose.JWEHeader;
+&nbsp;import com.nimbusds.jose.JWEObject;
+&nbsp;import com.nimbusds.jose.Payload;
+&nbsp;import com.nimbusds.jose.crypto.ECDHDecrypter;
+&nbsp;import com.nimbusds.jose.crypto.ECDHEncrypter;
+&nbsp;import com.nimbusds.jose.crypto.PasswordBasedDecrypter;
+&nbsp;import com.nimbusds.jose.jwk.Curve;
+&nbsp;import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
+&nbsp;import org.cryptomator.cryptolib.api.CryptoException;
+&nbsp;import org.cryptomator.cryptolib.api.Masterkey;
+&nbsp;import org.cryptomator.cryptolib.api.MasterkeyLoadingFailedException;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import java.security.Key;
+&nbsp;import java.security.KeyFactory;
+&nbsp;import java.security.NoSuchAlgorithmException;
+&nbsp;import java.security.interfaces.ECPrivateKey;
+&nbsp;import java.security.interfaces.ECPublicKey;
+&nbsp;import java.security.spec.InvalidKeySpecException;
+&nbsp;import java.security.spec.PKCS8EncodedKeySpec;
+&nbsp;import java.security.spec.X509EncodedKeySpec;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.Base64;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.function.Function;
+&nbsp;
+&nbsp;class JWEHelper {
+&nbsp;
+<b class="nc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(JWEHelper.class);</b>
+&nbsp;	private static final String JWE_PAYLOAD_KEY_FIELD = &quot;key&quot;;
+&nbsp;	private static final String EC_ALG = &quot;EC&quot;;
+&nbsp;
+&nbsp;	private JWEHelper() {}
+&nbsp;
+&nbsp;	public static JWEObject encryptUserKey(ECPrivateKey userKey, ECPublicKey deviceKey) {
+<b class="nc">&nbsp;		return encryptKey(userKey, deviceKey);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public static ECPrivateKey decryptUserKey(JWEObject jwe, String setupCode) throws InvalidJweKeyException {
+&nbsp;		try {
+<b class="nc">&nbsp;			jwe.decrypt(new PasswordBasedDecrypter(setupCode));</b>
+<b class="nc">&nbsp;			return readKey(jwe, JWE_PAYLOAD_KEY_FIELD, JWEHelper::decodeECPrivateKey);</b>
+<b class="nc">&nbsp;		} catch (JOSEException e) {</b>
+<b class="nc">&nbsp;			throw new InvalidJweKeyException(e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	public static ECPrivateKey decryptUserKey(JWEObject jwe, ECPrivateKey deviceKey) throws InvalidJweKeyException {
+&nbsp;		try {
+<b class="nc">&nbsp;			jwe.decrypt(new ECDHDecrypter(deviceKey));</b>
+<b class="nc">&nbsp;			return readKey(jwe, JWE_PAYLOAD_KEY_FIELD, JWEHelper::decodeECPrivateKey);</b>
+<b class="nc">&nbsp;		} catch (JOSEException e) {</b>
+<b class="nc">&nbsp;			throw new InvalidJweKeyException(e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Attempts to decode a DER-encoded EC private key.
+&nbsp;	 *
+&nbsp;	 * @param encoded DER-encoded EC private key
+&nbsp;	 * @return the decoded key
+&nbsp;	 * @throws KeyDecodeFailedException On malformed input
+&nbsp;	 */
+&nbsp;	public static ECPrivateKey decodeECPrivateKey(byte[] encoded) throws KeyDecodeFailedException {
+&nbsp;		try {
+<b class="nc">&nbsp;			KeyFactory factory = KeyFactory.getInstance(EC_ALG);</b>
+<b class="nc">&nbsp;			var privateKey = factory.generatePrivate(new PKCS8EncodedKeySpec(encoded));</b>
+<b class="nc">&nbsp;			if (privateKey instanceof ECPrivateKey ecPrivateKey) {</b>
+<b class="nc">&nbsp;				return ecPrivateKey;</b>
+&nbsp;			} else {
+<b class="nc">&nbsp;				throw new IllegalStateException(EC_ALG + &quot; key factory not generating ECPrivateKeys&quot;);</b>
+&nbsp;			}
+<b class="nc">&nbsp;		} catch (NoSuchAlgorithmException e) {</b>
+<b class="nc">&nbsp;			throw new IllegalStateException(EC_ALG + &quot; not supported&quot;);</b>
+<b class="nc">&nbsp;		} catch (InvalidKeySpecException e) {</b>
+<b class="nc">&nbsp;			throw new KeyDecodeFailedException(e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Attempts to decode a DER-encoded EC public key.
+&nbsp;	 *
+&nbsp;	 * @param encoded DER-encoded EC public key
+&nbsp;	 * @return the decoded key
+&nbsp;	 * @throws KeyDecodeFailedException On malformed input
+&nbsp;	 */
+&nbsp;	public static ECPublicKey decodeECPublicKey(byte[] encoded) throws KeyDecodeFailedException {
+&nbsp;		try {
+<b class="nc">&nbsp;			KeyFactory factory = KeyFactory.getInstance(EC_ALG);</b>
+<b class="nc">&nbsp;			var publicKey = factory.generatePublic(new X509EncodedKeySpec(encoded));</b>
+<b class="nc">&nbsp;			if (publicKey instanceof ECPublicKey ecPublicKey) {</b>
+<b class="nc">&nbsp;				return ecPublicKey;</b>
+&nbsp;			} else {
+<b class="nc">&nbsp;				throw new IllegalStateException(EC_ALG + &quot; key factory not generating ECPublicKeys&quot;);</b>
+&nbsp;			}
+<b class="nc">&nbsp;		} catch (NoSuchAlgorithmException e) {</b>
+<b class="nc">&nbsp;			throw new IllegalStateException(EC_ALG + &quot; not supported&quot;);</b>
+<b class="nc">&nbsp;		} catch (InvalidKeySpecException e) {</b>
+<b class="nc">&nbsp;			throw new KeyDecodeFailedException(e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	public static JWEObject encryptVaultKey(Masterkey vaultKey, ECPublicKey userKey) {
+<b class="nc">&nbsp;		return encryptKey(vaultKey, userKey);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private static JWEObject encryptKey(Key key, ECPublicKey userKey) {
+&nbsp;		try {
+<b class="nc">&nbsp;			var encodedVaultKey = Base64.getEncoder().encodeToString(key.getEncoded());</b>
+<b class="nc">&nbsp;			var keyGen = new ECKeyGenerator(Curve.P_384);</b>
+<b class="nc">&nbsp;			var ephemeralKeyPair = keyGen.generate();</b>
+<b class="nc">&nbsp;			var header = new JWEHeader.Builder(JWEAlgorithm.ECDH_ES, EncryptionMethod.A256GCM).ephemeralPublicKey(ephemeralKeyPair.toPublicJWK()).build();</b>
+<b class="nc">&nbsp;			var payload = new Payload(Map.of(JWE_PAYLOAD_KEY_FIELD, encodedVaultKey));</b>
+<b class="nc">&nbsp;			var jwe = new JWEObject(header, payload);</b>
+<b class="nc">&nbsp;			jwe.encrypt(new ECDHEncrypter(userKey));</b>
+<b class="nc">&nbsp;			return jwe;</b>
+<b class="nc">&nbsp;		} catch (JOSEException e) {</b>
+<b class="nc">&nbsp;			throw new RuntimeException(e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	public static Masterkey decryptVaultKey(JWEObject jwe, ECPrivateKey privateKey) throws InvalidJweKeyException {
+&nbsp;		try {
+<b class="nc">&nbsp;			jwe.decrypt(new ECDHDecrypter(privateKey));</b>
+<b class="nc">&nbsp;			return readKey(jwe, JWE_PAYLOAD_KEY_FIELD, Masterkey::new);</b>
+<b class="nc">&nbsp;		} catch (JOSEException e) {</b>
+<b class="nc">&nbsp;			throw new InvalidJweKeyException(e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private static &lt;T&gt; T readKey(JWEObject jwe, String keyField, Function&lt;byte[], T&gt; rawKeyFactory) throws MasterkeyLoadingFailedException {
+<b class="nc">&nbsp;		Preconditions.checkArgument(jwe.getState() == JWEObject.State.DECRYPTED);</b>
+<b class="nc">&nbsp;		var fields = jwe.getPayload().toJSONObject();</b>
+<b class="nc">&nbsp;		if (fields == null) {</b>
+<b class="nc">&nbsp;			LOG.error(&quot;Expected JWE payload to be JSON: {}&quot;, jwe.getPayload());</b>
+<b class="nc">&nbsp;			throw new MasterkeyLoadingFailedException(&quot;Expected JWE payload to be JSON&quot;);</b>
+&nbsp;		}
+<b class="nc">&nbsp;		var keyBytes = new byte[0];</b>
+&nbsp;		try {
+<b class="nc">&nbsp;			if (fields.get(keyField) instanceof String key) {</b>
+<b class="nc">&nbsp;				keyBytes = Base64.getDecoder().decode(key);</b>
+<b class="nc">&nbsp;				return rawKeyFactory.apply(keyBytes);</b>
+&nbsp;			} else {
+<b class="nc">&nbsp;				throw new IllegalArgumentException(&quot;JWE payload doesn&#39;t contain field &quot; + keyField);</b>
+&nbsp;			}
+<b class="nc">&nbsp;		} catch (IllegalArgumentException | KeyDecodeFailedException e) {</b>
+<b class="nc">&nbsp;			LOG.error(&quot;Unexpected JWE payload: {}&quot;, jwe.getPayload());</b>
+<b class="nc">&nbsp;			throw new MasterkeyLoadingFailedException(&quot;Unexpected JWE payload&quot;, e);</b>
+&nbsp;		} finally {
+<b class="nc">&nbsp;			Arrays.fill(keyBytes, (byte) 0x00);</b>
+<b class="nc">&nbsp;		}</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public static class InvalidJweKeyException extends MasterkeyLoadingFailedException {
+&nbsp;
+&nbsp;		public InvalidJweKeyException(Throwable cause) {
+<b class="nc">&nbsp;			super(&quot;Invalid key&quot;, cause);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	public static class KeyDecodeFailedException extends CryptoException {
+&nbsp;
+&nbsp;		public KeyDecodeFailedException(Throwable cause) {
+<b class="nc">&nbsp;			super(&quot;Malformed key&quot;, cause);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

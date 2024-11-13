@@ -1,0 +1,480 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ErrorController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.error</a>
+</div>
+
+<h1>Coverage Summary for Class: ErrorController (org.cryptomator.ui.error)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ErrorController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/28)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/38)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/102)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ErrorController$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/29)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/38)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/103)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.error;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.core.type.TypeReference;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import org.cryptomator.common.Environment;
+&nbsp;import org.cryptomator.common.ErrorCode;
+&nbsp;import org.cryptomator.common.Nullable;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import javax.inject.Inject;
+&nbsp;import javax.inject.Named;
+&nbsp;import javafx.application.Application;
+&nbsp;import javafx.application.Platform;
+&nbsp;import javafx.beans.binding.BooleanExpression;
+&nbsp;import javafx.beans.property.BooleanProperty;
+&nbsp;import javafx.beans.property.ObjectProperty;
+&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+&nbsp;import javafx.beans.property.SimpleObjectProperty;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.scene.Scene;
+&nbsp;import javafx.scene.input.Clipboard;
+&nbsp;import javafx.scene.input.ClipboardContent;
+&nbsp;import javafx.stage.Stage;
+&nbsp;import java.io.IOException;
+&nbsp;import java.io.InputStream;
+&nbsp;import java.net.URI;
+&nbsp;import java.net.URLEncoder;
+&nbsp;import java.net.http.HttpClient;
+&nbsp;import java.net.http.HttpRequest;
+&nbsp;import java.net.http.HttpResponse;
+&nbsp;import java.nio.charset.StandardCharsets;
+&nbsp;import java.time.Duration;
+&nbsp;import java.util.Comparator;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Optional;
+&nbsp;import java.util.concurrent.CompletableFuture;
+&nbsp;import java.util.concurrent.ExecutorService;
+&nbsp;import java.util.concurrent.TimeUnit;
+&nbsp;
+&nbsp;public class ErrorController implements FxController {
+&nbsp;
+<b class="nc">&nbsp;	private static final ObjectMapper JSON = new ObjectMapper();</b>
+<b class="nc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(ErrorController.class);</b>
+&nbsp;	private static final String USER_AGENT_FORMAT = &quot;Cryptomator/%s (Build %s) (%s %s %s)&quot;;
+&nbsp;	private static final String ERROR_CODES_URL_FORMAT = &quot;https://api.cryptomator.org/desktop/error-codes.json?error-code=%s&quot;;
+&nbsp;	private static final String SEARCH_URL_FORMAT = &quot;https://github.com/cryptomator/cryptomator/discussions/categories/errors?discussions_q=category:Errors+%s&quot;;
+&nbsp;	private static final String REPORT_URL_FORMAT = &quot;https://github.com/cryptomator/cryptomator/discussions/new?category=Errors&amp;title=Error+%s&amp;body=%s&quot;;
+&nbsp;	private static final String SEARCH_ERRORCODE_DELIM = &quot; OR &quot;;
+&nbsp;	private static final String REPORT_BODY_TEMPLATE = &quot;&quot;&quot;
+&nbsp;			&lt;!-- 💚 Thank you for reporting this error. --&gt;
+&nbsp;			OS: %s / %s
+&nbsp;			App: %s / %s
+&nbsp;			
+&nbsp;			&lt;!-- ✏ Please describe what happened as accurately as possible. --&gt;
+&nbsp;			Description:
+&nbsp;				
+&nbsp;			&lt;!-- 📋 Please also copy and paste the details from the error window. --&gt;
+&nbsp;			Details:
+&nbsp;			
+&nbsp;			&lt;!-- ❗ If the description or the detail text is missing, the discussion will be deleted. --&gt;
+&nbsp;			&quot;&quot;&quot;;
+&nbsp;
+&nbsp;	private final Application application;
+&nbsp;	private final String stackTrace;
+&nbsp;	private final ErrorCode errorCode;
+&nbsp;	private final Scene previousScene;
+&nbsp;	private final Stage window;
+&nbsp;	private final Environment environment;
+&nbsp;	private final ExecutorService executorService;
+&nbsp;
+<b class="nc">&nbsp;	private final BooleanProperty copiedDetails = new SimpleBooleanProperty();</b>
+<b class="nc">&nbsp;	private final ObjectProperty&lt;ErrorDiscussion&gt; matchingErrorDiscussion = new SimpleObjectProperty&lt;&gt;();</b>
+<b class="nc">&nbsp;	private final BooleanExpression errorSolutionFound = matchingErrorDiscussion.isNotNull();</b>
+<b class="nc">&nbsp;	private final BooleanProperty isLoadingHttpResponse = new SimpleBooleanProperty();</b>
+<b class="nc">&nbsp;	private final BooleanProperty askedForLookupDatabasePermission = new SimpleBooleanProperty();</b>
+&nbsp;	private final boolean formerSceneWasResizable;
+&nbsp;
+&nbsp;	@Inject
+<b class="nc">&nbsp;	ErrorController(Application application, @Named(&quot;stackTrace&quot;) String stackTrace, ErrorCode errorCode, @Nullable Scene previousScene, Stage window, Environment environment, ExecutorService executorService) {</b>
+<b class="nc">&nbsp;		this.application = application;</b>
+<b class="nc">&nbsp;		this.stackTrace = stackTrace;</b>
+<b class="nc">&nbsp;		this.errorCode = errorCode;</b>
+<b class="nc">&nbsp;		this.previousScene = previousScene;</b>
+<b class="nc">&nbsp;		this.window = window;</b>
+<b class="nc">&nbsp;		this.environment = environment;</b>
+<b class="nc">&nbsp;		this.executorService = executorService;</b>
+<b class="nc">&nbsp;		this.formerSceneWasResizable = window.isResizable();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void back() {
+<b class="nc">&nbsp;		if (previousScene != null) {</b>
+<b class="nc">&nbsp;			window.setScene(previousScene);</b>
+<b class="nc">&nbsp;			window.setResizable(formerSceneWasResizable);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void close() {
+<b class="nc">&nbsp;		window.close();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void showSolution() {
+<b class="nc">&nbsp;		if (matchingErrorDiscussion.isNotNull().get()) {</b>
+<b class="nc">&nbsp;			var discussion = matchingErrorDiscussion.get();</b>
+<b class="nc">&nbsp;			if (discussion != null) {</b>
+<b class="nc">&nbsp;				application.getHostServices().showDocument(discussion.url);</b>
+&nbsp;			}
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void searchError() {
+<b class="nc">&nbsp;		var searchTerm = URLEncoder.encode(getErrorCode().replace(ErrorCode.DELIM, SEARCH_ERRORCODE_DELIM), StandardCharsets.UTF_8);</b>
+<b class="nc">&nbsp;		application.getHostServices().showDocument(SEARCH_URL_FORMAT.formatted(searchTerm));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void reportError() {
+<b class="nc">&nbsp;		var title = URLEncoder.encode(getErrorCode(), StandardCharsets.UTF_8);</b>
+<b class="nc">&nbsp;		var enhancedTemplate = String.format(REPORT_BODY_TEMPLATE, //</b>
+<b class="nc">&nbsp;				System.getProperty(&quot;os.name&quot;), //</b>
+<b class="nc">&nbsp;				System.getProperty(&quot;os.version&quot;), //</b>
+<b class="nc">&nbsp;				environment.getAppVersion(), //</b>
+<b class="nc">&nbsp;				environment.getBuildNumber().orElse(&quot;undefined&quot;));</b>
+<b class="nc">&nbsp;		var body = URLEncoder.encode(enhancedTemplate, StandardCharsets.UTF_8);</b>
+<b class="nc">&nbsp;		application.getHostServices().showDocument(REPORT_URL_FORMAT.formatted(title, body));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void copyDetails() {
+<b class="nc">&nbsp;		ClipboardContent clipboardContent = new ClipboardContent();</b>
+<b class="nc">&nbsp;		clipboardContent.putString(getDetailText());</b>
+<b class="nc">&nbsp;		Clipboard.getSystemClipboard().setContent(clipboardContent);</b>
+&nbsp;
+<b class="nc">&nbsp;		copiedDetails.set(true);</b>
+<b class="nc">&nbsp;		CompletableFuture.delayedExecutor(2, TimeUnit.SECONDS, Platform::runLater).execute(() -&gt; copiedDetails.set(false));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void dismiss() {
+<b class="nc">&nbsp;		askedForLookupDatabasePermission.set(true);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void lookUpSolution() {
+<b class="nc">&nbsp;		String userAgent = USER_AGENT_FORMAT.formatted( //</b>
+<b class="nc">&nbsp;				environment.getAppVersion(), //</b>
+<b class="nc">&nbsp;				environment.getBuildNumber().orElse(&quot;undefined&quot;), //</b>
+<b class="nc">&nbsp;				System.getProperty(&quot;os.name&quot;), //</b>
+<b class="nc">&nbsp;				System.getProperty(&quot;os.version&quot;), //</b>
+<b class="nc">&nbsp;				System.getProperty(&quot;os.arch&quot;));</b>
+<b class="nc">&nbsp;		isLoadingHttpResponse.set(true);</b>
+<b class="nc">&nbsp;		askedForLookupDatabasePermission.set(true);</b>
+<b class="nc">&nbsp;		HttpClient httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();</b>
+<b class="nc">&nbsp;		HttpRequest httpRequest = HttpRequest.newBuilder()//</b>
+<b class="nc">&nbsp;				.header(&quot;User-Agent&quot;, userAgent)</b>
+<b class="nc">&nbsp;				.timeout(Duration.ofSeconds(10))</b>
+<b class="nc">&nbsp;				.uri(URI.create(ERROR_CODES_URL_FORMAT.formatted(URLEncoder.encode(errorCode.toString(),StandardCharsets.UTF_8))))//</b>
+<b class="nc">&nbsp;				.build();</b>
+<b class="nc">&nbsp;		httpClient.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofInputStream())//</b>
+<b class="nc">&nbsp;				.thenAcceptAsync(this::loadHttpResponse, executorService)//</b>
+<b class="nc">&nbsp;				.whenCompleteAsync((r, e) -&gt; isLoadingHttpResponse.set(false), Platform::runLater);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void loadHttpResponse(HttpResponse&lt;InputStream&gt; response) {
+<b class="nc">&nbsp;		if (response.statusCode() != 200) {</b>
+<b class="nc">&nbsp;			LOG.error(&quot;Status code {} when trying to load {} &quot;, response.statusCode(), response.uri());</b>
+&nbsp;		}
+&nbsp;		try {
+<b class="nc">&nbsp;			var typeRef = new TypeReference&lt;Map&lt;String, ErrorDiscussion&gt;&gt;() {};</b>
+<b class="nc">&nbsp;			Map&lt;String, ErrorDiscussion&gt; errorDiscussionMap = JSON.reader().forType(typeRef).readValue(response.body());</b>
+&nbsp;
+<b class="nc">&nbsp;			if (errorDiscussionMap.values().stream().anyMatch(this::containsMethodCode)) {</b>
+<b class="nc">&nbsp;				Comparator&lt;ErrorDiscussion&gt; comp = this::compareByFullErrorCode;</b>
+<b class="nc">&nbsp;				Optional&lt;ErrorDiscussion&gt; value = errorDiscussionMap.values().stream().filter(this::containsMethodCode)//</b>
+<b class="nc">&nbsp;						.min(comp//</b>
+<b class="nc">&nbsp;								.thenComparing(this::compareByRootCauseCode)//</b>
+<b class="nc">&nbsp;								.thenComparing(this::compareIsAnswered)//</b>
+<b class="nc">&nbsp;								.thenComparing(this::compareUpvoteCount));</b>
+&nbsp;
+<b class="nc">&nbsp;				if (value.isPresent()) {</b>
+<b class="nc">&nbsp;					matchingErrorDiscussion.set(value.get());</b>
+&nbsp;				}
+&nbsp;			}
+<b class="nc">&nbsp;		} catch (IOException e) {</b>
+<b class="nc">&nbsp;			LOG.error(&quot;Failed to load or parse JSON from &quot; + response.uri(), e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Checks if an ErrorDiscussion object&#39;s title contains the error code&#39;s method code.
+&nbsp;	 *
+&nbsp;	 * @param errorDiscussion The ErrorDiscussion object to be checked.
+&nbsp;	 * @return A boolean value indicating if the ErrorDiscussion object&#39;s title contains the error code&#39;s method code:
+&nbsp;	 * - true if the title contains the method code,
+&nbsp;	 * - false otherwise.
+&nbsp;	 */
+&nbsp;	public boolean containsMethodCode(ErrorDiscussion errorDiscussion) {
+<b class="nc">&nbsp;		return errorDiscussion.title.contains(&quot; &quot; + errorCode.methodCode());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Compares two ErrorDiscussion objects based on their upvote counts and returns the result.
+&nbsp;	 *
+&nbsp;	 * @param ed1 The first ErrorDiscussion object.
+&nbsp;	 * @param ed2 The second ErrorDiscussion object.
+&nbsp;	 * @return An integer indicating which ErrorDiscussion object has a higher upvote count:
+&nbsp;	 * - A positive value if ed2 has a higher upvote count than ed1,
+&nbsp;	 * - A negative value if ed1 has a higher upvote count than ed2,
+&nbsp;	 * - Or 0 if both upvote counts are equal.
+&nbsp;	 */
+&nbsp;	public int compareUpvoteCount(ErrorDiscussion ed1, ErrorDiscussion ed2) {
+<b class="nc">&nbsp;		return Integer.compare(ed2.upvoteCount, ed1.upvoteCount);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Compares two ErrorDiscussion objects based on their answered status and returns the result.
+&nbsp;	 *
+&nbsp;	 * @param ed1 The first ErrorDiscussion object.
+&nbsp;	 * @param ed2 The second ErrorDiscussion object.
+&nbsp;	 * @return An integer indicating the answered status of the ErrorDiscussion objects:
+&nbsp;	 * - A negative value (-1) if ed1 is considered answered and ed2 is considered unanswered,
+&nbsp;	 * - A positive value (1) if ed1 is considered unanswered and ed2 is considered answered,
+&nbsp;	 * - Or 0 if both ErrorDiscussion objects are considered answered or unanswered.
+&nbsp;	 */
+&nbsp;	public int compareIsAnswered(ErrorDiscussion ed1, ErrorDiscussion ed2) {
+<b class="nc">&nbsp;		if (ed1.answer != null &amp;&amp; ed2.answer == null) {</b>
+<b class="nc">&nbsp;			return -1;</b>
+<b class="nc">&nbsp;		} else if (ed1.answer == null &amp;&amp; ed2.answer != null) {</b>
+<b class="nc">&nbsp;			return 1;</b>
+&nbsp;		} else {
+<b class="nc">&nbsp;			return 0;</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Compares two ErrorDiscussion objects based on the presence of the full error code in their titles and returns the result.
+&nbsp;	 *
+&nbsp;	 * @param ed1 The first ErrorDiscussion object.
+&nbsp;	 * @param ed2 The second ErrorDiscussion object.
+&nbsp;	 * @return An integer indicating the comparison result based on the presence of the full error code in the titles:
+&nbsp;	 * - A negative value (-1) if ed1 contains the full error code in the title and ed2 does not have a match,
+&nbsp;	 * - A positive value (1) if ed1 does not have a match and ed2 contains the full error code in the title,
+&nbsp;	 * - Or 0 if both ErrorDiscussion objects either contain the full error code or do not have a match in the titles.
+&nbsp;	 */
+&nbsp;	public int compareByFullErrorCode(ErrorDiscussion ed1, ErrorDiscussion ed2) {
+<b class="nc">&nbsp;		if (ed1.title.contains(getErrorCode()) &amp;&amp; !ed2.title.contains(getErrorCode())) {</b>
+<b class="nc">&nbsp;			return -1;</b>
+<b class="nc">&nbsp;		} else if (!ed1.title.contains(getErrorCode()) &amp;&amp; ed2.title.contains(getErrorCode())) {</b>
+<b class="nc">&nbsp;			return 1;</b>
+&nbsp;		} else {
+<b class="nc">&nbsp;			return 0;</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Compares two ErrorDiscussion objects based on the presence of the root cause code in their titles and returns the result.
+&nbsp;	 *
+&nbsp;	 * @param ed1 The first ErrorDiscussion object.
+&nbsp;	 * @param ed2 The second ErrorDiscussion object.
+&nbsp;	 * @return An integer indicating the comparison result based on the presence of the root cause code in the titles:
+&nbsp;	 * - A negative value (-1) if ed1 contains the root cause code in the title and ed2 does not have a match,
+&nbsp;	 * - A positive value (1) if ed1 does not have a match and ed2 contains the root cause code in the title,
+&nbsp;	 * - Or 0 if both ErrorDiscussion objects either contain the root cause code or do not have a match in the titles.
+&nbsp;	 */
+&nbsp;	public int compareByRootCauseCode(ErrorDiscussion ed1, ErrorDiscussion ed2) {
+<b class="nc">&nbsp;		String value = &quot; &quot; + errorCode.methodCode() + ErrorCode.DELIM + errorCode.rootCauseCode();</b>
+<b class="nc">&nbsp;		if (ed1.title.contains(value) &amp;&amp; !ed2.title.contains(value)) {</b>
+<b class="nc">&nbsp;			return -1;</b>
+<b class="nc">&nbsp;		} else if (!ed1.title.contains(value) &amp;&amp; ed2.title.contains(value)) {</b>
+<b class="nc">&nbsp;			return 1;</b>
+&nbsp;		} else {
+<b class="nc">&nbsp;			return 0;</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/* Getter/Setter */
+&nbsp;	public boolean isPreviousScenePresent() {
+<b class="nc">&nbsp;		return previousScene != null;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public String getStackTrace() {
+<b class="nc">&nbsp;		return stackTrace;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public String getErrorCode() {
+<b class="nc">&nbsp;		return errorCode.toString();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public String getDetailText() {
+<b class="nc">&nbsp;		return &quot;```\nError Code &quot; + getErrorCode() + &quot;\n&quot; + getStackTrace() + &quot;\n```&quot;;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BooleanProperty copiedDetailsProperty() {
+<b class="nc">&nbsp;		return copiedDetails;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean getCopiedDetails() {
+<b class="nc">&nbsp;		return copiedDetails.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BooleanExpression errorSolutionFoundProperty() {
+<b class="nc">&nbsp;		return errorSolutionFound;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean getErrorSolutionFound() {
+<b class="nc">&nbsp;		return errorSolutionFound.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BooleanProperty isLoadingHttpResponseProperty() {
+<b class="nc">&nbsp;		return isLoadingHttpResponse;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean getIsLoadingHttpResponse() {
+<b class="nc">&nbsp;		return isLoadingHttpResponse.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BooleanProperty askedForLookupDatabasePermissionProperty() {
+<b class="nc">&nbsp;		return askedForLookupDatabasePermission;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean getAskedForLookupDatabasePermission() {
+<b class="nc">&nbsp;		return askedForLookupDatabasePermission.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

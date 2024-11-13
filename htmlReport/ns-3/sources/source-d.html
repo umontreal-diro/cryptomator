@@ -1,0 +1,258 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > OneDriveWindowsLocationPresetsProvider</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.common.locationpresets</a>
+</div>
+
+<h1>Coverage Summary for Class: OneDriveWindowsLocationPresetsProvider (org.cryptomator.common.locationpresets)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">OneDriveWindowsLocationPresetsProvider</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/38)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">OneDriveWindowsLocationPresetsProvider$CommandFailedException</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/42)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.common.locationpresets;
+&nbsp;
+&nbsp;import org.cryptomator.integrations.common.OperatingSystem;
+&nbsp;import org.jetbrains.annotations.Blocking;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.nio.charset.StandardCharsets;
+&nbsp;import java.nio.file.Path;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.concurrent.TimeUnit;
+&nbsp;import java.util.concurrent.TimeoutException;
+&nbsp;import java.util.function.Predicate;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;import java.util.stream.Stream;
+&nbsp;
+&nbsp;import static org.cryptomator.integrations.common.OperatingSystem.Value.WINDOWS;
+&nbsp;
+&nbsp;@OperatingSystem(WINDOWS)
+<b class="nc">&nbsp;public final class OneDriveWindowsLocationPresetsProvider implements LocationPresetsProvider {</b>
+&nbsp;
+<b class="nc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(OneDriveWindowsLocationPresetsProvider.class);</b>
+&nbsp;	private static final String REGSTR_TOKEN = &quot;REG_SZ&quot;;
+&nbsp;	private static final String REG_ONEDRIVE_ACCOUNTS = &quot;HKEY_CURRENT_USER\\Software\\Microsoft\\OneDrive\\Accounts\\&quot;;
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public Stream&lt;LocationPreset&gt; getLocations() {
+&nbsp;		try {
+<b class="nc">&nbsp;			var accountRegKeys = queryRegistry(REG_ONEDRIVE_ACCOUNTS, List.of(), l -&gt; l.startsWith(REG_ONEDRIVE_ACCOUNTS)).toList();</b>
+<b class="nc">&nbsp;			var cloudLocations = new ArrayList&lt;LocationPreset&gt;();</b>
+<b class="nc">&nbsp;			for (var accountRegKey : accountRegKeys) {</b>
+<b class="nc">&nbsp;				var path = queryRegistry(accountRegKey, List.of(&quot;/v&quot;, &quot;UserFolder&quot;), l -&gt; l.contains(&quot;UserFolder&quot;)).map(result -&gt; result.substring(result.indexOf(REGSTR_TOKEN) + REGSTR_TOKEN.length()).trim()) //</b>
+<b class="nc">&nbsp;						.map(Path::of) //</b>
+<b class="nc">&nbsp;						.findFirst().orElseThrow();</b>
+<b class="nc">&nbsp;				var name = &quot;OneDrive&quot;; //we assume personal oneDrive account by default</b>
+<b class="nc">&nbsp;				if (!accountRegKey.endsWith(&quot;Personal&quot;)) {</b>
+<b class="nc">&nbsp;					name = queryRegistry(accountRegKey, List.of(&quot;/v&quot;, &quot;DisplayName&quot;), l -&gt; l.contains(&quot;DisplayName&quot;)).map(result -&gt; result.substring(result.indexOf(REGSTR_TOKEN) + REGSTR_TOKEN.length()).trim()) //</b>
+<b class="nc">&nbsp;							.map(&quot;OneDrive - &quot;::concat) //</b>
+<b class="nc">&nbsp;							.findFirst().orElseThrow();</b>
+&nbsp;				}
+<b class="nc">&nbsp;				cloudLocations.add(new LocationPreset(name, path));</b>
+&nbsp;			}
+<b class="nc">&nbsp;			return cloudLocations.stream();</b>
+<b class="nc">&nbsp;		} catch (IOException | CommandFailedException | TimeoutException e) {</b>
+<b class="nc">&nbsp;			LOG.error(&quot;Unable to determine OneDrive location&quot;, e);</b>
+<b class="nc">&nbsp;			return Stream.of();</b>
+<b class="nc">&nbsp;		} catch (InterruptedException e) {</b>
+<b class="nc">&nbsp;			Thread.currentThread().interrupt();</b>
+<b class="nc">&nbsp;			LOG.error(&quot;Determination of OneDrive location interrupted&quot;, e);</b>
+<b class="nc">&nbsp;			return Stream.of();</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private Stream&lt;String&gt; queryRegistry(String keyname, List&lt;String&gt; moreArgs, Predicate&lt;String&gt; outputFilter) throws InterruptedException, CommandFailedException, TimeoutException, IOException {
+<b class="nc">&nbsp;		var args = new ArrayList&lt;String&gt;();</b>
+<b class="nc">&nbsp;		args.add(&quot;reg&quot;);</b>
+<b class="nc">&nbsp;		args.add(&quot;query&quot;);</b>
+<b class="nc">&nbsp;		args.add(keyname);</b>
+<b class="nc">&nbsp;		args.addAll(moreArgs);</b>
+<b class="nc">&nbsp;		ProcessBuilder command = new ProcessBuilder(args);</b>
+<b class="nc">&nbsp;		Process p = command.start();</b>
+<b class="nc">&nbsp;		waitForSuccess(p, 3, &quot;`reg query`&quot;);</b>
+<b class="nc">&nbsp;		return p.inputReader(StandardCharsets.ISO_8859_1).lines().filter(outputFilter);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Waits {@code timeoutSeconds} seconds for {@code process} to finish with exit code {@code 0}.
+&nbsp;	 *
+&nbsp;	 * @param process The process to wait for
+&nbsp;	 * @param timeoutSeconds How long to wait (in seconds)
+&nbsp;	 * @param cmdDescription A short description of the process used to generate log and exception messages
+&nbsp;	 * @throws TimeoutException Thrown when the process doesn&#39;t finish in time
+&nbsp;	 * @throws InterruptedException Thrown when the thread is interrupted while waiting for the process to finish
+&nbsp;	 * @throws CommandFailedException Thrown when the process exit code is non-zero
+&nbsp;	 */
+&nbsp;	@Blocking
+&nbsp;	private static void waitForSuccess(Process process, int timeoutSeconds, String cmdDescription) throws TimeoutException, InterruptedException, CommandFailedException {
+<b class="nc">&nbsp;		boolean exited = process.waitFor(timeoutSeconds, TimeUnit.SECONDS);</b>
+<b class="nc">&nbsp;		if (!exited) {</b>
+<b class="nc">&nbsp;			throw new TimeoutException(cmdDescription + &quot; timed out after &quot; + timeoutSeconds + &quot;s&quot;);</b>
+&nbsp;		}
+<b class="nc">&nbsp;		if (process.exitValue() != 0) {</b>
+<b class="nc">&nbsp;			@SuppressWarnings(&quot;resource&quot;) var stdout = process.inputReader(StandardCharsets.ISO_8859_1).lines().collect(Collectors.joining(&quot;\n&quot;));</b>
+<b class="nc">&nbsp;			@SuppressWarnings(&quot;resource&quot;) var stderr = process.errorReader(StandardCharsets.ISO_8859_1).lines().collect(Collectors.joining(&quot;\n&quot;));</b>
+<b class="nc">&nbsp;			throw new CommandFailedException(cmdDescription, process.exitValue(), stdout, stderr);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private static class CommandFailedException extends Exception {
+&nbsp;
+&nbsp;		int exitCode;
+&nbsp;		String stdout;
+&nbsp;		String stderr;
+&nbsp;
+&nbsp;		private CommandFailedException(String cmdDescription, int exitCode, String stdout, String stderr) {
+<b class="nc">&nbsp;			super(cmdDescription + &quot; returned with non-zero exit code &quot; + exitCode);</b>
+<b class="nc">&nbsp;			this.exitCode = exitCode;</b>
+<b class="nc">&nbsp;			this.stdout = stdout;</b>
+<b class="nc">&nbsp;			this.stderr = stderr;</b>
+&nbsp;		}
+&nbsp;
+&nbsp;	}
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

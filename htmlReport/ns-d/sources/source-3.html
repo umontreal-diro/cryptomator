@@ -1,0 +1,254 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > DraggableListCell</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.controls</a>
+</div>
+
+<h1>Coverage Summary for Class: DraggableListCell (org.cryptomator.ui.controls)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DraggableListCell</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/40)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/53)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/*******************************************************************************
+&nbsp; * Copyright (c) 2016, 2017 Sebastian Stenzel and others.
+&nbsp; * All rights reserved.
+&nbsp; * This program and the accompanying materials are made available under the terms of the accompanying LICENSE file.
+&nbsp; *
+&nbsp; * Contributors:
+&nbsp; *     Sebastian Stenzel - initial API and implementation
+&nbsp; *******************************************************************************/
+&nbsp;package org.cryptomator.ui.controls;
+&nbsp;
+&nbsp;import com.tobiasdiez.easybind.EasyBind;
+&nbsp;
+&nbsp;import javafx.beans.property.BooleanProperty;
+&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+&nbsp;import javafx.scene.SnapshotParameters;
+&nbsp;import javafx.scene.control.ListCell;
+&nbsp;import javafx.scene.image.Image;
+&nbsp;import javafx.scene.input.ClipboardContent;
+&nbsp;import javafx.scene.input.DragEvent;
+&nbsp;import javafx.scene.input.Dragboard;
+&nbsp;import javafx.scene.input.MouseEvent;
+&nbsp;import javafx.scene.input.TransferMode;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;public class DraggableListCell&lt;T&gt; extends ListCell&lt;T&gt; {
+&nbsp;
+&nbsp;	private static final String DROP_ABOVE_CLASS = &quot;drop-above&quot;;
+&nbsp;	private static final String DROP_BELOW_CLASS = &quot;drop-below&quot;;
+&nbsp;
+<b class="nc">&nbsp;	private final BooleanProperty dropAbove = new SimpleBooleanProperty();</b>
+<b class="nc">&nbsp;	private final BooleanProperty dropBelow = new SimpleBooleanProperty();</b>
+&nbsp;
+<b class="nc">&nbsp;	public DraggableListCell() {</b>
+<b class="nc">&nbsp;		setOnDragDetected(this::onDragDetected);</b>
+<b class="nc">&nbsp;		setOnDragOver(this::onDragOver);</b>
+<b class="nc">&nbsp;		setOnDragEntered(this::onDragEntered);</b>
+<b class="nc">&nbsp;		setOnDragExited(this::onDragExited);</b>
+<b class="nc">&nbsp;		setOnDragDropped(this::onDragDropped);</b>
+<b class="nc">&nbsp;		setOnDragDone(DragEvent::consume);</b>
+&nbsp;
+<b class="nc">&nbsp;		EasyBind.includeWhen(getStyleClass(), DROP_ABOVE_CLASS, dropAbove);</b>
+<b class="nc">&nbsp;		EasyBind.includeWhen(getStyleClass(), DROP_BELOW_CLASS, dropBelow);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void setDropPositionStyleClass(double verticalCursorPosition) {
+<b class="nc">&nbsp;		boolean isUpperHalf = verticalCursorPosition &lt; this.getHeight() / 2.0;</b>
+<b class="nc">&nbsp;		if (isUpperHalf) {</b>
+<b class="nc">&nbsp;			this.dropAbove.set(true);</b>
+<b class="nc">&nbsp;			this.dropBelow.set(false);</b>
+&nbsp;		} else {
+<b class="nc">&nbsp;			this.dropAbove.set(false);</b>
+<b class="nc">&nbsp;			this.dropBelow.set(true);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private void resetDropPositionStyleClasses() {
+<b class="nc">&nbsp;		this.dropAbove.set(false);</b>
+<b class="nc">&nbsp;		this.dropBelow.set(false);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void onDragDetected(MouseEvent event) {
+<b class="nc">&nbsp;		if (getItem() == null) {</b>
+&nbsp;			return;
+&nbsp;		}
+&nbsp;
+<b class="nc">&nbsp;		final ClipboardContent content = new ClipboardContent();</b>
+<b class="nc">&nbsp;		content.putString(Integer.toString(getIndex()));</b>
+<b class="nc">&nbsp;		final Image snapshot = this.snapshot(new SnapshotParameters(), null);</b>
+<b class="nc">&nbsp;		final Dragboard dragboard = startDragAndDrop(TransferMode.MOVE);</b>
+<b class="nc">&nbsp;		dragboard.setDragView(snapshot);</b>
+<b class="nc">&nbsp;		dragboard.setContent(content);</b>
+&nbsp;
+<b class="nc">&nbsp;		event.consume();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void onDragOver(DragEvent event) {
+<b class="nc">&nbsp;		if (getItem() == null) {</b>
+&nbsp;			return;
+&nbsp;		}
+&nbsp;
+<b class="nc">&nbsp;		if (event.getGestureSource() instanceof DraggableListCell&lt;?&gt; &amp;&amp; event.getGestureSource() != this &amp;&amp; event.getDragboard().hasString()) {</b>
+<b class="nc">&nbsp;			event.acceptTransferModes(TransferMode.MOVE);</b>
+<b class="nc">&nbsp;			setDropPositionStyleClass(event.getY());</b>
+&nbsp;		}
+&nbsp;
+<b class="nc">&nbsp;		event.consume();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void onDragEntered(DragEvent event) {
+<b class="nc">&nbsp;		if (getItem() == null) {</b>
+&nbsp;			return;
+&nbsp;		}
+&nbsp;
+<b class="nc">&nbsp;		if (event.getGestureSource() instanceof DraggableListCell&lt;?&gt; &amp;&amp; event.getGestureSource() != this &amp;&amp; event.getDragboard().hasString()) {</b>
+<b class="nc">&nbsp;			setDropPositionStyleClass(event.getY());</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private void onDragExited(DragEvent event) {
+<b class="nc">&nbsp;		if (getItem() == null) {</b>
+&nbsp;			return;
+&nbsp;		}
+&nbsp;
+<b class="nc">&nbsp;		if (event.getGestureSource() instanceof DraggableListCell&lt;?&gt; &amp;&amp; event.getGestureSource() != this &amp;&amp; event.getDragboard().hasString()) {</b>
+<b class="nc">&nbsp;			resetDropPositionStyleClasses();</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private void onDragDropped(DragEvent event) {
+<b class="nc">&nbsp;		if (getItem() == null) {</b>
+&nbsp;			return;
+&nbsp;		}
+&nbsp;
+<b class="nc">&nbsp;		if (event.getGestureSource() instanceof DraggableListCell&lt;?&gt; &amp;&amp; event.getDragboard().hasString()) {</b>
+<b class="nc">&nbsp;			final List&lt;T&gt; list = getListView().getItems();</b>
+&nbsp;			try {
+&nbsp;				// where to insert what?
+<b class="nc">&nbsp;				final int draggedIdx = Integer.parseInt(event.getDragboard().getString());</b>
+<b class="nc">&nbsp;				final T currentItem = this.getItem();</b>
+<b class="nc">&nbsp;				final T draggedItem = list.remove(draggedIdx);</b>
+<b class="nc">&nbsp;				final int currentItemIdx = list.indexOf(currentItem);</b>
+&nbsp;
+&nbsp;				// insert before or after currentItem?
+<b class="nc">&nbsp;				boolean insertBefore = event.getY() &lt; this.getHeight() / 2.0;</b>
+<b class="nc">&nbsp;				final int insertPosition = insertBefore ? currentItemIdx : currentItemIdx + 1;</b>
+&nbsp;
+&nbsp;				// insert!
+<b class="nc">&nbsp;				getListView().getItems().add(insertPosition, draggedItem);</b>
+<b class="nc">&nbsp;				getListView().getSelectionModel().select(insertPosition);</b>
+<b class="nc">&nbsp;				event.setDropCompleted(true);</b>
+<b class="nc">&nbsp;			} catch (NumberFormatException e) {</b>
+<b class="nc">&nbsp;				event.setDropCompleted(false);</b>
+&nbsp;			}
+&nbsp;		}
+&nbsp;
+<b class="nc">&nbsp;		event.consume();</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

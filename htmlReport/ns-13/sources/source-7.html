@@ -1,0 +1,233 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > CheckStateIconView</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.health</a>
+</div>
+
+<h1>Coverage Summary for Class: CheckStateIconView (org.cryptomator.ui.health)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CheckStateIconView</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/33)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CheckStateIconView$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/35)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.health;
+&nbsp;
+&nbsp;import com.tobiasdiez.easybind.EasyBind;
+&nbsp;import com.tobiasdiez.easybind.Subscription;
+&nbsp;import org.cryptomator.cryptofs.health.api.DiagnosticResult;
+&nbsp;import org.cryptomator.ui.common.Animations;
+&nbsp;import org.cryptomator.ui.common.AutoAnimator;
+&nbsp;import org.cryptomator.ui.controls.FontAwesome5Icon;
+&nbsp;import org.cryptomator.ui.controls.FontAwesome5IconView;
+&nbsp;
+&nbsp;import javafx.beans.binding.Bindings;
+&nbsp;import javafx.beans.property.ObjectProperty;
+&nbsp;import javafx.beans.property.SimpleObjectProperty;
+&nbsp;import javafx.beans.value.ObservableObjectValue;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * A {@link FontAwesome5IconView} that automatically sets the glyph depending on
+&nbsp; * the {@link Check#stateProperty() state} and {@link Check#highestResultSeverityProperty() severity} of a HealthCheck.
+&nbsp; */
+&nbsp;public class CheckStateIconView extends FontAwesome5IconView {
+&nbsp;
+<b class="nc">&nbsp;	private final ObjectProperty&lt;Check&gt; check = new SimpleObjectProperty&lt;&gt;();</b>
+&nbsp;	private final ObservableObjectValue&lt;Check.CheckState&gt; state;
+&nbsp;	private final ObservableObjectValue&lt;DiagnosticResult.Severity&gt; severity;
+&nbsp;	private final List&lt;Subscription&gt; subscriptions;
+&nbsp;	private final AutoAnimator onRunningRotator;
+&nbsp;
+<b class="nc">&nbsp;	public CheckStateIconView() {</b>
+<b class="nc">&nbsp;		this.state = EasyBind.wrapNullable(check).mapObservable(Check::stateProperty).asOrdinary();</b>
+<b class="nc">&nbsp;		this.severity = EasyBind.wrapNullable(check).mapObservable(Check::highestResultSeverityProperty).asOrdinary();</b>
+<b class="nc">&nbsp;		this.glyph.bind(Bindings.createObjectBinding(this::glyphForState, state, severity));</b>
+<b class="nc">&nbsp;		this.subscriptions = List.of( //</b>
+<b class="nc">&nbsp;				EasyBind.includeWhen(getStyleClass(), &quot;glyph-icon-muted&quot;, Bindings.equal(state, Check.CheckState.SKIPPED).or(Bindings.equal(state, Check.CheckState.CANCELLED)).or(Bindings.equal(severity, DiagnosticResult.Severity.INFO))), //</b>
+<b class="nc">&nbsp;				EasyBind.includeWhen(getStyleClass(), &quot;glyph-icon-primary&quot;, Bindings.equal(severity, DiagnosticResult.Severity.GOOD)), //</b>
+<b class="nc">&nbsp;				EasyBind.includeWhen(getStyleClass(), &quot;glyph-icon-orange&quot;, Bindings.equal(severity, DiagnosticResult.Severity.WARN).or(Bindings.equal(severity, DiagnosticResult.Severity.CRITICAL))), //</b>
+<b class="nc">&nbsp;				EasyBind.includeWhen(getStyleClass(), &quot;glyph-icon-red&quot;, Bindings.equal(state, Check.CheckState.ERROR)) //</b>
+&nbsp;		);
+<b class="nc">&nbsp;		var animation = Animations.createDiscrete360Rotation(this);</b>
+<b class="nc">&nbsp;		this.onRunningRotator = AutoAnimator.animate(animation) //</b>
+<b class="nc">&nbsp;				.onCondition(Bindings.equal(state, Check.CheckState.RUNNING)) //</b>
+<b class="nc">&nbsp;				.afterStop(() -&gt; setRotate(0)) //</b>
+<b class="nc">&nbsp;				.build();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private FontAwesome5Icon glyphForState() {
+<b class="nc">&nbsp;		if (state.getValue() == null) {</b>
+<b class="nc">&nbsp;			return null;</b>
+&nbsp;		}
+<b class="nc">&nbsp;		return switch (state.getValue()) {</b>
+<b class="nc">&nbsp;			case RUNNABLE -&gt; null;</b>
+<b class="nc">&nbsp;			case SKIPPED -&gt; FontAwesome5Icon.FAST_FORWARD;</b>
+<b class="nc">&nbsp;			case SCHEDULED -&gt; FontAwesome5Icon.CLOCK;</b>
+<b class="nc">&nbsp;			case RUNNING -&gt; FontAwesome5Icon.SPINNER;</b>
+<b class="nc">&nbsp;			case ERROR -&gt; FontAwesome5Icon.TIMES;</b>
+<b class="nc">&nbsp;			case CANCELLED -&gt; FontAwesome5Icon.BAN;</b>
+<b class="nc">&nbsp;			case SUCCEEDED -&gt; glyphIconForSeverity();</b>
+&nbsp;		};
+&nbsp;	}
+&nbsp;
+&nbsp;	private FontAwesome5Icon glyphIconForSeverity() {
+<b class="nc">&nbsp;		if (severity.getValue() == null) {</b>
+<b class="nc">&nbsp;			return null;</b>
+&nbsp;		}
+<b class="nc">&nbsp;		return switch (severity.getValue()) {</b>
+<b class="nc">&nbsp;			case GOOD, INFO -&gt; FontAwesome5Icon.CHECK;</b>
+<b class="nc">&nbsp;			case WARN, CRITICAL -&gt; FontAwesome5Icon.EXCLAMATION_TRIANGLE;</b>
+&nbsp;		};
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObjectProperty&lt;Check&gt; checkProperty() {
+<b class="nc">&nbsp;		return check;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void setCheck(Check c) {
+<b class="nc">&nbsp;		check.set(c);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Check getCheck() {
+<b class="nc">&nbsp;		return check.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

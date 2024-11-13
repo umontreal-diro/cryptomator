@@ -1,0 +1,531 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > CheckDetailController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.health</a>
+</div>
+
+<h1>Coverage Summary for Class: CheckDetailController (org.cryptomator.ui.health)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CheckDetailController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/34)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/78)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CheckDetailController$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">CheckDetailController$FixStateStringifier</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/20)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">CheckDetailController$SeverityStringifier</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/17)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/41)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/55)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/117)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.health;
+&nbsp;
+&nbsp;import com.tobiasdiez.easybind.EasyBind;
+&nbsp;import com.tobiasdiez.easybind.EasyObservableList;
+&nbsp;import com.tobiasdiez.easybind.Subscription;
+&nbsp;import org.cryptomator.cryptofs.health.api.DiagnosticResult;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;
+&nbsp;import javax.inject.Inject;
+&nbsp;import javafx.beans.binding.Binding;
+&nbsp;import javafx.beans.binding.Bindings;
+&nbsp;import javafx.beans.binding.BooleanBinding;
+&nbsp;import javafx.beans.binding.BooleanExpression;
+&nbsp;import javafx.beans.property.BooleanProperty;
+&nbsp;import javafx.beans.property.ObjectProperty;
+&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+&nbsp;import javafx.beans.property.SimpleObjectProperty;
+&nbsp;import javafx.beans.value.ObservableValue;
+&nbsp;import javafx.collections.FXCollections;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.scene.control.ChoiceBox;
+&nbsp;import javafx.scene.control.ListView;
+&nbsp;import javafx.scene.input.Clipboard;
+&nbsp;import javafx.scene.input.ClipboardContent;
+&nbsp;import javafx.util.StringConverter;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;import java.util.function.Function;
+&nbsp;import java.util.function.Predicate;
+&nbsp;import java.util.stream.Stream;
+&nbsp;
+&nbsp;import static org.cryptomator.cryptofs.health.api.DiagnosticResult.Severity;
+&nbsp;import static org.cryptomator.ui.health.Result.FixState.FIXABLE;
+&nbsp;import static org.cryptomator.ui.health.Result.FixState.FIXED;
+&nbsp;import static org.cryptomator.ui.health.Result.FixState.FIXING;
+&nbsp;import static org.cryptomator.ui.health.Result.FixState.FIX_FAILED;
+&nbsp;import static org.cryptomator.ui.health.Result.FixState.NOT_FIXABLE;
+&nbsp;
+&nbsp;@HealthCheckScoped
+&nbsp;public class CheckDetailController implements FxController {
+&nbsp;
+&nbsp;	private final EasyObservableList&lt;Result&gt; results;
+&nbsp;	private final ObjectProperty&lt;Check&gt; check;
+&nbsp;	private final ObservableValue&lt;Check.CheckState&gt; checkState;
+&nbsp;	private final ObservableValue&lt;String&gt; checkName;
+&nbsp;	private final BooleanExpression checkRunning;
+&nbsp;	private final BooleanExpression checkScheduled;
+&nbsp;	private final BooleanExpression checkFinished;
+&nbsp;	private final BooleanExpression checkSkipped;
+&nbsp;	private final BooleanExpression checkSucceeded;
+&nbsp;	private final BooleanExpression checkFailed;
+&nbsp;	private final BooleanExpression checkCancelled;
+&nbsp;	private final Binding&lt;Number&gt; countOfWarnSeverity;
+&nbsp;	private final Binding&lt;Number&gt; countOfCritSeverity;
+&nbsp;	private final Binding&lt;Boolean&gt; warnOrCritsExist;
+&nbsp;	private final ResultListCellFactory resultListCellFactory;
+&nbsp;	private final ResultFixApplier resultFixApplier;
+&nbsp;	private final ResourceBundle resourceBundle;
+&nbsp;
+&nbsp;	private final BooleanProperty fixAllInfoResultsExecuted;
+&nbsp;	private final BooleanBinding fixAllInfoResultsPossible;
+&nbsp;	private final ObjectProperty&lt;Predicate&lt;Result&gt;&gt; resultsFilter;
+&nbsp;
+&nbsp;	public ListView&lt;Result&gt; resultsListView;
+&nbsp;	public ChoiceBox&lt;DiagnosticResult.Severity&gt; severityChoiceBox;
+&nbsp;	public ChoiceBox&lt;Result.FixState&gt; fixStateChoiceBox;
+&nbsp;	private Subscription resultSubscription;
+&nbsp;
+&nbsp;	@Inject
+<b class="nc">&nbsp;	public CheckDetailController(ObjectProperty&lt;Check&gt; selectedTask, ResultListCellFactory resultListCellFactory, ResultFixApplier resultFixApplier, ResourceBundle resourceBundle) {</b>
+<b class="nc">&nbsp;		this.resultListCellFactory = resultListCellFactory;</b>
+<b class="nc">&nbsp;		this.resultFixApplier = resultFixApplier;</b>
+<b class="nc">&nbsp;		this.resourceBundle = resourceBundle;</b>
+<b class="nc">&nbsp;		this.results = EasyBind.wrapList(FXCollections.observableArrayList());</b>
+<b class="nc">&nbsp;		this.check = selectedTask;</b>
+<b class="nc">&nbsp;		this.checkState = selectedTask.flatMap(Check::stateProperty);</b>
+<b class="nc">&nbsp;		this.checkName = selectedTask.map(Check::getName).orElse(&quot;&quot;);</b>
+<b class="nc">&nbsp;		this.checkRunning = BooleanExpression.booleanExpression(checkState.map(Check.CheckState.RUNNING::equals).orElse(false));</b>
+<b class="nc">&nbsp;		this.checkScheduled = BooleanExpression.booleanExpression(checkState.map(Check.CheckState.SCHEDULED::equals).orElse(false));</b>
+<b class="nc">&nbsp;		this.checkSkipped = BooleanExpression.booleanExpression(checkState.map(Check.CheckState.SKIPPED::equals).orElse(false));</b>
+<b class="nc">&nbsp;		this.checkSucceeded = BooleanExpression.booleanExpression(checkState.map(Check.CheckState.SUCCEEDED::equals).orElse(false));</b>
+<b class="nc">&nbsp;		this.checkFailed = BooleanExpression.booleanExpression(checkState.map(Check.CheckState.ERROR::equals).orElse(false));</b>
+<b class="nc">&nbsp;		this.checkCancelled = BooleanExpression.booleanExpression(checkState.map(Check.CheckState.CANCELLED::equals).orElse(false));</b>
+<b class="nc">&nbsp;		this.checkFinished = checkSucceeded.or(checkFailed).or(checkCancelled);</b>
+<b class="nc">&nbsp;		this.countOfWarnSeverity = results.reduce(countSeverity(Severity.WARN));</b>
+<b class="nc">&nbsp;		this.countOfCritSeverity = results.reduce(countSeverity(Severity.CRITICAL));</b>
+<b class="nc">&nbsp;		this.warnOrCritsExist = EasyBind.combine(checkSucceeded, countOfWarnSeverity, countOfCritSeverity, (suceeded, warns, crits) -&gt; suceeded &amp;&amp; (warns.longValue() &gt; 0 || crits.longValue() &gt; 0));</b>
+<b class="nc">&nbsp;		this.fixAllInfoResultsExecuted = new SimpleBooleanProperty(false);</b>
+<b class="nc">&nbsp;		this.fixAllInfoResultsPossible = Bindings.createBooleanBinding(() -&gt; results.stream().anyMatch(this::isFixableInfoResult), results) //</b>
+<b class="nc">&nbsp;				.and(fixAllInfoResultsExecuted.not());</b>
+<b class="nc">&nbsp;		this.resultsFilter = new SimpleObjectProperty&lt;&gt;(r -&gt; true);</b>
+<b class="nc">&nbsp;		selectedTask.addListener(this::selectedTaskChanged);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private boolean isFixableInfoResult(Result r) {
+<b class="nc">&nbsp;		return r.diagnosis().getSeverity() == Severity.INFO &amp;&amp; r.getState() == FIXABLE;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void selectedTaskChanged(ObservableValue&lt;? extends Check&gt; observable, Check oldValue, Check newValue) {
+<b class="nc">&nbsp;		if (resultSubscription != null) {</b>
+<b class="nc">&nbsp;			resultSubscription.unsubscribe();</b>
+&nbsp;		}
+<b class="nc">&nbsp;		if (newValue != null) {</b>
+<b class="nc">&nbsp;			resultSubscription = EasyBind.bindContent(results, newValue.getResults());</b>
+&nbsp;		}
+<b class="nc">&nbsp;		severityChoiceBox.setValue(null);</b>
+<b class="nc">&nbsp;		fixStateChoiceBox.setValue(null);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private Function&lt;Stream&lt;? extends Result&gt;, Long&gt; countSeverity(DiagnosticResult.Severity severity) {
+<b class="nc">&nbsp;		return stream -&gt; stream.filter(item -&gt; severity.equals(item.diagnosis().getSeverity())).count();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void initialize() {
+<b class="nc">&nbsp;		resultsListView.setItems(results.filtered(resultsFilter));</b>
+<b class="nc">&nbsp;		resultsListView.setCellFactory(resultListCellFactory);</b>
+&nbsp;
+<b class="nc">&nbsp;		severityChoiceBox.getItems().add(null);</b>
+<b class="nc">&nbsp;		severityChoiceBox.getItems().addAll(Arrays.stream(DiagnosticResult.Severity.values()).toList());</b>
+<b class="nc">&nbsp;		severityChoiceBox.setConverter(new SeverityStringifier());</b>
+<b class="nc">&nbsp;		severityChoiceBox.setValue(null);</b>
+&nbsp;
+<b class="nc">&nbsp;		fixStateChoiceBox.getItems().add(null);</b>
+<b class="nc">&nbsp;		fixStateChoiceBox.getItems().addAll(Arrays.stream(Result.FixState.values()).toList());</b>
+<b class="nc">&nbsp;		fixStateChoiceBox.setConverter(new FixStateStringifier());</b>
+<b class="nc">&nbsp;		fixStateChoiceBox.setValue(null);</b>
+&nbsp;
+<b class="nc">&nbsp;		resultsFilter.bind(Bindings.createObjectBinding(() -&gt; this::filterResults, severityChoiceBox.valueProperty(), fixStateChoiceBox.valueProperty()));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private boolean filterResults(Result r) {
+<b class="nc">&nbsp;		var desiredFixState = fixStateChoiceBox.getValue();</b>
+<b class="nc">&nbsp;		var desiredSeverity = severityChoiceBox.getValue();</b>
+<b class="nc">&nbsp;		return (desiredFixState == null || r.getState() == desiredFixState) &amp;&amp; (desiredSeverity == null || r.diagnosis().getSeverity() == desiredSeverity);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void fixAllInfoResults() {
+<b class="nc">&nbsp;		fixAllInfoResultsExecuted.setValue(true);</b>
+<b class="nc">&nbsp;		results.stream().filter(this::isFixableInfoResult).forEach(resultFixApplier::fix);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void copyResultDetails() {
+<b class="nc">&nbsp;		var result = resultsListView.getSelectionModel().getSelectedItem();</b>
+<b class="nc">&nbsp;		if (result != null) {</b>
+<b class="nc">&nbsp;			ClipboardContent clipboardContent = new ClipboardContent();</b>
+<b class="nc">&nbsp;			clipboardContent.putString(result.diagnosis().toString());</b>
+<b class="nc">&nbsp;			Clipboard.getSystemClipboard().setContent(clipboardContent);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/* -- Internal classes -- */
+&nbsp;
+<b class="nc">&nbsp;	class SeverityStringifier extends StringConverter&lt;Severity&gt; {</b>
+&nbsp;
+&nbsp;		@Override
+&nbsp;		public String toString(Severity object) {
+<b class="nc">&nbsp;			if (object == null) {</b>
+<b class="nc">&nbsp;				return resourceBundle.getString(&quot;health.result.severityFilter.all&quot;);</b>
+&nbsp;			}
+<b class="nc">&nbsp;			return switch (object) {</b>
+<b class="nc">&nbsp;				case GOOD -&gt; resourceBundle.getString(&quot;health.result.severityFilter.good&quot;);</b>
+<b class="nc">&nbsp;				case INFO -&gt; resourceBundle.getString(&quot;health.result.severityFilter.info&quot;);</b>
+<b class="nc">&nbsp;				case WARN -&gt; resourceBundle.getString(&quot;health.result.severityFilter.warn&quot;);</b>
+<b class="nc">&nbsp;				case CRITICAL -&gt; resourceBundle.getString(&quot;health.result.severityFilter.crit&quot;);</b>
+&nbsp;			};
+&nbsp;		}
+&nbsp;
+&nbsp;		@Override
+&nbsp;		public Severity fromString(String string) {
+<b class="nc">&nbsp;			if (resourceBundle.getString(&quot;health.result.severityFilter.good&quot;).equals(string)) {</b>
+<b class="nc">&nbsp;				return Severity.GOOD;</b>
+<b class="nc">&nbsp;			} else if (resourceBundle.getString(&quot;health.result.severityFilter.info&quot;).equals(string)) {</b>
+<b class="nc">&nbsp;				return Severity.INFO;</b>
+<b class="nc">&nbsp;			} else if (resourceBundle.getString(&quot;health.result.severityFilter.warn&quot;).equals(string)) {</b>
+<b class="nc">&nbsp;				return Severity.WARN;</b>
+<b class="nc">&nbsp;			} else if (resourceBundle.getString(&quot;health.result.severityFilter.crit&quot;).equals(string)) {</b>
+<b class="nc">&nbsp;				return Severity.CRITICAL;</b>
+&nbsp;			} else {
+<b class="nc">&nbsp;				return null;</b>
+&nbsp;			}
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+<b class="nc">&nbsp;	class FixStateStringifier extends StringConverter&lt;Result.FixState&gt; {</b>
+&nbsp;
+&nbsp;		@Override
+&nbsp;		public String toString(Result.FixState object) {
+<b class="nc">&nbsp;			if (object == null) {</b>
+<b class="nc">&nbsp;				return resourceBundle.getString(&quot;health.result.fixStateFilter.all&quot;);</b>
+&nbsp;			}
+<b class="nc">&nbsp;			return switch (object) {</b>
+<b class="nc">&nbsp;				case FIXABLE -&gt; resourceBundle.getString(&quot;health.result.fixStateFilter.fixable&quot;);</b>
+<b class="nc">&nbsp;				case NOT_FIXABLE -&gt; resourceBundle.getString(&quot;health.result.fixStateFilter.notFixable&quot;);</b>
+<b class="nc">&nbsp;				case FIXING -&gt; resourceBundle.getString(&quot;health.result.fixStateFilter.fixing&quot;);</b>
+<b class="nc">&nbsp;				case FIXED -&gt; resourceBundle.getString(&quot;health.result.fixStateFilter.fixed&quot;);</b>
+<b class="nc">&nbsp;				case FIX_FAILED -&gt; resourceBundle.getString(&quot;health.result.fixStateFilter.fixFailed&quot;);</b>
+&nbsp;			};
+&nbsp;		}
+&nbsp;
+&nbsp;		@Override
+&nbsp;		public Result.FixState fromString(String string) {
+<b class="nc">&nbsp;			if (resourceBundle.getString(&quot;health.result.fixStateFilter.fixable&quot;).equals(string)) {</b>
+<b class="nc">&nbsp;				return FIXABLE;</b>
+<b class="nc">&nbsp;			} else if (resourceBundle.getString(&quot;health.result.fixStateFilter.notFixable&quot;).equals(string)) {</b>
+<b class="nc">&nbsp;				return NOT_FIXABLE;</b>
+<b class="nc">&nbsp;			} else if (resourceBundle.getString(&quot;health.result.fixStateFilter.fixing&quot;).equals(string)) {</b>
+<b class="nc">&nbsp;				return FIXING;</b>
+<b class="nc">&nbsp;			} else if (resourceBundle.getString(&quot;health.result.fixStateFilter.fixed&quot;).equals(string)) {</b>
+<b class="nc">&nbsp;				return FIXED;</b>
+<b class="nc">&nbsp;			} else if (resourceBundle.getString(&quot;health.result.fixStateFilter.fixFailed&quot;).equals(string)) {</b>
+<b class="nc">&nbsp;				return FIX_FAILED;</b>
+&nbsp;			} else {
+<b class="nc">&nbsp;				return null;</b>
+&nbsp;			}
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/* Getter/Setter */
+&nbsp;
+&nbsp;	public String getCheckName() {
+<b class="nc">&nbsp;		return checkName.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObservableValue&lt;String&gt; checkNameProperty() {
+<b class="nc">&nbsp;		return checkName;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public long getCountOfWarnSeverity() {
+<b class="nc">&nbsp;		return countOfWarnSeverity.getValue().longValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Binding&lt;Number&gt; countOfWarnSeverityProperty() {
+<b class="nc">&nbsp;		return countOfWarnSeverity;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public long getCountOfCritSeverity() {
+<b class="nc">&nbsp;		return countOfCritSeverity.getValue().longValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Binding&lt;Number&gt; countOfCritSeverityProperty() {
+<b class="nc">&nbsp;		return countOfCritSeverity;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isCheckRunning() {
+<b class="nc">&nbsp;		return checkRunning.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BooleanExpression checkRunningProperty() {
+<b class="nc">&nbsp;		return checkRunning;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isCheckFinished() {
+<b class="nc">&nbsp;		return checkFinished.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BooleanExpression checkFinishedProperty() {
+<b class="nc">&nbsp;		return checkFinished;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isCheckScheduled() {
+<b class="nc">&nbsp;		return checkScheduled.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BooleanExpression checkScheduledProperty() {
+<b class="nc">&nbsp;		return checkScheduled;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isCheckSkipped() {
+<b class="nc">&nbsp;		return checkSkipped.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BooleanExpression checkSkippedProperty() {
+<b class="nc">&nbsp;		return checkSkipped;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isCheckSucceeded() {
+<b class="nc">&nbsp;		return checkSucceeded.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BooleanExpression checkSucceededProperty() {
+<b class="nc">&nbsp;		return checkSucceeded;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isCheckFailed() {
+<b class="nc">&nbsp;		return checkFailed.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BooleanExpression checkFailedProperty() {
+<b class="nc">&nbsp;		return checkFailed;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isCheckCancelled() {
+<b class="nc">&nbsp;		return checkCancelled.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Binding&lt;Boolean&gt; warnOrCritsExistProperty() {
+<b class="nc">&nbsp;		return warnOrCritsExist;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isWarnOrCritsExist() {
+<b class="nc">&nbsp;		return warnOrCritsExist.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BooleanExpression checkCancelledProperty() {
+<b class="nc">&nbsp;		return checkCancelled;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObjectProperty&lt;Check&gt; checkProperty() {
+<b class="nc">&nbsp;		return check;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Check getCheck() {
+<b class="nc">&nbsp;		return check.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObservableValue&lt;Boolean&gt; fixAllInfoResultsPossibleProperty() {
+<b class="nc">&nbsp;		return fixAllInfoResultsPossible;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean getFixAllInfoResultsPossible() {
+<b class="nc">&nbsp;		return fixAllInfoResultsPossible.getValue();</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

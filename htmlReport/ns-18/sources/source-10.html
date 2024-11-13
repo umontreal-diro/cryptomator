@@ -1,0 +1,385 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > VaultListController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.mainwindow</a>
+</div>
+
+<h1>Coverage Summary for Class: VaultListController (org.cryptomator.ui.mainwindow)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">VaultListController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/52)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/91)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.mainwindow;
+&nbsp;
+&nbsp;import org.apache.commons.lang3.SystemUtils;
+&nbsp;import org.cryptomator.common.vaults.Vault;
+&nbsp;import org.cryptomator.common.vaults.VaultListManager;
+&nbsp;import org.cryptomator.cryptofs.CryptoFileSystemProvider;
+&nbsp;import org.cryptomator.cryptofs.DirStructure;
+&nbsp;import org.cryptomator.ui.addvaultwizard.AddVaultWizardComponent;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;import org.cryptomator.ui.common.VaultService;
+&nbsp;import org.cryptomator.ui.fxapp.FxApplicationWindows;
+&nbsp;import org.cryptomator.ui.removevault.RemoveVaultComponent;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import javax.inject.Inject;
+&nbsp;import javafx.beans.binding.Bindings;
+&nbsp;import javafx.beans.binding.BooleanBinding;
+&nbsp;import javafx.beans.property.BooleanProperty;
+&nbsp;import javafx.beans.property.ObjectProperty;
+&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+&nbsp;import javafx.beans.value.ObservableValue;
+&nbsp;import javafx.collections.ListChangeListener;
+&nbsp;import javafx.collections.ObservableList;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.geometry.Side;
+&nbsp;import javafx.scene.control.Button;
+&nbsp;import javafx.scene.control.ContextMenu;
+&nbsp;import javafx.scene.control.ListView;
+&nbsp;import javafx.scene.input.ContextMenuEvent;
+&nbsp;import javafx.scene.input.DragEvent;
+&nbsp;import javafx.scene.input.KeyCode;
+&nbsp;import javafx.scene.input.KeyEvent;
+&nbsp;import javafx.scene.input.MouseEvent;
+&nbsp;import javafx.scene.input.TransferMode;
+&nbsp;import javafx.scene.layout.StackPane;
+&nbsp;import javafx.stage.Stage;
+&nbsp;import java.io.File;
+&nbsp;import java.io.IOException;
+&nbsp;import java.nio.file.Path;
+&nbsp;import java.util.EnumSet;
+&nbsp;import java.util.Optional;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;import java.util.Set;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;import static org.cryptomator.common.Constants.CRYPTOMATOR_FILENAME_EXT;
+&nbsp;import static org.cryptomator.common.Constants.MASTERKEY_FILENAME;
+&nbsp;import static org.cryptomator.common.Constants.VAULTCONFIG_FILENAME;
+&nbsp;import static org.cryptomator.common.vaults.VaultState.Value.ERROR;
+&nbsp;import static org.cryptomator.common.vaults.VaultState.Value.LOCKED;
+&nbsp;import static org.cryptomator.common.vaults.VaultState.Value.MISSING;
+&nbsp;import static org.cryptomator.common.vaults.VaultState.Value.NEEDS_MIGRATION;
+&nbsp;
+&nbsp;@MainWindowScoped
+&nbsp;public class VaultListController implements FxController {
+&nbsp;
+<b class="nc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(VaultListController.class);</b>
+&nbsp;
+&nbsp;	private final Stage mainWindow;
+&nbsp;	private final ObservableList&lt;Vault&gt; vaults;
+&nbsp;	private final VaultService vaultService;
+&nbsp;	private final ObjectProperty&lt;Vault&gt; selectedVault;
+&nbsp;	private final VaultListCellFactory cellFactory;
+&nbsp;	private final AddVaultWizardComponent.Builder addVaultWizard;
+&nbsp;	private final BooleanBinding emptyVaultList;
+&nbsp;	private final RemoveVaultComponent.Builder removeVaultDialogue;
+&nbsp;	private final VaultListManager vaultListManager;
+<b class="nc">&nbsp;	private final BooleanProperty draggingVaultOver = new SimpleBooleanProperty();</b>
+&nbsp;	private final ResourceBundle resourceBundle;
+&nbsp;	private final FxApplicationWindows appWindows;
+&nbsp;
+&nbsp;	public ListView&lt;Vault&gt; vaultList;
+&nbsp;	public StackPane root;
+&nbsp;	public Button addVaultBtn;
+&nbsp;	@FXML
+&nbsp;	private ContextMenu addVaultContextMenu;
+&nbsp;
+&nbsp;	@Inject
+&nbsp;	VaultListController(@MainWindow Stage mainWindow, //
+&nbsp;						ObservableList&lt;Vault&gt; vaults, //
+&nbsp;						ObjectProperty&lt;Vault&gt; selectedVault, //
+&nbsp;						VaultListCellFactory cellFactory, //
+&nbsp;						VaultService vaultService, //
+&nbsp;						AddVaultWizardComponent.Builder addVaultWizard, //
+&nbsp;						RemoveVaultComponent.Builder removeVaultDialogue, //
+&nbsp;						VaultListManager vaultListManager, //
+&nbsp;						ResourceBundle resourceBundle, //
+<b class="nc">&nbsp;						FxApplicationWindows appWindows) {</b>
+<b class="nc">&nbsp;		this.mainWindow = mainWindow;</b>
+<b class="nc">&nbsp;		this.vaults = vaults;</b>
+<b class="nc">&nbsp;		this.selectedVault = selectedVault;</b>
+<b class="nc">&nbsp;		this.cellFactory = cellFactory;</b>
+<b class="nc">&nbsp;		this.vaultService = vaultService;</b>
+<b class="nc">&nbsp;		this.addVaultWizard = addVaultWizard;</b>
+<b class="nc">&nbsp;		this.removeVaultDialogue = removeVaultDialogue;</b>
+<b class="nc">&nbsp;		this.vaultListManager = vaultListManager;</b>
+<b class="nc">&nbsp;		this.resourceBundle = resourceBundle;</b>
+<b class="nc">&nbsp;		this.appWindows = appWindows;</b>
+&nbsp;
+<b class="nc">&nbsp;		this.emptyVaultList = Bindings.isEmpty(vaults);</b>
+&nbsp;
+<b class="nc">&nbsp;		selectedVault.addListener(this::selectedVaultDidChange);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void initialize() {
+<b class="nc">&nbsp;		vaultList.setItems(vaults);</b>
+<b class="nc">&nbsp;		vaultList.setCellFactory(cellFactory);</b>
+<b class="nc">&nbsp;		selectedVault.bind(vaultList.getSelectionModel().selectedItemProperty());</b>
+<b class="nc">&nbsp;		vaults.addListener((ListChangeListener.Change&lt;? extends Vault&gt; c) -&gt; {</b>
+<b class="nc">&nbsp;			while (c.next()) {</b>
+<b class="nc">&nbsp;				if (c.wasAdded()) {</b>
+<b class="nc">&nbsp;					Vault anyAddedVault = c.getAddedSubList().get(0);</b>
+<b class="nc">&nbsp;					vaultList.getSelectionModel().select(anyAddedVault);</b>
+&nbsp;				}
+&nbsp;			}
+&nbsp;		});
+<b class="nc">&nbsp;		vaultList.addEventFilter(MouseEvent.MOUSE_RELEASED, this::deselect);</b>
+&nbsp;
+&nbsp;		//unlock vault on double click
+<b class="nc">&nbsp;		vaultList.addEventFilter(MouseEvent.MOUSE_CLICKED, click -&gt; {</b>
+<b class="nc">&nbsp;			if (click.getClickCount() &gt;= 2) {</b>
+<b class="nc">&nbsp;				Optional.ofNullable(selectedVault.get())</b>
+<b class="nc">&nbsp;						.filter(Vault::isLocked)</b>
+<b class="nc">&nbsp;						.ifPresent(vault -&gt; appWindows.startUnlockWorkflow(vault, mainWindow));</b>
+<b class="nc">&nbsp;				Optional.ofNullable(selectedVault.get())</b>
+<b class="nc">&nbsp;						.filter(Vault::isUnlocked)</b>
+<b class="nc">&nbsp;						.ifPresent(vaultService::reveal);</b>
+&nbsp;			}
+&nbsp;		});
+&nbsp;
+&nbsp;		//don&#39;t show context menu when no vault selected
+<b class="nc">&nbsp;		vaultList.addEventFilter(ContextMenuEvent.CONTEXT_MENU_REQUESTED, request -&gt; {</b>
+<b class="nc">&nbsp;			if (selectedVault.get() == null) {</b>
+<b class="nc">&nbsp;				request.consume();</b>
+&nbsp;			}
+&nbsp;		});
+&nbsp;
+&nbsp;		//show removeVaultDialog on certain key press
+<b class="nc">&nbsp;		vaultList.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -&gt; {</b>
+<b class="nc">&nbsp;			if (keyEvent.getCode() == KeyCode.DELETE) {</b>
+<b class="nc">&nbsp;				pressedShortcutToRemoveVault();</b>
+<b class="nc">&nbsp;				keyEvent.consume();</b>
+&nbsp;			}
+&nbsp;		});
+<b class="nc">&nbsp;		if (SystemUtils.IS_OS_MAC) {</b>
+<b class="nc">&nbsp;			vaultList.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -&gt; {</b>
+<b class="nc">&nbsp;				if (keyEvent.getCode() == KeyCode.BACK_SPACE) {</b>
+<b class="nc">&nbsp;					pressedShortcutToRemoveVault();</b>
+<b class="nc">&nbsp;					keyEvent.consume();</b>
+&nbsp;				}
+&nbsp;			});
+&nbsp;		}
+&nbsp;
+&nbsp;		//register vault selection shortcut to the main window
+<b class="nc">&nbsp;		mainWindow.addEventFilter(KeyEvent.KEY_RELEASED, keyEvent -&gt; {</b>
+<b class="nc">&nbsp;			if (keyEvent.isShortcutDown() &amp;&amp; keyEvent.getCode().isDigitKey()) {</b>
+<b class="nc">&nbsp;				vaultList.getSelectionModel().select(Integer.parseInt(keyEvent.getText()) - 1);</b>
+<b class="nc">&nbsp;				keyEvent.consume();</b>
+&nbsp;			}
+&nbsp;		});
+&nbsp;
+<b class="nc">&nbsp;		root.setOnDragEntered(this::handleDragEvent);</b>
+<b class="nc">&nbsp;		root.setOnDragOver(this::handleDragEvent);</b>
+<b class="nc">&nbsp;		root.setOnDragDropped(this::handleDragEvent);</b>
+<b class="nc">&nbsp;		root.setOnDragExited(this::handleDragEvent);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	private void toggleMenu() {
+<b class="nc">&nbsp;		if (addVaultContextMenu.isShowing()) {</b>
+<b class="nc">&nbsp;			addVaultContextMenu.hide();</b>
+&nbsp;		} else {
+<b class="nc">&nbsp;			addVaultContextMenu.show(addVaultBtn, Side.BOTTOM, 0.0, 0.0);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private void deselect(MouseEvent released) {
+<b class="nc">&nbsp;		if (released.getY() &gt; (vaultList.getItems().size() * vaultList.fixedCellSizeProperty().get())) {</b>
+<b class="nc">&nbsp;			vaultList.getSelectionModel().clearSelection();</b>
+<b class="nc">&nbsp;			released.consume();</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private void selectedVaultDidChange(@SuppressWarnings(&quot;unused&quot;) ObservableValue&lt;? extends Vault&gt; observableValue, @SuppressWarnings(&quot;unused&quot;) Vault oldValue, Vault newValue) {
+<b class="nc">&nbsp;		if (newValue == null) {</b>
+&nbsp;			return;
+&nbsp;		}
+<b class="nc">&nbsp;		VaultListManager.redetermineVaultState(newValue);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void didClickAddNewVault() {
+<b class="nc">&nbsp;		addVaultWizard.build().showAddNewVaultWizard(resourceBundle);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void didClickAddExistingVault() {
+<b class="nc">&nbsp;		addVaultWizard.build().showAddExistingVaultWizard(resourceBundle);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void pressedShortcutToRemoveVault() {
+<b class="nc">&nbsp;		final var vault = selectedVault.get();</b>
+<b class="nc">&nbsp;		if (vault != null &amp;&amp; EnumSet.of(LOCKED, MISSING, ERROR, NEEDS_MIGRATION).contains(vault.getState())) {</b>
+<b class="nc">&nbsp;			removeVaultDialogue.vault(vault).build().showRemoveVault();</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private void handleDragEvent(DragEvent event) {
+<b class="nc">&nbsp;		if (DragEvent.DRAG_OVER.equals(event.getEventType()) &amp;&amp; event.getGestureSource() == null &amp;&amp; event.getDragboard().hasFiles()) {</b>
+<b class="nc">&nbsp;			draggingVaultOver.set(event.getDragboard().getFiles().stream().map(File::toPath).anyMatch(this::containsVault));</b>
+<b class="nc">&nbsp;			if (draggingVaultOver.get()) {</b>
+<b class="nc">&nbsp;				event.acceptTransferModes(TransferMode.ANY);</b>
+&nbsp;			}
+<b class="nc">&nbsp;		} else if (DragEvent.DRAG_DROPPED.equals(event.getEventType()) &amp;&amp; event.getGestureSource() == null &amp;&amp; event.getDragboard().hasFiles()) {</b>
+<b class="nc">&nbsp;			Set&lt;Path&gt; vaultPaths = event.getDragboard().getFiles().stream().map(File::toPath).filter(this::containsVault).collect(Collectors.toSet());</b>
+<b class="nc">&nbsp;			if (!vaultPaths.isEmpty()) {</b>
+<b class="nc">&nbsp;				vaultPaths.forEach(this::addVault);</b>
+&nbsp;			}
+<b class="nc">&nbsp;			event.setDropCompleted(!vaultPaths.isEmpty());</b>
+<b class="nc">&nbsp;			event.consume();</b>
+<b class="nc">&nbsp;		} else if (DragEvent.DRAG_EXITED.equals(event.getEventType())) {</b>
+<b class="nc">&nbsp;			draggingVaultOver.set(false);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private boolean containsVault(Path path) {
+&nbsp;		try {
+<b class="nc">&nbsp;			if (path.getFileName().toString().endsWith(CRYPTOMATOR_FILENAME_EXT)) {</b>
+<b class="nc">&nbsp;				path = path.getParent();</b>
+&nbsp;			}
+<b class="nc">&nbsp;			return CryptoFileSystemProvider.checkDirStructureForVault(path, VAULTCONFIG_FILENAME, MASTERKEY_FILENAME) != DirStructure.UNRELATED;</b>
+<b class="nc">&nbsp;		} catch (IOException e) {</b>
+<b class="nc">&nbsp;			return false;</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private void addVault(Path pathToVault) {
+&nbsp;		try {
+<b class="nc">&nbsp;			if (pathToVault.getFileName().toString().endsWith(CRYPTOMATOR_FILENAME_EXT)) {</b>
+<b class="nc">&nbsp;				vaultListManager.add(pathToVault.getParent());</b>
+&nbsp;			} else {
+<b class="nc">&nbsp;				vaultListManager.add(pathToVault);</b>
+&nbsp;			}
+<b class="nc">&nbsp;		} catch (IOException e) {</b>
+<b class="nc">&nbsp;			LOG.debug(&quot;Not a vault: {}&quot;, pathToVault);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	// Getter and Setter
+&nbsp;
+&nbsp;	public BooleanBinding emptyVaultListProperty() {
+<b class="nc">&nbsp;		return emptyVaultList;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isEmptyVaultList() {
+<b class="nc">&nbsp;		return emptyVaultList.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BooleanProperty draggingVaultOverProperty() {
+<b class="nc">&nbsp;		return draggingVaultOver;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isDraggingVaultOver() {
+<b class="nc">&nbsp;		return draggingVaultOver.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

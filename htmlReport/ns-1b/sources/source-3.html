@@ -1,0 +1,202 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > QuitForcedController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.quit</a>
+</div>
+
+<h1>Coverage Summary for Class: QuitForcedController (org.cryptomator.ui.quit)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">QuitForcedController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/29)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.quit;
+&nbsp;
+&nbsp;import org.cryptomator.common.vaults.Vault;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;import org.cryptomator.ui.common.VaultService;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import javax.inject.Inject;
+&nbsp;import javafx.collections.ObservableList;
+&nbsp;import javafx.concurrent.Task;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.scene.control.Button;
+&nbsp;import javafx.scene.control.ContentDisplay;
+&nbsp;import javafx.stage.Stage;
+&nbsp;import java.awt.desktop.QuitResponse;
+&nbsp;import java.util.Collection;
+&nbsp;import java.util.concurrent.ExecutorService;
+&nbsp;import java.util.concurrent.atomic.AtomicReference;
+&nbsp;import java.util.function.Consumer;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;public class QuitForcedController implements FxController {
+&nbsp;
+<b class="nc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(QuitForcedController.class);</b>
+&nbsp;
+&nbsp;	private final Stage window;
+&nbsp;	private final ObservableList&lt;Vault&gt; unlockedVaults;
+&nbsp;	private final ExecutorService executorService;
+&nbsp;	private final VaultService vaultService;
+&nbsp;	private final AtomicReference&lt;QuitResponse&gt; quitResponse;
+&nbsp;
+&nbsp;	/* FXML */
+&nbsp;	public Button forceLockAndQuitButton;
+&nbsp;
+&nbsp;	@Inject
+<b class="nc">&nbsp;	QuitForcedController(@QuitWindow Stage window, ObservableList&lt;Vault&gt; vaults, ExecutorService executorService, VaultService vaultService, @QuitWindow AtomicReference&lt;QuitResponse&gt; quitResponse) {</b>
+<b class="nc">&nbsp;		this.window = window;</b>
+<b class="nc">&nbsp;		this.unlockedVaults = vaults.filtered(Vault::isUnlocked);</b>
+<b class="nc">&nbsp;		this.executorService = executorService;</b>
+<b class="nc">&nbsp;		this.vaultService = vaultService;</b>
+<b class="nc">&nbsp;		this.quitResponse = quitResponse;</b>
+<b class="nc">&nbsp;		window.setOnCloseRequest(windowEvent -&gt; cancel());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void respondToQuitRequest(Consumer&lt;QuitResponse&gt; action) {
+<b class="nc">&nbsp;		var response = quitResponse.getAndSet(null);</b>
+<b class="nc">&nbsp;		if (response != null) {</b>
+<b class="nc">&nbsp;			action.accept(response);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void cancel() {
+<b class="nc">&nbsp;		LOG.info(&quot;Quitting application forced canceled by user.&quot;);</b>
+<b class="nc">&nbsp;		window.close();</b>
+<b class="nc">&nbsp;		respondToQuitRequest(QuitResponse::cancelQuit);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void forceLockAndQuit() {
+<b class="nc">&nbsp;		forceLockAndQuitButton.setDisable(true);</b>
+<b class="nc">&nbsp;		forceLockAndQuitButton.setContentDisplay(ContentDisplay.LEFT);</b>
+&nbsp;
+<b class="nc">&nbsp;		Task&lt;Collection&lt;Vault&gt;&gt; lockAllTask = vaultService.createLockAllTask(unlockedVaults, true); // forced set to true</b>
+<b class="nc">&nbsp;		lockAllTask.setOnSucceeded(evt -&gt; {</b>
+<b class="nc">&nbsp;			LOG.info(&quot;Locked {}&quot;, lockAllTask.getValue().stream().map(Vault::getDisplayName).collect(Collectors.joining(&quot;, &quot;)));</b>
+<b class="nc">&nbsp;			if (unlockedVaults.isEmpty()) {</b>
+<b class="nc">&nbsp;				window.close();</b>
+<b class="nc">&nbsp;				respondToQuitRequest(QuitResponse::performQuit);</b>
+&nbsp;			}
+&nbsp;		});
+<b class="nc">&nbsp;		lockAllTask.setOnFailed(evt -&gt; {</b>
+&nbsp;			//TODO: what will happen if force lock and quit app fails?
+&nbsp;
+<b class="nc">&nbsp;			LOG.error(&quot;Forced locking failed&quot;, lockAllTask.getException());</b>
+<b class="nc">&nbsp;			forceLockAndQuitButton.setDisable(false);</b>
+<b class="nc">&nbsp;			forceLockAndQuitButton.setContentDisplay(ContentDisplay.TEXT_ONLY);</b>
+&nbsp;
+<b class="nc">&nbsp;			window.close();</b>
+<b class="nc">&nbsp;			respondToQuitRequest(QuitResponse::cancelQuit);</b>
+&nbsp;		});
+<b class="nc">&nbsp;		executorService.execute(lockAllTask);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

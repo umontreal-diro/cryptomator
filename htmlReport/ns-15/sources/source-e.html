@@ -1,0 +1,149 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ReceivedKey</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.keyloading.hub</a>
+</div>
+
+<h1>Coverage Summary for Class: ReceivedKey (org.cryptomator.ui.keyloading.hub)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ReceivedKey</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.keyloading.hub;
+&nbsp;
+&nbsp;import com.nimbusds.jose.JWEObject;
+&nbsp;import org.cryptomator.cryptolib.api.Masterkey;
+&nbsp;
+&nbsp;import java.security.interfaces.ECPrivateKey;
+&nbsp;
+&nbsp;@FunctionalInterface
+&nbsp;interface ReceivedKey {
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Decrypts the vault key.
+&nbsp;	 *
+&nbsp;	 * @param deviceKey This device&#39;s private key.
+&nbsp;	 * @return The decrypted vault key
+&nbsp;	 */
+&nbsp;	Masterkey decryptMasterkey(ECPrivateKey deviceKey);
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Creates an unlock response object from the user key + vault key.
+&nbsp;	 *
+&nbsp;	 * @param vaultKeyJwe a JWE containing the symmetric vault key, encrypted for this device&#39;s user.
+&nbsp;	 * @param userKeyJwe a JWE containing the user&#39;s private key, encrypted for this device.
+&nbsp;	 * @return Ciphertext received by Hub, which can be decrypted using this device&#39;s private key.
+&nbsp;	 */
+&nbsp;	static ReceivedKey vaultKeyAndUserKey(JWEObject vaultKeyJwe, JWEObject userKeyJwe) {
+<b class="nc">&nbsp;		return deviceKey -&gt; {</b>
+<b class="nc">&nbsp;			var userKey = JWEHelper.decryptUserKey(userKeyJwe, deviceKey);</b>
+<b class="nc">&nbsp;			return JWEHelper.decryptVaultKey(vaultKeyJwe, userKey);</b>
+&nbsp;		};
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Creates an unlock response object from the received legacy &quot;access token&quot; JWE.
+&nbsp;	 *
+&nbsp;	 * @param vaultKeyJwe a JWE containing the symmetric vault key, encrypted for this device.
+&nbsp;	 * @return Ciphertext received by Hub, which can be decrypted using this device&#39;s private key.
+&nbsp;	 * @deprecated Only for compatibility with Hub 1.0 - 1.2
+&nbsp;	 */
+&nbsp;	@Deprecated
+&nbsp;	static ReceivedKey legacyDeviceKey(JWEObject vaultKeyJwe) {
+<b class="nc">&nbsp;		return deviceKey -&gt; JWEHelper.decryptVaultKey(vaultKeyJwe, deviceKey);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

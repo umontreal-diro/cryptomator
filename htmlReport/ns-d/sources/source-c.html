@@ -1,0 +1,435 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > SecurePasswordField</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.controls</a>
+</div>
+
+<h1>Coverage Summary for Class: SecurePasswordField (org.cryptomator.ui.controls)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SecurePasswordField</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/28)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/29)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/88)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">SecurePasswordField$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/29)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/29)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/89)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/*******************************************************************************
+&nbsp; * Copyright (c) 2014, 2017 Sebastian Stenzel
+&nbsp; * All rights reserved.
+&nbsp; * This program and the accompanying materials are made available under the terms of the accompanying LICENSE file.
+&nbsp; *
+&nbsp; * Contributors:
+&nbsp; *     Sebastian Stenzel - initial API and implementation
+&nbsp; ******************************************************************************/
+&nbsp;package org.cryptomator.ui.controls;
+&nbsp;
+&nbsp;import com.google.common.base.Strings;
+&nbsp;import org.cryptomator.common.Passphrase;
+&nbsp;
+&nbsp;import javafx.application.Platform;
+&nbsp;import javafx.beans.NamedArg;
+&nbsp;import javafx.beans.Observable;
+&nbsp;import javafx.beans.property.BooleanProperty;
+&nbsp;import javafx.beans.property.ReadOnlyBooleanProperty;
+&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+&nbsp;import javafx.scene.AccessibleAttribute;
+&nbsp;import javafx.scene.AccessibleRole;
+&nbsp;import javafx.scene.control.IndexRange;
+&nbsp;import javafx.scene.control.PasswordField;
+&nbsp;import javafx.scene.control.TextField;
+&nbsp;import javafx.scene.input.DragEvent;
+&nbsp;import javafx.scene.input.Dragboard;
+&nbsp;import javafx.scene.input.KeyCode;
+&nbsp;import javafx.scene.input.KeyCodeCombination;
+&nbsp;import javafx.scene.input.KeyCombination;
+&nbsp;import javafx.scene.input.KeyEvent;
+&nbsp;import javafx.scene.input.TransferMode;
+&nbsp;import java.text.Normalizer;
+&nbsp;import java.text.Normalizer.Form;
+&nbsp;import java.util.Arrays;
+&nbsp;
+&nbsp;/**
+&nbsp; * Patched PasswordField that doesn&#39;t create String copies of the password in memory (unless explicitly revealed). Instead the password is stored in a char[] that can be swiped.
+&nbsp; *
+&nbsp; * @implNote Since {@link #setText(String)} is final, we can not override its behaviour. For that reason you should not use the {@link #textProperty()} for anything else than display purposes.
+&nbsp; */
+&nbsp;public class SecurePasswordField extends TextField {
+&nbsp;
+&nbsp;	private static final char WIPE_CHAR = &#39; &#39;;
+&nbsp;	private static final int INITIAL_BUFFER_SIZE = 50;
+&nbsp;	private static final int GROW_BUFFER_SIZE = 50;
+&nbsp;	private static final String DEFAULT_PLACEHOLDER = &quot;•&quot;;
+&nbsp;	private static final String STYLE_CLASS = &quot;secure-password-field&quot;;
+<b class="nc">&nbsp;	private static final KeyCodeCombination SHORTCUT_BACKSPACE = new KeyCodeCombination(KeyCode.BACK_SPACE, KeyCombination.SHORTCUT_DOWN);</b>
+&nbsp;
+&nbsp;	private final String placeholderChar;
+<b class="nc">&nbsp;	private final BooleanProperty capsLocked = new SimpleBooleanProperty();</b>
+<b class="nc">&nbsp;	private final BooleanProperty containingNonPrintableChars = new SimpleBooleanProperty();</b>
+<b class="nc">&nbsp;	private final BooleanProperty revealPassword = new SimpleBooleanProperty();</b>
+&nbsp;
+<b class="nc">&nbsp;	private char[] content = new char[INITIAL_BUFFER_SIZE];</b>
+<b class="nc">&nbsp;	private int length = 0;</b>
+&nbsp;
+&nbsp;	public SecurePasswordField() {
+<b class="nc">&nbsp;		this(DEFAULT_PLACEHOLDER);</b>
+&nbsp;	}
+&nbsp;
+<b class="nc">&nbsp;	public SecurePasswordField(@NamedArg(&quot;placeholderChar&quot;) String placeholderChar) {</b>
+<b class="nc">&nbsp;		this.getStyleClass().add(STYLE_CLASS);</b>
+<b class="nc">&nbsp;		this.placeholderChar = placeholderChar;</b>
+<b class="nc">&nbsp;		this.setAccessibleRole(AccessibleRole.PASSWORD_FIELD);</b>
+<b class="nc">&nbsp;		this.addEventHandler(DragEvent.DRAG_OVER, this::handleDragOver);</b>
+<b class="nc">&nbsp;		this.addEventHandler(DragEvent.DRAG_DROPPED, this::handleDragDropped);</b>
+<b class="nc">&nbsp;		this.addEventHandler(KeyEvent.ANY, this::handleKeyEvent);</b>
+<b class="nc">&nbsp;		this.revealPasswordProperty().addListener(this::revealPasswordChanged);</b>
+<b class="nc">&nbsp;		this.focusedProperty().addListener(this::focusedChanged);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void cut() {
+&nbsp;		//not implemented by design
+<b class="nc">&nbsp;	}</b>
+&nbsp;
+&nbsp;	public void copy() {
+&nbsp;		//not implemented by design
+<b class="nc">&nbsp;	}</b>
+&nbsp;
+&nbsp;	public Object queryAccessibleAttribute(AccessibleAttribute attribute, Object... parameters) {
+<b class="nc">&nbsp;		return switch (attribute) {</b>
+<b class="nc">&nbsp;			case TEXT -&gt; null;</b>
+<b class="nc">&nbsp;			default -&gt; super.queryAccessibleAttribute(attribute, parameters);</b>
+&nbsp;		};
+&nbsp;	}
+&nbsp;
+&nbsp;	private void handleDragOver(DragEvent event) {
+<b class="nc">&nbsp;		Dragboard dragboard = event.getDragboard();</b>
+<b class="nc">&nbsp;		if (dragboard.hasString() &amp;&amp; dragboard.getString() != null) {</b>
+<b class="nc">&nbsp;			event.acceptTransferModes(TransferMode.COPY);</b>
+&nbsp;		}
+<b class="nc">&nbsp;		event.consume();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void handleDragDropped(DragEvent event) {
+<b class="nc">&nbsp;		Dragboard dragboard = event.getDragboard();</b>
+<b class="nc">&nbsp;		if (dragboard.hasString() &amp;&amp; dragboard.getString() != null) {</b>
+<b class="nc">&nbsp;			insertText(getCaretPosition(), dragboard.getString());</b>
+&nbsp;		}
+<b class="nc">&nbsp;		event.consume();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void handleKeyEvent(KeyEvent e) {
+<b class="nc">&nbsp;		if (e.getCode() == KeyCode.CAPS) {</b>
+<b class="nc">&nbsp;			updateCapsLocked();</b>
+<b class="nc">&nbsp;		} else if (SHORTCUT_BACKSPACE.match(e)) {</b>
+<b class="nc">&nbsp;			wipe();</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private void revealPasswordChanged(@SuppressWarnings(&quot;unused&quot;) Observable observable) {
+<b class="nc">&nbsp;		IndexRange selection = getSelection();</b>
+<b class="nc">&nbsp;		if (isRevealPassword()) {</b>
+<b class="nc">&nbsp;			super.setText(this.getCharacters().toString());</b>
+&nbsp;		} else {
+<b class="nc">&nbsp;			String placeholderText = Strings.repeat(placeholderChar, length);</b>
+<b class="nc">&nbsp;			super.setText(placeholderText);</b>
+&nbsp;		}
+<b class="nc">&nbsp;		selectRange(selection.getStart(), selection.getEnd());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void focusedChanged(@SuppressWarnings(&quot;unused&quot;) Observable observable) {
+<b class="nc">&nbsp;		updateCapsLocked();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void updateCapsLocked() {
+<b class="nc">&nbsp;		capsLocked.set(Platform.isKeyLocked(KeyCode.CAPS).orElse(false));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void updateContainingNonPrintableChars() {
+<b class="nc">&nbsp;		containingNonPrintableChars.set(containsNonPrintableCharacters());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * @return &lt;code&gt;true&lt;/code&gt; if any {@link Character#isISOControl(char) control character} is present in the current value of this password field.
+&nbsp;	 * @implNote runs in O(n)
+&nbsp;	 */
+&nbsp;	boolean containsNonPrintableCharacters() {
+<b class="nc">&nbsp;		for (int i = 0; i &lt; length; i++) {</b>
+<b class="nc">&nbsp;			if (Character.isISOControl(content[i])) {</b>
+<b class="nc">&nbsp;				return true;</b>
+&nbsp;			}
+&nbsp;		}
+<b class="nc">&nbsp;		return false;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Replaces a range of characters with the given text.
+&nbsp;	 * The text will be normalized to &lt;a href=&quot;https://www.unicode.org/glossary/#normalization_form_c&quot;&gt;NFC&lt;/a&gt;.
+&nbsp;	 *
+&nbsp;	 * @param start The starting index in the range, inclusive. This must be &amp;gt;= 0 and &amp;lt; the end.
+&nbsp;	 * @param end The ending index in the range, exclusive. This is one-past the last character to
+&nbsp;	 * delete (consistent with the String manipulation methods). This must be &amp;gt; the start,
+&nbsp;	 * and &amp;lt;= the length of the text.
+&nbsp;	 * @param text The text that is to replace the range. This must not be null.
+&nbsp;	 * @implNote Internally calls {@link PasswordField#replaceText(int, int, String)} with a dummy String for visual purposes.
+&nbsp;	 */
+&nbsp;	@Override
+&nbsp;	public void replaceText(int start, int end, String text) {
+<b class="nc">&nbsp;		String normalizedText = Normalizer.normalize(text, Form.NFC);</b>
+<b class="nc">&nbsp;		int removed = end - start;</b>
+<b class="nc">&nbsp;		int added = normalizedText.length();</b>
+<b class="nc">&nbsp;		int delta = added - removed;</b>
+&nbsp;
+&nbsp;		// ensure sufficient content buffer size
+<b class="nc">&nbsp;		int oldLength = length;</b>
+<b class="nc">&nbsp;		this.length += delta;</b>
+<b class="nc">&nbsp;		growContentIfNeeded();</b>
+&nbsp;
+&nbsp;		// shift existing content
+<b class="nc">&nbsp;		if (delta != 0 &amp;&amp; start &lt; oldLength) {</b>
+<b class="nc">&nbsp;			System.arraycopy(content, end, content, end + delta, oldLength - end);</b>
+&nbsp;		}
+&nbsp;
+&nbsp;		// copy new text to content buffer
+<b class="nc">&nbsp;		normalizedText.getChars(0, normalizedText.length(), content, start);</b>
+&nbsp;
+&nbsp;		// trigger visual hints
+<b class="nc">&nbsp;		updateContainingNonPrintableChars();</b>
+<b class="nc">&nbsp;		if (isRevealPassword()) {</b>
+<b class="nc">&nbsp;			super.replaceText(start, end, text);</b>
+&nbsp;		} else {
+<b class="nc">&nbsp;			String placeholderString = Strings.repeat(placeholderChar, normalizedText.length());</b>
+<b class="nc">&nbsp;			super.replaceText(start, end, placeholderString);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private void growContentIfNeeded() {
+<b class="nc">&nbsp;		if (length &gt; content.length) {</b>
+<b class="nc">&nbsp;			char[] newContent = new char[length + GROW_BUFFER_SIZE];</b>
+<b class="nc">&nbsp;			System.arraycopy(content, 0, newContent, 0, content.length);</b>
+<b class="nc">&nbsp;			wipe(content);</b>
+<b class="nc">&nbsp;			this.content = newContent;</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Creates a CharSequence by wrapping the password characters.
+&nbsp;	 *
+&nbsp;	 * @return A character sequence backed by the SecurePasswordField&#39;s buffer (not a copy).
+&nbsp;	 * @implNote The CharSequence will not copy the backing char[].
+&nbsp;	 * Therefore any mutation to the SecurePasswordField&#39;s content will mutate or eventually swipe the returned CharSequence.
+&nbsp;	 * @implSpec The CharSequence is usually in &lt;a href=&quot;https://www.unicode.org/glossary/#normalization_form_c&quot;&gt;NFC&lt;/a&gt; representation (unless NFD-encoded char[] is set via {@link #setPassword(char[])}).
+&nbsp;	 * @see #wipe()
+&nbsp;	 */
+&nbsp;	@Override
+&nbsp;	public Passphrase getCharacters() {
+<b class="nc">&nbsp;		return new Passphrase(content, 0, length);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Convenience method wrapper for {@link #setPassword(char[])}.
+&nbsp;	 *
+&nbsp;	 * @param password
+&nbsp;	 * @see #setPassword(char[])
+&nbsp;	 */
+&nbsp;	public void setPassword(CharSequence password) {
+<b class="nc">&nbsp;		char[] buf = new char[password.length()];</b>
+<b class="nc">&nbsp;		for (int i = 0; i &lt; password.length(); i++) {</b>
+<b class="nc">&nbsp;			buf[i] = password.charAt(i);</b>
+&nbsp;		}
+<b class="nc">&nbsp;		setPassword(buf);</b>
+<b class="nc">&nbsp;		Arrays.fill(buf, WIPE_CHAR);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Directly sets the content of this password field to a copy of the given password.
+&nbsp;	 * No conversion whatsoever happens. If you want to normalize the unicode representation of the password,
+&nbsp;	 * do it before calling this method.
+&nbsp;	 *
+&nbsp;	 * @param password
+&nbsp;	 */
+&nbsp;	public void setPassword(char[] password) {
+<b class="nc">&nbsp;		wipe();</b>
+<b class="nc">&nbsp;		content = Arrays.copyOf(password, password.length);</b>
+<b class="nc">&nbsp;		length = password.length;</b>
+&nbsp;
+<b class="nc">&nbsp;		String placeholderString = Strings.repeat(placeholderChar, password.length);</b>
+<b class="nc">&nbsp;		setText(placeholderString);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Destroys the stored password by overriding each character with a different character.
+&nbsp;	 */
+&nbsp;	public void wipe() {
+<b class="nc">&nbsp;		wipe(content);</b>
+<b class="nc">&nbsp;		length = 0;</b>
+<b class="nc">&nbsp;		setText(null);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void wipe(char[] buffer) {
+<b class="nc">&nbsp;		Arrays.fill(buffer, WIPE_CHAR);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/* Observable Properties */
+&nbsp;
+&nbsp;	public ReadOnlyBooleanProperty capsLockedProperty() {
+<b class="nc">&nbsp;		return capsLocked;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isCapsLocked() {
+<b class="nc">&nbsp;		return capsLocked.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ReadOnlyBooleanProperty containingNonPrintableCharsProperty() {
+<b class="nc">&nbsp;		return containingNonPrintableChars;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isContainingNonPrintableChars() {
+<b class="nc">&nbsp;		return containingNonPrintableChars.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BooleanProperty revealPasswordProperty() {
+<b class="nc">&nbsp;		return revealPassword;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isRevealPassword() {
+<b class="nc">&nbsp;		return revealPassword.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void setRevealPassword(boolean revealPassword) {
+<b class="nc">&nbsp;		this.revealPassword.set(revealPassword);</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

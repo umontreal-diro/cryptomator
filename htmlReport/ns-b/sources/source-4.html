@@ -1,0 +1,216 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > NewPasswordController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.changepassword</a>
+</div>
+
+<h1>Coverage Summary for Class: NewPasswordController (org.cryptomator.ui.changepassword)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">NewPasswordController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/29)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.changepassword;
+&nbsp;
+&nbsp;import org.cryptomator.common.Passphrase;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;import org.cryptomator.ui.controls.FontAwesome5IconView;
+&nbsp;import org.cryptomator.ui.controls.NiceSecurePasswordField;
+&nbsp;
+&nbsp;import javafx.beans.binding.Bindings;
+&nbsp;import javafx.beans.binding.BooleanBinding;
+&nbsp;import javafx.beans.property.BooleanProperty;
+&nbsp;import javafx.beans.property.IntegerProperty;
+&nbsp;import javafx.beans.property.ReadOnlyBooleanProperty;
+&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+&nbsp;import javafx.beans.property.SimpleIntegerProperty;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.scene.control.Label;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;
+&nbsp;public class NewPasswordController implements FxController {
+&nbsp;
+&nbsp;	private final ResourceBundle resourceBundle;
+&nbsp;	private final PasswordStrengthUtil strengthRater;
+<b class="nc">&nbsp;	private final IntegerProperty passwordStrength = new SimpleIntegerProperty(-1);</b>
+<b class="nc">&nbsp;	private final BooleanProperty goodPassword = new SimpleBooleanProperty();</b>
+&nbsp;
+&nbsp;	public NiceSecurePasswordField passwordField;
+&nbsp;	public NiceSecurePasswordField reenterField;
+&nbsp;	public Label passwordStrengthLabel;
+&nbsp;	public FontAwesome5IconView passwordStrengthCheckmark;
+&nbsp;	public FontAwesome5IconView passwordStrengthWarning;
+&nbsp;	public FontAwesome5IconView passwordStrengthCross;
+&nbsp;	public Label passwordMatchLabel;
+&nbsp;	public FontAwesome5IconView passwordMatchCheckmark;
+&nbsp;	public FontAwesome5IconView passwordMatchCross;
+&nbsp;
+<b class="nc">&nbsp;	public NewPasswordController(ResourceBundle resourceBundle, PasswordStrengthUtil strengthRater) {</b>
+<b class="nc">&nbsp;		this.resourceBundle = resourceBundle;</b>
+<b class="nc">&nbsp;		this.strengthRater = strengthRater;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void initialize() {
+<b class="nc">&nbsp;		passwordStrength.bind(Bindings.createIntegerBinding(() -&gt; strengthRater.computeRate(passwordField.getCharacters()), passwordField.textProperty()));</b>
+&nbsp;
+<b class="nc">&nbsp;		passwordStrengthLabel.graphicProperty().bind(Bindings.createObjectBinding(this::getIconViewForPasswordStrengthLabel, passwordField.textProperty(), passwordStrength));</b>
+<b class="nc">&nbsp;		passwordStrengthLabel.textProperty().bind(passwordStrength.map(strengthRater::getStrengthDescription));</b>
+&nbsp;
+<b class="nc">&nbsp;		BooleanBinding passwordsMatch = Bindings.createBooleanBinding(this::passwordFieldsMatch, passwordField.textProperty(), reenterField.textProperty());</b>
+<b class="nc">&nbsp;		BooleanBinding reenterFieldNotEmpty = reenterField.textProperty().isNotEmpty();</b>
+<b class="nc">&nbsp;		passwordMatchLabel.visibleProperty().bind(reenterFieldNotEmpty);</b>
+<b class="nc">&nbsp;		passwordMatchLabel.graphicProperty().bind(Bindings.when(passwordsMatch.and(reenterFieldNotEmpty)).then(passwordMatchCheckmark).otherwise(passwordMatchCross));</b>
+<b class="nc">&nbsp;		passwordMatchLabel.textProperty().bind(Bindings.when(passwordsMatch.and(reenterFieldNotEmpty)).then(resourceBundle.getString(&quot;newPassword.passwordsMatch&quot;)).otherwise(resourceBundle.getString(&quot;newPassword.passwordsDoNotMatch&quot;)));</b>
+&nbsp;
+<b class="nc">&nbsp;		BooleanBinding sufficientStrength = Bindings.createBooleanBinding(this::sufficientStrength, passwordField.textProperty());</b>
+<b class="nc">&nbsp;		goodPassword.bind(passwordsMatch.and(sufficientStrength));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private FontAwesome5IconView getIconViewForPasswordStrengthLabel() {
+<b class="nc">&nbsp;		if (passwordField.getCharacters().length() == 0) {</b>
+<b class="nc">&nbsp;			return null;</b>
+<b class="nc">&nbsp;		} else if (passwordStrength.intValue() &lt;= -1) {</b>
+<b class="nc">&nbsp;			return passwordStrengthCross;</b>
+<b class="nc">&nbsp;		} else if (passwordStrength.intValue() &lt; 3) {</b>
+<b class="nc">&nbsp;			return passwordStrengthWarning;</b>
+&nbsp;		} else {
+<b class="nc">&nbsp;			return passwordStrengthCheckmark;</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private boolean passwordFieldsMatch() {
+<b class="nc">&nbsp;		return CharSequence.compare(passwordField.getCharacters(), reenterField.getCharacters()) == 0;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private boolean sufficientStrength() {
+<b class="nc">&nbsp;		return strengthRater.fulfillsMinimumRequirements(passwordField.getCharacters());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/* Getter/Setter */
+&nbsp;
+&nbsp;	public ReadOnlyBooleanProperty goodPasswordProperty() {
+<b class="nc">&nbsp;		return goodPassword;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isGoodPassword() {
+<b class="nc">&nbsp;		return goodPassword.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public IntegerProperty passwordStrengthProperty() {
+<b class="nc">&nbsp;		return passwordStrength;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public int getPasswordStrength() {
+<b class="nc">&nbsp;		return passwordStrength.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Passphrase getNewPassword() {
+<b class="nc">&nbsp;		return passwordField.getCharacters();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

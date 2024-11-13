@@ -1,0 +1,262 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > UpdateCheckerModule</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.fxapp</a>
+</div>
+
+<h1>Coverage Summary for Class: UpdateCheckerModule (org.cryptomator.ui.fxapp)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UpdateCheckerModule</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/24)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">UpdateCheckerModule$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">UpdateCheckerModule$1$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/30)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.fxapp;
+&nbsp;
+&nbsp;import dagger.Module;
+&nbsp;import dagger.Provides;
+&nbsp;import org.apache.commons.lang3.SystemUtils;
+&nbsp;import org.cryptomator.common.Environment;
+&nbsp;import org.cryptomator.common.settings.Settings;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import javax.inject.Named;
+&nbsp;import javafx.beans.binding.Bindings;
+&nbsp;import javafx.beans.binding.ObjectBinding;
+&nbsp;import javafx.concurrent.ScheduledService;
+&nbsp;import javafx.concurrent.Task;
+&nbsp;import javafx.util.Duration;
+&nbsp;import java.io.UncheckedIOException;
+&nbsp;import java.net.URI;
+&nbsp;import java.net.http.HttpClient;
+&nbsp;import java.net.http.HttpRequest;
+&nbsp;import java.util.Optional;
+&nbsp;import java.util.concurrent.ExecutorService;
+&nbsp;
+&nbsp;@Module
+<b class="nc">&nbsp;public abstract class UpdateCheckerModule {</b>
+&nbsp;
+<b class="nc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(UpdateCheckerModule.class);</b>
+&nbsp;
+<b class="nc">&nbsp;	private static final URI LATEST_VERSION_URI = URI.create(&quot;https://api.cryptomator.org/desktop/latest-version.json&quot;);</b>
+<b class="nc">&nbsp;	private static final Duration UPDATE_CHECK_INTERVAL = Duration.hours(3);</b>
+<b class="nc">&nbsp;	private static final Duration DISABLED_UPDATE_CHECK_INTERVAL = Duration.hours(100000); // Duration.INDEFINITE leads to overflows...</b>
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@FxApplicationScoped
+&nbsp;	static Optional&lt;HttpClient&gt; provideHttpClient() {
+&nbsp;		try {
+<b class="nc">&nbsp;			return Optional.of(HttpClient.newBuilder() //</b>
+<b class="nc">&nbsp;					.followRedirects(HttpClient.Redirect.NORMAL) // from version 1.6.11 onwards, Cryptomator can follow redirects, in case this URL ever changes</b>
+<b class="nc">&nbsp;					.build());</b>
+<b class="nc">&nbsp;		} catch (UncheckedIOException e) {</b>
+<b class="nc">&nbsp;			LOG.error(&quot;HttpClient for update check cannot be created.&quot;, e);</b>
+<b class="nc">&nbsp;			return Optional.empty();</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@FxApplicationScoped
+&nbsp;	static HttpRequest provideCheckForUpdatesRequest(Environment env) {
+<b class="nc">&nbsp;		String userAgent = String.format(&quot;Cryptomator VersionChecker/%s %s %s (%s)&quot;, //</b>
+<b class="nc">&nbsp;				env.getAppVersion(), //</b>
+&nbsp;				SystemUtils.OS_NAME, //
+&nbsp;				SystemUtils.OS_VERSION, //
+&nbsp;				SystemUtils.OS_ARCH); //
+<b class="nc">&nbsp;		return HttpRequest.newBuilder() //</b>
+<b class="nc">&nbsp;				.uri(LATEST_VERSION_URI) //</b>
+<b class="nc">&nbsp;				.header(&quot;User-Agent&quot;, userAgent) //</b>
+<b class="nc">&nbsp;				.timeout(java.time.Duration.ofSeconds(10))</b>
+<b class="nc">&nbsp;				.build();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@Named(&quot;checkForUpdatesInterval&quot;)
+&nbsp;	@FxApplicationScoped
+&nbsp;	static ObjectBinding&lt;Duration&gt; provideCheckForUpdateInterval(Settings settings) {
+<b class="nc">&nbsp;		return Bindings.when(settings.checkForUpdates).then(UPDATE_CHECK_INTERVAL).otherwise(DISABLED_UPDATE_CHECK_INTERVAL);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@FxApplicationScoped
+&nbsp;	static ScheduledService&lt;String&gt; provideCheckForUpdatesService(ExecutorService executor, Optional&lt;HttpClient&gt; httpClient, HttpRequest checkForUpdatesRequest, @Named(&quot;checkForUpdatesInterval&quot;) ObjectBinding&lt;Duration&gt; period) {
+<b class="nc">&nbsp;		ScheduledService&lt;String&gt; service = new ScheduledService&lt;&gt;() {</b>
+&nbsp;			@Override
+&nbsp;			protected Task&lt;String&gt; createTask() {
+<b class="nc">&nbsp;				if (httpClient.isPresent()) {</b>
+<b class="nc">&nbsp;					return new UpdateCheckerTask(httpClient.get(), checkForUpdatesRequest);</b>
+&nbsp;				} else {
+<b class="nc">&nbsp;					return new Task&lt;&gt;() {</b>
+&nbsp;						@Override
+&nbsp;						protected String call() {
+<b class="nc">&nbsp;							throw new NullPointerException(&quot;No HttpClient present.&quot;);</b>
+&nbsp;						}
+&nbsp;					};
+&nbsp;				}
+&nbsp;			}
+&nbsp;		};
+<b class="nc">&nbsp;		service.setOnFailed(event -&gt; LOG.error(&quot;Failed to execute update service&quot;, service.getException()));</b>
+<b class="nc">&nbsp;		service.setExecutor(executor);</b>
+<b class="nc">&nbsp;		service.periodProperty().bind(period);</b>
+<b class="nc">&nbsp;		return service;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

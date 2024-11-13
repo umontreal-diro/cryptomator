@@ -1,0 +1,280 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > WeakBindings</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.common</a>
+</div>
+
+<h1>Coverage Summary for Class: WeakBindings (org.cryptomator.ui.common)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">WeakBindings</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">WeakBindings$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">WeakBindings$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">WeakBindings$3</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">WeakBindings$4</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/17)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.common;
+&nbsp;
+&nbsp;import javafx.beans.binding.DoubleBinding;
+&nbsp;import javafx.beans.binding.IntegerBinding;
+&nbsp;import javafx.beans.binding.LongBinding;
+&nbsp;import javafx.beans.binding.StringBinding;
+&nbsp;import javafx.beans.value.ObservableObjectValue;
+&nbsp;import javafx.beans.value.ObservableValue;
+&nbsp;
+&nbsp;
+&nbsp;/**
+&nbsp; * Contains a variety of method to create {@link java.util.function.Function#identity() identity}-bindings
+&nbsp; * to facilitate the Weak References used internally in JavaFX&#39;s Bindings.
+&nbsp; */
+<b class="nc">&nbsp;public final class WeakBindings {</b>
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Create a new StringBinding that listens to changes from the given observable without being strongly referenced by it.
+&nbsp;	 *
+&nbsp;	 * @param observable The observable
+&nbsp;	 * @return a StringBinding weakly referenced from the given observable
+&nbsp;	 */
+&nbsp;	public static StringBinding bindString(ObservableObjectValue&lt;String&gt; observable) {
+<b class="nc">&nbsp;		return new StringBinding() {</b>
+&nbsp;			{
+<b class="nc">&nbsp;				bind(observable);</b>
+&nbsp;			}
+&nbsp;
+&nbsp;			@Override
+&nbsp;			protected String computeValue() {
+<b class="nc">&nbsp;				return observable.get();</b>
+&nbsp;			}
+&nbsp;		};
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Create a new LongBinding that listens to changes from the given observable without being strongly referenced by it.
+&nbsp;	 *
+&nbsp;	 * @param observable The observable
+&nbsp;	 * @return a LongBinding weakly referenced from the given observable
+&nbsp;	 */
+&nbsp;	public static LongBinding bindLong(ObservableValue&lt;Number&gt; observable) {
+<b class="nc">&nbsp;		return new LongBinding() {</b>
+&nbsp;			{
+<b class="nc">&nbsp;				bind(observable);</b>
+&nbsp;			}
+&nbsp;
+&nbsp;			@Override
+&nbsp;			protected long computeValue() {
+<b class="nc">&nbsp;				return observable.getValue().longValue();</b>
+&nbsp;			}
+&nbsp;		};
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Create a new DoubleBinding that listens to changes from the given observable without being strongly referenced by it.
+&nbsp;	 *
+&nbsp;	 * @param observable The observable
+&nbsp;	 * @return a DoubleBinding weakly referenced from the given observable
+&nbsp;	 */
+&nbsp;	public static DoubleBinding bindDouble(ObservableValue&lt;Number&gt; observable) {
+<b class="nc">&nbsp;		return new DoubleBinding() {</b>
+&nbsp;			{
+<b class="nc">&nbsp;				bind(observable);</b>
+&nbsp;			}
+&nbsp;
+&nbsp;			@Override
+&nbsp;			protected double computeValue() {
+<b class="nc">&nbsp;				return observable.getValue().doubleValue();</b>
+&nbsp;			}
+&nbsp;		};
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Create a new IntegerBinding that listens to changes from the given observable without being strongly referenced by it.
+&nbsp;	 *
+&nbsp;	 * @param observable The observable
+&nbsp;	 * @return a IntegerBinding weakly referenced from the given observable
+&nbsp;	 */
+&nbsp;	public static IntegerBinding bindInteger(ObservableValue&lt;Number&gt; observable) {
+<b class="nc">&nbsp;		return new IntegerBinding() {</b>
+&nbsp;			{
+<b class="nc">&nbsp;				bind(observable);</b>
+&nbsp;			}
+&nbsp;
+&nbsp;			@Override
+&nbsp;			protected int computeValue() {
+<b class="nc">&nbsp;				return observable.getValue().intValue();</b>
+&nbsp;			}
+&nbsp;		};
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

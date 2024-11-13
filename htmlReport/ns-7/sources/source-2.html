@@ -1,0 +1,134 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > HandleLaunchArgsMessage</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ipc</a>
+</div>
+
+<h1>Coverage Summary for Class: HandleLaunchArgsMessage (org.cryptomator.ipc)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">HandleLaunchArgsMessage</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (3/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    57,1%
+  </span>
+  <span class="absValue">
+    (4/7)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ipc;
+&nbsp;
+&nbsp;import com.google.common.base.Joiner;
+&nbsp;import com.google.common.base.Splitter;
+&nbsp;
+&nbsp;import java.nio.ByteBuffer;
+&nbsp;import java.nio.charset.StandardCharsets;
+&nbsp;import java.util.List;
+&nbsp;
+<b class="fc">&nbsp;record HandleLaunchArgsMessage(List&lt;String&gt; args) implements IpcMessage {</b>
+&nbsp;
+&nbsp;	private static final char DELIMITER = &#39;\n&#39;;
+&nbsp;
+&nbsp;	public static HandleLaunchArgsMessage decode(ByteBuffer encoded) {
+<b class="nc">&nbsp;		var str = StandardCharsets.UTF_8.decode(encoded).toString();</b>
+<b class="nc">&nbsp;		var args = Splitter.on(DELIMITER).omitEmptyStrings().splitToList(str);</b>
+<b class="nc">&nbsp;		return new HandleLaunchArgsMessage(args);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public MessageType getMessageType() {
+<b class="fc">&nbsp;		return MessageType.HANDLE_LAUNCH_ARGS;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public ByteBuffer encodePayload() {
+<b class="fc">&nbsp;		var str = Joiner.on(DELIMITER).join(args);</b>
+<b class="fc">&nbsp;		return StandardCharsets.UTF_8.encode(str);</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

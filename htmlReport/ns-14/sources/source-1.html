@@ -1,0 +1,144 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > KeyLoadingModule</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.keyloading</a>
+</div>
+
+<h1>Coverage Summary for Class: KeyLoadingModule (org.cryptomator.ui.keyloading)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">KeyLoadingModule</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.keyloading;
+&nbsp;
+&nbsp;import dagger.Module;
+&nbsp;import dagger.Provides;
+&nbsp;import org.cryptomator.common.vaults.Vault;
+&nbsp;import org.cryptomator.ui.common.DefaultSceneFactory;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;import org.cryptomator.ui.common.FxmlLoaderFactory;
+&nbsp;import org.cryptomator.ui.keyloading.hub.HubKeyLoadingModule;
+&nbsp;import org.cryptomator.ui.keyloading.masterkeyfile.MasterkeyFileLoadingModule;
+&nbsp;
+&nbsp;import javax.inject.Provider;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;
+&nbsp;@Module(includes = {MasterkeyFileLoadingModule.class, HubKeyLoadingModule.class})
+<b class="nc">&nbsp;abstract class KeyLoadingModule {</b>
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@KeyLoading
+&nbsp;	@KeyLoadingScoped
+&nbsp;	static FxmlLoaderFactory provideFxmlLoaderFactory(Map&lt;Class&lt;? extends FxController&gt;, Provider&lt;FxController&gt;&gt; factories, DefaultSceneFactory sceneFactory, ResourceBundle resourceBundle) {
+<b class="nc">&nbsp;		return new FxmlLoaderFactory(factories, sceneFactory, resourceBundle);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@KeyLoading
+&nbsp;	@KeyLoadingScoped
+&nbsp;	static KeyLoadingStrategy provideKeyLoadingStrategy(@KeyLoading Vault vault, Map&lt;String, Provider&lt;KeyLoadingStrategy&gt;&gt; strategies) {
+&nbsp;		try {
+<b class="nc">&nbsp;			String scheme = vault.getVaultConfigCache().get().getKeyId().getScheme();</b>
+<b class="nc">&nbsp;			var fallback = KeyLoadingStrategy.failed(new IllegalArgumentException(&quot;Unsupported key id &quot; + scheme));</b>
+<b class="nc">&nbsp;			return strategies.getOrDefault(scheme, () -&gt; fallback).get();</b>
+<b class="nc">&nbsp;		} catch (IOException e) {</b>
+<b class="nc">&nbsp;			return KeyLoadingStrategy.failed(e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

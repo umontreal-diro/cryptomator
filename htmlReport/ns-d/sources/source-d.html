@@ -1,0 +1,207 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ThroughputLabel</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.controls</a>
+</div>
+
+<h1>Coverage Summary for Class: ThroughputLabel (org.cryptomator.ui.controls)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ThroughputLabel</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/27)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.controls;
+&nbsp;
+&nbsp;import javafx.beans.binding.Bindings;
+&nbsp;import javafx.beans.binding.StringBinding;
+&nbsp;import javafx.beans.property.LongProperty;
+&nbsp;import javafx.beans.property.SimpleLongProperty;
+&nbsp;import javafx.beans.property.SimpleStringProperty;
+&nbsp;import javafx.beans.property.StringProperty;
+&nbsp;import javafx.scene.control.Label;
+&nbsp;
+&nbsp;public class ThroughputLabel extends Label {
+&nbsp;
+&nbsp;	private static final long KIBS_THRESHOLD = 1l &lt;&lt; 7; // 0.128 kiB/s
+&nbsp;	private static final long MIBS_THRESHOLD = 1l &lt;&lt; 19; // 0.512 MiB/s
+&nbsp;
+<b class="nc">&nbsp;	private final StringProperty idleFormat = new SimpleStringProperty(&quot;-&quot;);</b>
+<b class="nc">&nbsp;	private final StringProperty kibsFormat = new SimpleStringProperty(&quot;%.3f&quot;);</b>
+<b class="nc">&nbsp;	private final StringProperty mibsFormat = new SimpleStringProperty(&quot;%.3f&quot;);</b>
+<b class="nc">&nbsp;	private final LongProperty bytesPerSecond = new SimpleLongProperty();</b>
+&nbsp;
+<b class="nc">&nbsp;	public ThroughputLabel() {</b>
+<b class="nc">&nbsp;		textProperty().bind(createStringBinding());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	protected StringBinding createStringBinding() {
+<b class="nc">&nbsp;		return Bindings.createStringBinding(this::updateText, kibsFormat, mibsFormat, bytesPerSecond);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private String updateText() {
+<b class="nc">&nbsp;		long bps = bytesPerSecond.get();</b>
+<b class="nc">&nbsp;		if (bps &gt; MIBS_THRESHOLD) {</b>
+<b class="nc">&nbsp;			double mibs = ((double) bps) / 1024.0 / 1024.0;</b>
+<b class="nc">&nbsp;			return String.format(mibsFormat.get(), mibs);</b>
+<b class="nc">&nbsp;		} else if (bps &gt; KIBS_THRESHOLD) {</b>
+<b class="nc">&nbsp;			double kibs = ((double) bps) / 1024.0;</b>
+<b class="nc">&nbsp;			return String.format(kibsFormat.get(), kibs);</b>
+&nbsp;		} else {
+<b class="nc">&nbsp;			return String.format(idleFormat.get(), bps);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/* Observables */
+&nbsp;
+&nbsp;	public StringProperty idleFormatProperty() {
+<b class="nc">&nbsp;		return idleFormat;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public String getIdleFormat() {
+<b class="nc">&nbsp;		return idleFormat.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void setIdleFormat(String idleFormat) {
+<b class="nc">&nbsp;		this.idleFormat.set(idleFormat);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public StringProperty kibsFormatProperty() {
+<b class="nc">&nbsp;		return kibsFormat;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public String getKibsFormat() {
+<b class="nc">&nbsp;		return kibsFormat.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void setKibsFormat(String kibsFormat) {
+<b class="nc">&nbsp;		this.kibsFormat.set(kibsFormat);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public StringProperty mibsFormatProperty() {
+<b class="nc">&nbsp;		return mibsFormat;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public String getMibsFormat() {
+<b class="nc">&nbsp;		return mibsFormat.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void setMibsFormat(String mibsFormat) {
+<b class="nc">&nbsp;		this.mibsFormat.set(mibsFormat);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public LongProperty bytesPerSecondProperty() {
+<b class="nc">&nbsp;		return bytesPerSecond;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public long getBytesPerSecond() {
+<b class="nc">&nbsp;		return bytesPerSecond.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void setBytesPerSecond(long bytesPerSecond) {
+<b class="nc">&nbsp;		this.bytesPerSecond.set(bytesPerSecond);</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

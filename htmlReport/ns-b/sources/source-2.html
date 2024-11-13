@@ -1,0 +1,231 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ChangePasswordController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.changepassword</a>
+</div>
+
+<h1>Coverage Summary for Class: ChangePasswordController (org.cryptomator.ui.changepassword)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ChangePasswordController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/39)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.changepassword;
+&nbsp;
+&nbsp;import org.cryptomator.common.keychain.KeychainManager;
+&nbsp;import org.cryptomator.common.vaults.Vault;
+&nbsp;import org.cryptomator.cryptofs.common.BackupHelper;
+&nbsp;import org.cryptomator.cryptolib.api.CryptoException;
+&nbsp;import org.cryptomator.cryptolib.api.InvalidPassphraseException;
+&nbsp;import org.cryptomator.cryptolib.common.MasterkeyFileAccess;
+&nbsp;import org.cryptomator.integrations.keychain.KeychainAccessException;
+&nbsp;import org.cryptomator.ui.common.Animations;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;import org.cryptomator.ui.controls.NiceSecurePasswordField;
+&nbsp;import org.cryptomator.ui.fxapp.FxApplicationWindows;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import javax.inject.Inject;
+&nbsp;import javafx.beans.binding.BooleanBinding;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.scene.control.Button;
+&nbsp;import javafx.scene.control.CheckBox;
+&nbsp;import javafx.stage.Stage;
+&nbsp;import java.io.IOException;
+&nbsp;import java.nio.file.Files;
+&nbsp;import java.nio.file.Path;
+&nbsp;import java.nio.file.StandardCopyOption;
+&nbsp;import java.nio.file.StandardOpenOption;
+&nbsp;
+&nbsp;import static org.cryptomator.common.Constants.MASTERKEY_BACKUP_SUFFIX;
+&nbsp;import static org.cryptomator.common.Constants.MASTERKEY_FILENAME;
+&nbsp;
+&nbsp;@ChangePasswordScoped
+&nbsp;public class ChangePasswordController implements FxController {
+&nbsp;
+<b class="nc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(ChangePasswordController.class);</b>
+&nbsp;
+&nbsp;	private final Stage window;
+&nbsp;	private final Vault vault;
+&nbsp;	private final FxApplicationWindows appWindows;
+&nbsp;	private final KeychainManager keychain;
+&nbsp;	private final MasterkeyFileAccess masterkeyFileAccess;
+&nbsp;
+&nbsp;	public NiceSecurePasswordField oldPasswordField;
+&nbsp;	public CheckBox finalConfirmationCheckbox;
+&nbsp;	public Button finishButton;
+&nbsp;	public NewPasswordController newPasswordController;
+&nbsp;
+&nbsp;	@Inject
+<b class="nc">&nbsp;	public ChangePasswordController(@ChangePasswordWindow Stage window, @ChangePasswordWindow Vault vault, FxApplicationWindows appWindows, KeychainManager keychain, MasterkeyFileAccess masterkeyFileAccess) {</b>
+<b class="nc">&nbsp;		this.window = window;</b>
+<b class="nc">&nbsp;		this.vault = vault;</b>
+<b class="nc">&nbsp;		this.appWindows = appWindows;</b>
+<b class="nc">&nbsp;		this.keychain = keychain;</b>
+<b class="nc">&nbsp;		this.masterkeyFileAccess = masterkeyFileAccess;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void initialize() {
+<b class="nc">&nbsp;		BooleanBinding checkboxNotConfirmed = finalConfirmationCheckbox.selectedProperty().not();</b>
+<b class="nc">&nbsp;		BooleanBinding oldPasswordFieldEmpty = oldPasswordField.textProperty().isEmpty();</b>
+<b class="nc">&nbsp;		finishButton.disableProperty().bind(checkboxNotConfirmed.or(oldPasswordFieldEmpty).or(newPasswordController.goodPasswordProperty().not()));</b>
+<b class="nc">&nbsp;		window.setOnHiding(event -&gt; {</b>
+<b class="nc">&nbsp;			oldPasswordField.wipe();</b>
+<b class="nc">&nbsp;			newPasswordController.passwordField.wipe();</b>
+<b class="nc">&nbsp;			newPasswordController.reenterField.wipe();</b>
+&nbsp;		});
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void cancel() {
+<b class="nc">&nbsp;		window.close();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void finish() {
+&nbsp;		try {
+<b class="nc">&nbsp;			CharSequence oldPassphrase = oldPasswordField.getCharacters();</b>
+<b class="nc">&nbsp;			CharSequence newPassphrase = newPasswordController.passwordField.getCharacters();</b>
+<b class="nc">&nbsp;			Path masterkeyPath = vault.getPath().resolve(MASTERKEY_FILENAME);</b>
+<b class="nc">&nbsp;			byte[] oldMasterkeyBytes = Files.readAllBytes(masterkeyPath);</b>
+<b class="nc">&nbsp;			byte[] newMasterkeyBytes = masterkeyFileAccess.changePassphrase(oldMasterkeyBytes, oldPassphrase, newPassphrase);</b>
+<b class="nc">&nbsp;			Path backupKeyPath = vault.getPath().resolve(MASTERKEY_FILENAME + BackupHelper.generateFileIdSuffix(oldMasterkeyBytes) + MASTERKEY_BACKUP_SUFFIX);</b>
+<b class="nc">&nbsp;			Files.move(masterkeyPath, backupKeyPath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);</b>
+<b class="nc">&nbsp;			Files.write(masterkeyPath, newMasterkeyBytes, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);</b>
+<b class="nc">&nbsp;			LOG.info(&quot;Successfully changed password for {}&quot;, vault.getDisplayName());</b>
+<b class="nc">&nbsp;			updatePasswordInSystemkeychain();</b>
+<b class="nc">&nbsp;			window.close();</b>
+<b class="nc">&nbsp;		} catch (InvalidPassphraseException e) {</b>
+<b class="nc">&nbsp;			Animations.createShakeWindowAnimation(window).play();</b>
+<b class="nc">&nbsp;			oldPasswordField.selectAll();</b>
+<b class="nc">&nbsp;			oldPasswordField.requestFocus();</b>
+<b class="nc">&nbsp;		} catch (IOException | CryptoException e) {</b>
+<b class="nc">&nbsp;			LOG.error(&quot;Password change failed. Unable to perform operation.&quot;, e);</b>
+<b class="nc">&nbsp;			appWindows.showErrorWindow(e, window, window.getScene());</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private void updatePasswordInSystemkeychain() {
+<b class="nc">&nbsp;		if (keychain.isSupported() &amp;&amp; !keychain.isLocked()) {</b>
+&nbsp;			try {
+<b class="nc">&nbsp;				keychain.changePassphrase(vault.getId(), vault.getDisplayName(), newPasswordController.passwordField.getCharacters());</b>
+<b class="nc">&nbsp;				LOG.info(&quot;Successfully updated password in system keychain for {}&quot;, vault.getDisplayName());</b>
+<b class="nc">&nbsp;			} catch (KeychainAccessException e) {</b>
+<b class="nc">&nbsp;				LOG.error(&quot;Failed to update password in system keychain.&quot;, e);</b>
+&nbsp;			}
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/* Getter/Setter */
+&nbsp;
+&nbsp;	public Vault getVault() {
+<b class="nc">&nbsp;		return vault;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

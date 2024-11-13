@@ -1,0 +1,162 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ErrorModule</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.error</a>
+</div>
+
+<h1>Coverage Summary for Class: ErrorModule (org.cryptomator.ui.error)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ErrorModule</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.error;
+&nbsp;
+&nbsp;import dagger.Binds;
+&nbsp;import dagger.Module;
+&nbsp;import dagger.Provides;
+&nbsp;import dagger.multibindings.IntoMap;
+&nbsp;import org.cryptomator.common.ErrorCode;
+&nbsp;import org.cryptomator.ui.common.DefaultSceneFactory;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;import org.cryptomator.ui.common.FxControllerKey;
+&nbsp;import org.cryptomator.ui.common.FxmlFile;
+&nbsp;import org.cryptomator.ui.common.FxmlLoaderFactory;
+&nbsp;import org.cryptomator.ui.common.FxmlScene;
+&nbsp;
+&nbsp;import javax.inject.Named;
+&nbsp;import javax.inject.Provider;
+&nbsp;import javafx.scene.Scene;
+&nbsp;import java.io.ByteArrayOutputStream;
+&nbsp;import java.io.PrintStream;
+&nbsp;import java.nio.charset.StandardCharsets;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;
+&nbsp;@Module
+<b class="nc">&nbsp;abstract class ErrorModule {</b>
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	static FxmlLoaderFactory provideFxmlLoaderFactory(Map&lt;Class&lt;? extends FxController&gt;, Provider&lt;FxController&gt;&gt; factories, DefaultSceneFactory sceneFactory, ResourceBundle resourceBundle) {
+<b class="nc">&nbsp;		return new FxmlLoaderFactory(factories, sceneFactory, resourceBundle);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@Named(&quot;stackTrace&quot;)
+&nbsp;	static String provideStackTrace(Throwable cause) {
+&nbsp;		// TODO deduplicate VaultDetailUnknownErrorController.java
+<b class="nc">&nbsp;		ByteArrayOutputStream baos = new ByteArrayOutputStream();</b>
+<b class="nc">&nbsp;		cause.printStackTrace(new PrintStream(baos));</b>
+<b class="nc">&nbsp;		return baos.toString(StandardCharsets.UTF_8);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	static ErrorCode provideErrorCode(Throwable cause) {
+<b class="nc">&nbsp;		return ErrorCode.of(cause);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(ErrorController.class)
+&nbsp;	abstract FxController bindErrorController(ErrorController controller);
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@FxmlScene(FxmlFile.ERROR)
+&nbsp;	static Scene provideErrorScene(FxmlLoaderFactory fxmlLoaders) {
+<b class="nc">&nbsp;		return fxmlLoaders.createScene(FxmlFile.ERROR);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

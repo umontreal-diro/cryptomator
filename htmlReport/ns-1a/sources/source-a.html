@@ -1,0 +1,316 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > VolumePreferencesController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.preferences</a>
+</div>
+
+<h1>Coverage Summary for Class: VolumePreferencesController (org.cryptomator.ui.preferences)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">VolumePreferencesController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/40)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">VolumePreferencesController$MountServiceConverter</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/45)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.preferences;
+&nbsp;
+&nbsp;import dagger.Lazy;
+&nbsp;import org.cryptomator.common.ObservableUtil;
+&nbsp;import org.cryptomator.common.settings.Settings;
+&nbsp;import org.cryptomator.integrations.mount.MountCapability;
+&nbsp;import org.cryptomator.integrations.mount.MountService;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;
+&nbsp;import javax.inject.Inject;
+&nbsp;import javafx.application.Application;
+&nbsp;import javafx.beans.binding.Bindings;
+&nbsp;import javafx.beans.value.ObservableValue;
+&nbsp;import javafx.scene.control.Button;
+&nbsp;import javafx.scene.control.ChoiceBox;
+&nbsp;import javafx.scene.control.TextField;
+&nbsp;import javafx.util.StringConverter;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;
+&nbsp;@PreferencesScoped
+&nbsp;public class VolumePreferencesController implements FxController {
+&nbsp;
+&nbsp;	public static final String DOCS_MOUNTING_URL = &quot;https://docs.cryptomator.org/en/1.7/desktop/volume-type/&quot;;
+&nbsp;	public static final int MIN_PORT = 1024;
+&nbsp;	public static final int MAX_PORT = 65535;
+&nbsp;
+&nbsp;	private final Settings settings;
+&nbsp;	private final ObservableValue&lt;MountService&gt; selectedMountService;
+&nbsp;	private final ResourceBundle resourceBundle;
+&nbsp;	private final ObservableValue&lt;Boolean&gt; loopbackPortSupported;
+&nbsp;	private final ObservableValue&lt;Boolean&gt; mountToDirSupported;
+&nbsp;	private final ObservableValue&lt;Boolean&gt; mountToDriveLetterSupported;
+&nbsp;	private final ObservableValue&lt;Boolean&gt; mountFlagsSupported;
+&nbsp;	private final ObservableValue&lt;Boolean&gt; readonlySupported;
+&nbsp;	private final Lazy&lt;Application&gt; application;
+&nbsp;	private final List&lt;MountService&gt; mountProviders;
+&nbsp;	public ChoiceBox&lt;MountService&gt; volumeTypeChoiceBox;
+&nbsp;	public TextField loopbackPortField;
+&nbsp;	public Button loopbackPortApplyButton;
+&nbsp;
+&nbsp;	@Inject
+&nbsp;	VolumePreferencesController(Settings settings, //
+&nbsp;								Lazy&lt;Application&gt; application, //
+&nbsp;								List&lt;MountService&gt; mountProviders, //
+<b class="nc">&nbsp;								ResourceBundle resourceBundle) {</b>
+<b class="nc">&nbsp;		this.settings = settings;</b>
+<b class="nc">&nbsp;		this.application = application;</b>
+<b class="nc">&nbsp;		this.mountProviders = mountProviders;</b>
+<b class="nc">&nbsp;		this.resourceBundle = resourceBundle;</b>
+&nbsp;
+<b class="nc">&nbsp;		var fallbackProvider = mountProviders.stream().findFirst().orElse(null);</b>
+<b class="nc">&nbsp;		this.selectedMountService = ObservableUtil.mapWithDefault(settings.mountService, serviceName -&gt; mountProviders.stream().filter(s -&gt; s.getClass().getName().equals(serviceName)).findFirst().orElse(fallbackProvider), fallbackProvider);</b>
+<b class="nc">&nbsp;		this.loopbackPortSupported = selectedMountService.map(s -&gt; s.hasCapability(MountCapability.LOOPBACK_PORT));</b>
+<b class="nc">&nbsp;		this.mountToDirSupported = selectedMountService.map(s -&gt; s.hasCapability(MountCapability.MOUNT_WITHIN_EXISTING_PARENT) || s.hasCapability(MountCapability.MOUNT_TO_EXISTING_DIR));</b>
+<b class="nc">&nbsp;		this.mountToDriveLetterSupported = selectedMountService.map(s -&gt; s.hasCapability(MountCapability.MOUNT_AS_DRIVE_LETTER));</b>
+<b class="nc">&nbsp;		this.mountFlagsSupported = selectedMountService.map(s -&gt; s.hasCapability(MountCapability.MOUNT_FLAGS));</b>
+<b class="nc">&nbsp;		this.readonlySupported = selectedMountService.map(s -&gt; s.hasCapability(MountCapability.READ_ONLY));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void initialize() {
+<b class="nc">&nbsp;		volumeTypeChoiceBox.getItems().add(null);</b>
+<b class="nc">&nbsp;		volumeTypeChoiceBox.getItems().addAll(mountProviders);</b>
+<b class="nc">&nbsp;		volumeTypeChoiceBox.setConverter(new MountServiceConverter());</b>
+<b class="nc">&nbsp;		boolean autoSelected = settings.mountService.get() == null;</b>
+<b class="nc">&nbsp;		volumeTypeChoiceBox.getSelectionModel().select(autoSelected ? null : selectedMountService.getValue());</b>
+<b class="nc">&nbsp;		volumeTypeChoiceBox.valueProperty().addListener((observableValue, oldProvider, newProvider) -&gt; {</b>
+<b class="nc">&nbsp;			var toSet = Optional.ofNullable(newProvider).map(nP -&gt; nP.getClass().getName()).orElse(null);</b>
+<b class="nc">&nbsp;			settings.mountService.set(toSet);</b>
+&nbsp;		});
+&nbsp;
+<b class="nc">&nbsp;		loopbackPortField.setText(String.valueOf(settings.port.get()));</b>
+<b class="nc">&nbsp;		loopbackPortApplyButton.visibleProperty().bind(settings.port.asString().isNotEqualTo(loopbackPortField.textProperty()));</b>
+<b class="nc">&nbsp;		loopbackPortApplyButton.disableProperty().bind(Bindings.createBooleanBinding(this::validateLoopbackPort, loopbackPortField.textProperty()).not());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private boolean validateLoopbackPort() {
+&nbsp;		try {
+<b class="nc">&nbsp;			int port = Integer.parseInt(loopbackPortField.getText());</b>
+<b class="nc">&nbsp;			return port == 0 // choose port automatically</b>
+&nbsp;					|| port &gt;= MIN_PORT &amp;&amp; port &lt;= MAX_PORT; // port within range
+<b class="nc">&nbsp;		} catch (NumberFormatException e) {</b>
+<b class="nc">&nbsp;			return false;</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	public void doChangeLoopbackPort() {
+<b class="nc">&nbsp;		if (validateLoopbackPort()) {</b>
+<b class="nc">&nbsp;			settings.port.set(Integer.parseInt(loopbackPortField.getText()));</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/* Property Getters */
+&nbsp;
+&nbsp;	public ObservableValue&lt;Boolean&gt; loopbackPortSupportedProperty() {
+<b class="nc">&nbsp;		return loopbackPortSupported;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isLoopbackPortSupported() {
+<b class="nc">&nbsp;		return loopbackPortSupported.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObservableValue&lt;Boolean&gt; readonlySupportedProperty() {
+<b class="nc">&nbsp;		return readonlySupported;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isReadonlySupported() {
+<b class="nc">&nbsp;		return readonlySupported.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObservableValue&lt;Boolean&gt; mountToDirSupportedProperty() {
+<b class="nc">&nbsp;		return mountToDirSupported;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isMountToDirSupported() {
+<b class="nc">&nbsp;		return mountToDirSupported.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObservableValue&lt;Boolean&gt; mountToDriveLetterSupportedProperty() {
+<b class="nc">&nbsp;		return mountToDriveLetterSupported;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isMountToDriveLetterSupported() {
+<b class="nc">&nbsp;		return mountToDriveLetterSupported.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObservableValue&lt;Boolean&gt; mountFlagsSupportedProperty() {
+<b class="nc">&nbsp;		return mountFlagsSupported;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isMountFlagsSupported() {
+<b class="nc">&nbsp;		return mountFlagsSupported.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/* Helpers */
+&nbsp;
+<b class="nc">&nbsp;	private class MountServiceConverter extends StringConverter&lt;MountService&gt; {</b>
+&nbsp;
+&nbsp;		@Override
+&nbsp;		public String toString(MountService provider) {
+<b class="nc">&nbsp;			if (provider == null) {</b>
+<b class="nc">&nbsp;				return resourceBundle.getString(&quot;preferences.volume.type.automatic&quot;);</b>
+&nbsp;			} else {
+<b class="nc">&nbsp;				return provider.displayName();</b>
+&nbsp;			}
+&nbsp;		}
+&nbsp;
+&nbsp;		@Override
+&nbsp;		public MountService fromString(String string) {
+<b class="nc">&nbsp;			throw new UnsupportedOperationException();</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	public void openDocs() {
+<b class="nc">&nbsp;		application.get().getHostServices().showDocument(DOCS_MOUNTING_URL);</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

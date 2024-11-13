@@ -1,0 +1,271 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AwtTrayMenuController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.traymenu</a>
+</div>
+
+<h1>Coverage Summary for Class: AwtTrayMenuController (org.cryptomator.ui.traymenu)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AwtTrayMenuController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/37)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">AwtTrayMenuController$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/39)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.traymenu;
+&nbsp;
+&nbsp;import com.google.common.base.Preconditions;
+&nbsp;import org.apache.commons.lang3.SystemUtils;
+&nbsp;import org.cryptomator.integrations.common.CheckAvailability;
+&nbsp;import org.cryptomator.integrations.common.Priority;
+&nbsp;import org.cryptomator.integrations.tray.ActionItem;
+&nbsp;import org.cryptomator.integrations.tray.SeparatorItem;
+&nbsp;import org.cryptomator.integrations.tray.SubMenuItem;
+&nbsp;import org.cryptomator.integrations.tray.TrayIconLoader;
+&nbsp;import org.cryptomator.integrations.tray.TrayMenuController;
+&nbsp;import org.cryptomator.integrations.tray.TrayMenuException;
+&nbsp;import org.cryptomator.integrations.tray.TrayMenuItem;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import java.awt.AWTException;
+&nbsp;import java.awt.Image;
+&nbsp;import java.awt.Menu;
+&nbsp;import java.awt.MenuItem;
+&nbsp;import java.awt.PopupMenu;
+&nbsp;import java.awt.SystemTray;
+&nbsp;import java.awt.Toolkit;
+&nbsp;import java.awt.TrayIcon;
+&nbsp;import java.awt.event.MouseAdapter;
+&nbsp;import java.awt.event.MouseEvent;
+&nbsp;import java.util.List;
+&nbsp;import java.util.function.Consumer;
+&nbsp;
+&nbsp;/**
+&nbsp; * Fallback tray icon implementation using AWT. This will only be used if no better implementation is found.
+&nbsp; * @see &lt;a href=&quot;https://github.com/cryptomator/integrations-linux/blob/33f9a4685b781b55fcce399b8618818bfc08cbdf/src/main/java/org/cryptomator/linux/tray/AppindicatorTrayMenuController.java&quot;&gt;preferred AppIndicator-based implementation used on Linux&lt;/a&gt;
+&nbsp; */
+&nbsp;@CheckAvailability
+&nbsp;@Priority(Priority.FALLBACK)
+<b class="nc">&nbsp;public class AwtTrayMenuController implements TrayMenuController {</b>
+&nbsp;
+<b class="nc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(AwtTrayMenuController.class);</b>
+&nbsp;
+<b class="nc">&nbsp;	private final PopupMenu menu = new PopupMenu();</b>
+&nbsp;	private TrayIcon trayIcon;
+&nbsp;	private Image image;
+&nbsp;
+&nbsp;	@CheckAvailability
+&nbsp;	public static boolean isAvailable() {
+<b class="nc">&nbsp;		return SystemTray.isSupported();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void showTrayIcon(Consumer&lt;TrayIconLoader&gt; iconLoader, Runnable defaultAction, String tooltip) throws TrayMenuException {
+<b class="nc">&nbsp;		TrayIconLoader.PngData callback = this::showTrayIconWithPngData;</b>
+<b class="nc">&nbsp;		iconLoader.accept(callback);</b>
+<b class="nc">&nbsp;		trayIcon = new TrayIcon(image, tooltip, menu);</b>
+&nbsp;
+<b class="nc">&nbsp;		trayIcon.setImageAutoSize(true);</b>
+<b class="nc">&nbsp;		if (SystemUtils.IS_OS_WINDOWS) {</b>
+<b class="nc">&nbsp;			trayIcon.addActionListener(evt -&gt; defaultAction.run());</b>
+&nbsp;		}
+&nbsp;
+&nbsp;		try {
+<b class="nc">&nbsp;			SystemTray.getSystemTray().add(trayIcon);</b>
+<b class="nc">&nbsp;			LOG.debug(&quot;initialized tray icon&quot;);</b>
+<b class="nc">&nbsp;		} catch (AWTException e) {</b>
+<b class="nc">&nbsp;			throw new TrayMenuException(&quot;Failed to add icon to system tray.&quot;, e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private void showTrayIconWithPngData(byte[] imageData) {
+<b class="nc">&nbsp;		image = Toolkit.getDefaultToolkit().createImage(imageData);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void updateTrayIcon(Consumer&lt;TrayIconLoader&gt; iconLoader) {
+<b class="nc">&nbsp;		TrayIconLoader.PngData callback = this::updateTrayIconWithPngData;</b>
+<b class="nc">&nbsp;		iconLoader.accept(callback);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void updateTrayIconWithPngData(byte[] imageData) {
+<b class="nc">&nbsp;		if (trayIcon == null) {</b>
+<b class="nc">&nbsp;			throw new IllegalStateException(&quot;Failed to update the icon as it has not yet been added&quot;);</b>
+&nbsp;		}
+<b class="nc">&nbsp;		var image = Toolkit.getDefaultToolkit().createImage(imageData);</b>
+<b class="nc">&nbsp;		trayIcon.setImage(image);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void updateTrayMenu(List&lt;TrayMenuItem&gt; items) {
+<b class="nc">&nbsp;		menu.removeAll();</b>
+<b class="nc">&nbsp;		addChildren(menu, items);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void onBeforeOpenMenu(Runnable listener) {
+<b class="nc">&nbsp;		Preconditions.checkNotNull(this.trayIcon);</b>
+<b class="nc">&nbsp;		this.trayIcon.addMouseListener(new MouseAdapter() {</b>
+&nbsp;			@Override
+&nbsp;			public void mousePressed(MouseEvent e) {
+<b class="nc">&nbsp;				listener.run();</b>
+&nbsp;			}
+&nbsp;		});
+&nbsp;	}
+&nbsp;
+&nbsp;	private void addChildren(Menu menu, List&lt;TrayMenuItem&gt; items) {
+<b class="nc">&nbsp;		for (var item : items) {</b>
+<b class="nc">&nbsp;			switch (item) {</b>
+<b class="nc">&nbsp;				case ActionItem a -&gt; {</b>
+<b class="nc">&nbsp;					var menuItem = new MenuItem(a.title());</b>
+<b class="nc">&nbsp;					menuItem.addActionListener(evt -&gt; a.action().run());</b>
+<b class="nc">&nbsp;					menuItem.setEnabled(a.enabled());</b>
+<b class="nc">&nbsp;					menu.add(menuItem);</b>
+&nbsp;				}
+<b class="nc">&nbsp;				case SeparatorItem s -&gt; menu.addSeparator(); // TODO: rename to _ with JEP 443</b>
+<b class="nc">&nbsp;				case SubMenuItem s -&gt; {</b>
+<b class="nc">&nbsp;					var submenu = new Menu(s.title());</b>
+<b class="nc">&nbsp;					addChildren(submenu, s.items());</b>
+<b class="nc">&nbsp;					menu.add(submenu);</b>
+&nbsp;				}
+&nbsp;			}
+&nbsp;		}
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

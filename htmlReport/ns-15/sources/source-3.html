@@ -1,0 +1,206 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AuthFlowTask</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.keyloading.hub</a>
+</div>
+
+<h1>Coverage Summary for Class: AuthFlowTask (org.cryptomator.ui.keyloading.hub)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AuthFlowTask</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/15)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">AuthFlowTask$NotOkResponseException</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.keyloading.hub;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import io.github.coffeelibs.tinyoauth2client.TinyOAuth2;
+&nbsp;import io.github.coffeelibs.tinyoauth2client.http.response.Response;
+&nbsp;
+&nbsp;import javafx.concurrent.Task;
+&nbsp;import java.io.IOException;
+&nbsp;import java.net.URI;
+&nbsp;import java.net.http.HttpClient;
+&nbsp;import java.time.Duration;
+&nbsp;import java.util.function.Consumer;
+&nbsp;
+&nbsp;class AuthFlowTask extends Task&lt;String&gt; {
+&nbsp;
+<b class="nc">&nbsp;	private static final ObjectMapper JSON = new ObjectMapper();</b>
+&nbsp;
+&nbsp;	private final HubConfig hubConfig;
+&nbsp;	private final AuthFlowContext authFlowContext;
+&nbsp;	private final Consumer&lt;URI&gt; redirectUriConsumer;
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Spawns a server and waits for the redirectUri to be called.
+&nbsp;	 *
+&nbsp;	 * @param hubConfig Configuration object holding parameters required by {@link io.github.coffeelibs.tinyoauth2client.AuthorizationCodeGrant}
+&nbsp;	 * @param redirectUriConsumer A callback invoked with the redirectUri, as soon as the server has started
+&nbsp;	 */
+<b class="nc">&nbsp;	public AuthFlowTask(HubConfig hubConfig, AuthFlowContext authFlowContext, Consumer&lt;URI&gt; redirectUriConsumer) {</b>
+<b class="nc">&nbsp;		this.hubConfig = hubConfig;</b>
+<b class="nc">&nbsp;		this.authFlowContext = authFlowContext;</b>
+<b class="nc">&nbsp;		this.redirectUriConsumer = redirectUriConsumer;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	protected String call() throws IOException, InterruptedException {
+<b class="nc">&nbsp;		var response = TinyOAuth2.client(hubConfig.clientId) //</b>
+<b class="nc">&nbsp;				.withTokenEndpoint(URI.create(hubConfig.tokenEndpoint)) //</b>
+<b class="nc">&nbsp;				.withRequestTimeout(Duration.ofSeconds(10)) //</b>
+<b class="nc">&nbsp;				.authorizationCodeGrant(URI.create(hubConfig.authEndpoint)) //</b>
+<b class="nc">&nbsp;				.setSuccessResponse(Response.redirect(URI.create(hubConfig.authSuccessUrl + &quot;&amp;device=&quot; + authFlowContext.deviceId()))) //</b>
+<b class="nc">&nbsp;				.setErrorResponse(Response.redirect(URI.create(hubConfig.authErrorUrl + &quot;&amp;device=&quot; + authFlowContext.deviceId()))) //</b>
+<b class="nc">&nbsp;				.authorize(HttpClient.newHttpClient(), redirectUriConsumer);</b>
+<b class="nc">&nbsp;		if (response.statusCode() != 200) {</b>
+<b class="nc">&nbsp;			throw new NotOkResponseException(&quot;Authorization returned status code &quot; + response.statusCode());</b>
+&nbsp;		}
+<b class="nc">&nbsp;		return JSON.reader().readTree(response.body()).get(&quot;access_token&quot;).asText();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public static class NotOkResponseException extends RuntimeException {
+&nbsp;
+&nbsp;		NotOkResponseException(String msg) {
+<b class="nc">&nbsp;			super(msg);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>
