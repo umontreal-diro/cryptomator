@@ -10,12 +10,13 @@ La GitHub Action a été modifiée pour exécuter des builds parallèles avec ci
 
 La matrice de configurations (`matrix.jvm_opts`) définit cinq configurations, chacune ayant un flag JVM unique. Pour chaque build, un taux de couverture est calculé et enregistré, permettant une analyse approfondie des effets de chaque flag sur la couverture de code et la stabilité des tests.
 
-### Liste des Flags Utilisés et Justification
+### Liste des Flags Utilisés et Justification (Si vous lisez vraiment cette partie)
+
 
 1. **`-Xmx512m`** :
    - **Description** : Limite la taille maximale de la heap (mémoire allouée aux objets Java) à 512 Mo.
    - **Impact sur la performance** : En limitant la mémoire, on peut évaluer comment l’application se comporte sous contrainte de mémoire. Cela aide à identifier les problèmes potentiels de fuite de mémoire et à tester l’efficacité du garbage collector.
-   - **Impact sur la qualité** : Permet de vérifier si les tests passent avec des ressources limitées, ce qui peut révéler des faiblesses ou inefficacités dans le code.
+   - **Impact sur la qualité** : Permet de vérifier si les tests passent avec des ressources limitées, par exemple, un Windows Xp, ce qui peut révéler des faiblesses ou inefficacités dans le code.
    - **Observabilité** : Donne un aperçu de l'utilisation de la mémoire et peut aider à identifier des scénarios de surcharge de mémoire.
 
 2. **`-XX:+UnlockDiagnosticVMOptions`** :
@@ -28,7 +29,7 @@ La matrice de configurations (`matrix.jvm_opts`) définit cinq configurations, c
    - **Description** : Affiche des détails sur la collecte des déchets pour le garbage collector.
    - **Impact sur la performance** : Aide à identifier les cycles de garbage collection et à évaluer si le GC impacte les performances de l’application.
    - **Impact sur la qualité** : Permet de repérer d’éventuelles anomalies dans la gestion de la mémoire en affichant les cycles de collecte.
-   - **Observabilité** : Donne des informations précieuses sur les cycles de GC, permettant une meilleure compréhension de la gestion de la mémoire par la JVM.
+   - **Observabilité** : Donne des informations précieuses sur les cycles de GC, permettant une meilleure compréhension de la gestion de la mémoire par la JVM, si le lecteur arrive à comprendre l'information retourné.
 
 4. **`-XX:+UseCompressedOops`** :
    - **Description** : Active la compression des pointeurs d’objets (Ordinary Object Pointers) pour optimiser la consommation de mémoire dans les environnements 64 bits.
