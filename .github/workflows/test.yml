@@ -23,12 +23,29 @@ jobs:
           distribution: ${{ env.JAVA_DIST }}
           java-version: ${{ env.JAVA_VERSION }}
           cache: 'maven'
-      - name: Build and Test
+      - name: Build and Test with Different Flags
         run: |
-          export MAVEN_OPTS="-Xms512m -XX:+UseG1GC -XX:+PrintGCDetails -XX:+HeapDumpOnOutOfMemoryError -XX:+UseCompressedOops"
-          echo "Using MAVEN_OPTS: $MAVEN_OPTS"
-          xvfb-run mvn -B verify -Djavafx.platform=linux jacoco:report -Pcoverage
-          unset MAVEN_OPTS
+          # Flags to test
+          flags=(
+            "-Xms512m"
+            "-XX:+UseG1GC"
+            "-XX:+PrintGCDetails"
+            "-XX:+HeapDumpOnOutOfMemoryError"
+            "-XX:+UseCompressedOops"
+          )
+          
+          for flag in "${flags[@]}"; do
+            echo "Using MAVEN_OPTS: 
+            export MAVEN_OPTS="$flag"
+          
+           
+            xvfb-run mvn -B verify -Djavafx.platform=linux jacoco:report -Pcoverage
+          
+        
+          
+            unset MAVEN_OPTS 
+          done
+
       - name: Get JaCoCo Coverage
         id: coverage
         run: |
