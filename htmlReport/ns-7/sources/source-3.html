@@ -1,0 +1,214 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > IpcCommunicator</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ipc</a>
+</div>
+
+<h1>Coverage Summary for Class: IpcCommunicator (org.cryptomator.ipc)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">IpcCommunicator</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    80%
+  </span>
+  <span class="absValue">
+    (4/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (2/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    44,4%
+  </span>
+  <span class="absValue">
+    (8/18)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ipc;
+&nbsp;
+&nbsp;import com.google.common.base.Preconditions;
+&nbsp;import com.google.common.util.concurrent.MoreExecutors;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import java.io.Closeable;
+&nbsp;import java.io.IOException;
+&nbsp;import java.io.UncheckedIOException;
+&nbsp;import java.nio.file.Files;
+&nbsp;import java.nio.file.Path;
+&nbsp;import java.nio.file.attribute.BasicFileAttributes;
+&nbsp;import java.util.List;
+&nbsp;import java.util.concurrent.Executor;
+&nbsp;import java.util.concurrent.Future;
+&nbsp;
+&nbsp;public interface IpcCommunicator extends Closeable {
+&nbsp;
+<b class="fc">&nbsp;	Logger LOG = LoggerFactory.getLogger(IpcCommunicator.class);</b>
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Attempts to establish a socket connection via one of the given paths.
+&nbsp;	 * &lt;p&gt;
+&nbsp;	 * If no connection to an existing sockets can be established, a new socket is created for the first given path.
+&nbsp;	 * &lt;p&gt;
+&nbsp;	 * If this fails as well, a fallback communicator is returned that allows process-internal communication mocking the API
+&nbsp;	 * that would have been used for IPC.
+&nbsp;	 *
+&nbsp;	 * @param socketPaths The socket path(s)
+&nbsp;	 * @return A communicator object that allows sending and receiving messages
+&nbsp;	 */
+&nbsp;	static IpcCommunicator create(Iterable&lt;Path&gt; socketPaths) {
+<b class="fc">&nbsp;		Preconditions.checkArgument(socketPaths.iterator().hasNext(), &quot;socketPaths must contain at least one element&quot;);</b>
+<b class="pc">&nbsp;		for (var p : socketPaths) {</b>
+&nbsp;			try {
+<b class="fc">&nbsp;				var attr = Files.readAttributes(p, BasicFileAttributes.class);</b>
+<b class="pc">&nbsp;				if (attr.isOther()) {</b>
+<b class="fc">&nbsp;					return Client.create(p);</b>
+&nbsp;				}
+<b class="nc">&nbsp;			} catch (IOException e) {</b>
+&nbsp;				// attempt next socket path
+&nbsp;			}
+&nbsp;		}
+&nbsp;		// Didn&#39;t get any connection yet? I.e. we&#39;re the first app instance, so let&#39;s launch a server:
+&nbsp;		try {
+<b class="nc">&nbsp;			final var socketPath = socketPaths.iterator().next();</b>
+<b class="nc">&nbsp;			Files.deleteIfExists(socketPath); // ensure path does not exist before creating it</b>
+<b class="nc">&nbsp;			return Server.create(socketPath);</b>
+<b class="nc">&nbsp;		} catch (IOException e) {</b>
+<b class="nc">&nbsp;			LOG.warn(&quot;Failed to create IPC server&quot;, e);</b>
+<b class="nc">&nbsp;			return new LoopbackCommunicator();</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	boolean isClient();
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Listens to incoming messages until the connection gets closed.
+&nbsp;	 *  @param listener The listener that should be notified of incoming messages
+&nbsp;	 * @param executor An executor on which to listen. Listening will block, so you might want to use a background thread.
+&nbsp;	 * @return
+&nbsp;	 */
+&nbsp;	void listen(IpcMessageListener listener, Executor executor);
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Sends the given message.
+&nbsp;	 *
+&nbsp;	 * @param message The message to send
+&nbsp;	 * @param executor An executor used to send the message. Sending will block, so you might want to use a background thread.
+&nbsp;	 */
+&nbsp;	void send(IpcMessage message, Executor executor);
+&nbsp;
+&nbsp;	default void sendRevealRunningApp() {
+<b class="fc">&nbsp;		send(new RevealRunningAppMessage(), MoreExecutors.directExecutor());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	default void sendHandleLaunchargs(List&lt;String&gt; args) {
+<b class="fc">&nbsp;		send(new HandleLaunchArgsMessage(args), MoreExecutors.directExecutor());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Clean up resources.
+&nbsp;	 *
+&nbsp;	 * @implSpec Must be idempotent
+&nbsp;	 * @throws IOException In case of I/O errors.
+&nbsp;	 */
+&nbsp;	@Override
+&nbsp;	void close() throws IOException;
+&nbsp;
+&nbsp;	default void closeUnchecked() throws UncheckedIOException {
+&nbsp;		try {
+<b class="nc">&nbsp;			close();</b>
+<b class="nc">&nbsp;		} catch (IOException e) {</b>
+<b class="nc">&nbsp;			throw new UncheckedIOException(e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

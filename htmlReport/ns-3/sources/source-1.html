@@ -1,0 +1,148 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > DropboxLinuxLocationPresetsProvider</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.common.locationpresets</a>
+</div>
+
+<h1>Coverage Summary for Class: DropboxLinuxLocationPresetsProvider (org.cryptomator.common.locationpresets)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DropboxLinuxLocationPresetsProvider</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.common.locationpresets;
+&nbsp;
+&nbsp;import org.cryptomator.integrations.common.OperatingSystem;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.io.UncheckedIOException;
+&nbsp;import java.nio.file.Files;
+&nbsp;import java.nio.file.Path;
+&nbsp;import java.util.function.Predicate;
+&nbsp;import java.util.regex.Pattern;
+&nbsp;import java.util.stream.Stream;
+&nbsp;
+&nbsp;import static org.cryptomator.integrations.common.OperatingSystem.Value.LINUX;
+&nbsp;
+&nbsp;@OperatingSystem(LINUX)
+<b class="nc">&nbsp;public final class DropboxLinuxLocationPresetsProvider implements LocationPresetsProvider {</b>
+&nbsp;
+<b class="nc">&nbsp;	private static final Path USER_HOME = LocationPresetsProvider.resolveLocation(&quot;~/.&quot;).toAbsolutePath();</b>
+<b class="nc">&nbsp;	private static final Predicate&lt;String&gt; PATTERN = Pattern.compile(&quot;Dropbox \\(.+\\)&quot;).asMatchPredicate();</b>
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public Stream&lt;LocationPreset&gt; getLocations() {
+<b class="nc">&nbsp;		try (var dirStream = Files.list(USER_HOME)) {</b>
+<b class="nc">&nbsp;			var presets = dirStream.filter(p -&gt; Files.isDirectory(p) &amp;&amp; PATTERN.test(p.getFileName().toString())) //</b>
+<b class="nc">&nbsp;					.map(p -&gt; new LocationPreset(p.getFileName().toString(), p)) //</b>
+<b class="nc">&nbsp;					.toList();</b>
+<b class="nc">&nbsp;			return presets.stream(); //workaround to ensure that the directory stream is always closed</b>
+<b class="nc">&nbsp;		} catch (IOException | UncheckedIOException e) { //UncheckedIOException thrown by the stream of Files.list()</b>
+<b class="nc">&nbsp;			return Stream.of();</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

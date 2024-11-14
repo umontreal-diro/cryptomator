@@ -1,0 +1,280 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > VaultSettings</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.common.settings</a>
+</div>
+
+<h1>Coverage Summary for Class: VaultSettings (org.cryptomator.common.settings)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">VaultSettings</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/58)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/*******************************************************************************
+&nbsp; * Copyright (c) 2017 Skymatic UG (haftungsbeschränkt).
+&nbsp; * All rights reserved. This program and the accompanying materials
+&nbsp; * are made available under the terms of the accompanying LICENSE file.
+&nbsp; *******************************************************************************/
+&nbsp;package org.cryptomator.common.settings;
+&nbsp;
+&nbsp;import com.google.common.base.CharMatcher;
+&nbsp;import com.google.common.base.Strings;
+&nbsp;import com.google.common.io.BaseEncoding;
+&nbsp;import org.jetbrains.annotations.VisibleForTesting;
+&nbsp;
+&nbsp;import javafx.beans.Observable;
+&nbsp;import javafx.beans.binding.Bindings;
+&nbsp;import javafx.beans.binding.StringExpression;
+&nbsp;import javafx.beans.property.BooleanProperty;
+&nbsp;import javafx.beans.property.IntegerProperty;
+&nbsp;import javafx.beans.property.ObjectProperty;
+&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+&nbsp;import javafx.beans.property.SimpleIntegerProperty;
+&nbsp;import javafx.beans.property.SimpleObjectProperty;
+&nbsp;import javafx.beans.property.SimpleStringProperty;
+&nbsp;import javafx.beans.property.StringProperty;
+&nbsp;import java.nio.file.Path;
+&nbsp;import java.nio.file.Paths;
+&nbsp;import java.util.Objects;
+&nbsp;import java.util.Random;
+&nbsp;
+&nbsp;/**
+&nbsp; * The settings specific to a single vault.
+&nbsp; */
+&nbsp;public class VaultSettings {
+&nbsp;
+&nbsp;	static final boolean DEFAULT_UNLOCK_AFTER_STARTUP = false;
+&nbsp;	static final boolean DEFAULT_REVEAL_AFTER_MOUNT = true;
+&nbsp;	static final boolean DEFAULT_USES_READONLY_MODE = false;
+&nbsp;	static final String DEFAULT_MOUNT_FLAGS = &quot;&quot;; // TODO: remove empty default mount flags and let this property be null if not used
+&nbsp;	static final int DEFAULT_MAX_CLEARTEXT_FILENAME_LENGTH = -1;
+<b class="nc">&nbsp;	static final WhenUnlocked DEFAULT_ACTION_AFTER_UNLOCK = WhenUnlocked.ASK;</b>
+&nbsp;	static final boolean DEFAULT_AUTOLOCK_WHEN_IDLE = false;
+&nbsp;	static final int DEFAULT_AUTOLOCK_IDLE_SECONDS = 30 * 60;
+&nbsp;	static final int DEFAULT_PORT = 42427;
+&nbsp;
+<b class="nc">&nbsp;	private static final Random RNG = new Random();</b>
+&nbsp;
+&nbsp;	public final String id;
+&nbsp;	public final ObjectProperty&lt;Path&gt; path;
+&nbsp;	public final StringProperty displayName;
+&nbsp;	public final BooleanProperty unlockAfterStartup;
+&nbsp;	public final BooleanProperty revealAfterMount;
+&nbsp;	public final BooleanProperty usesReadOnlyMode;
+&nbsp;	public final StringProperty mountFlags;
+&nbsp;	public final IntegerProperty maxCleartextFilenameLength;
+&nbsp;	public final ObjectProperty&lt;WhenUnlocked&gt; actionAfterUnlock;
+&nbsp;	public final BooleanProperty autoLockWhenIdle;
+&nbsp;	public final IntegerProperty autoLockIdleSeconds;
+&nbsp;	public final ObjectProperty&lt;Path&gt; mountPoint;
+&nbsp;	public final StringExpression mountName;
+&nbsp;	public final StringProperty mountService;
+&nbsp;	public final IntegerProperty port;
+&nbsp;
+<b class="nc">&nbsp;	VaultSettings(VaultSettingsJson json) {</b>
+<b class="nc">&nbsp;		this.id = json.id;</b>
+<b class="nc">&nbsp;		this.path = new SimpleObjectProperty&lt;&gt;(this, &quot;path&quot;, json.path == null ? null : Paths.get(json.path));</b>
+<b class="nc">&nbsp;		this.displayName = new SimpleStringProperty(this, &quot;displayName&quot;, json.displayName);</b>
+<b class="nc">&nbsp;		this.unlockAfterStartup = new SimpleBooleanProperty(this, &quot;unlockAfterStartup&quot;, json.unlockAfterStartup);</b>
+<b class="nc">&nbsp;		this.revealAfterMount = new SimpleBooleanProperty(this, &quot;revealAfterMount&quot;, json.revealAfterMount);</b>
+<b class="nc">&nbsp;		this.usesReadOnlyMode = new SimpleBooleanProperty(this, &quot;usesReadOnlyMode&quot;, json.usesReadOnlyMode);</b>
+<b class="nc">&nbsp;		this.mountFlags = new SimpleStringProperty(this, &quot;mountFlags&quot;, json.mountFlags);</b>
+<b class="nc">&nbsp;		this.maxCleartextFilenameLength = new SimpleIntegerProperty(this, &quot;maxCleartextFilenameLength&quot;, json.maxCleartextFilenameLength);</b>
+<b class="nc">&nbsp;		this.actionAfterUnlock = new SimpleObjectProperty&lt;&gt;(this, &quot;actionAfterUnlock&quot;, json.actionAfterUnlock);</b>
+<b class="nc">&nbsp;		this.autoLockWhenIdle = new SimpleBooleanProperty(this, &quot;autoLockWhenIdle&quot;, json.autoLockWhenIdle);</b>
+<b class="nc">&nbsp;		this.autoLockIdleSeconds = new SimpleIntegerProperty(this, &quot;autoLockIdleSeconds&quot;, json.autoLockIdleSeconds);</b>
+<b class="nc">&nbsp;		this.mountPoint = new SimpleObjectProperty&lt;&gt;(this, &quot;mountPoint&quot;, json.mountPoint == null ? null : Path.of(json.mountPoint));</b>
+<b class="nc">&nbsp;		this.mountService = new SimpleStringProperty(this, &quot;mountService&quot;, json.mountService);</b>
+<b class="nc">&nbsp;		this.port = new SimpleIntegerProperty(this, &quot;port&quot;, json.port);</b>
+&nbsp;		// mount name is no longer an explicit setting, see https://github.com/cryptomator/cryptomator/pull/1318
+<b class="nc">&nbsp;		this.mountName = StringExpression.stringExpression(Bindings.createStringBinding(() -&gt; {</b>
+&nbsp;			final String name;
+<b class="nc">&nbsp;			if (displayName.isEmpty().get()) {</b>
+<b class="nc">&nbsp;				name = path.get().getFileName().toString();</b>
+&nbsp;			} else {
+<b class="nc">&nbsp;				name = displayName.get();</b>
+&nbsp;			}
+<b class="nc">&nbsp;			return normalizeDisplayName(name);</b>
+&nbsp;		}, displayName, path));
+&nbsp;
+<b class="nc">&nbsp;		migrateLegacySettings(json);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@SuppressWarnings(&quot;deprecation&quot;)
+&nbsp;	private void migrateLegacySettings(VaultSettingsJson json) {
+&nbsp;		// implicit migration of 1.6.x legacy setting &quot;customMountPath&quot; / &quot;winDriveLetter&quot;:
+<b class="nc">&nbsp;		if (json.useCustomMountPath &amp;&amp; !Strings.isNullOrEmpty(json.customMountPath)) {</b>
+<b class="nc">&nbsp;			this.mountPoint.set(Path.of(json.customMountPath));</b>
+<b class="nc">&nbsp;		} else if (!Strings.isNullOrEmpty(json.winDriveLetter)) {</b>
+<b class="nc">&nbsp;			this.mountPoint.set(Path.of(json.winDriveLetter + &quot;:\\&quot;));</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	Observable[] observables() {
+<b class="nc">&nbsp;		return new Observable[]{actionAfterUnlock, autoLockIdleSeconds, autoLockWhenIdle, displayName, maxCleartextFilenameLength, mountFlags, mountPoint, path, revealAfterMount, unlockAfterStartup, usesReadOnlyMode, port, mountService};</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public static VaultSettings withRandomId() {
+<b class="nc">&nbsp;		var defaults = new VaultSettingsJson();</b>
+<b class="nc">&nbsp;		defaults.id = generateId();</b>
+<b class="nc">&nbsp;		return new VaultSettings(defaults);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private static String generateId() {
+<b class="nc">&nbsp;		byte[] randomBytes = new byte[9];</b>
+<b class="nc">&nbsp;		RNG.nextBytes(randomBytes);</b>
+<b class="nc">&nbsp;		return BaseEncoding.base64Url().encode(randomBytes);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	VaultSettingsJson serialized() {
+<b class="nc">&nbsp;		var json = new VaultSettingsJson();</b>
+<b class="nc">&nbsp;		json.id = id;</b>
+<b class="nc">&nbsp;		json.path = path.map(Path::toString).getValue();</b>
+<b class="nc">&nbsp;		json.displayName = displayName.get();</b>
+<b class="nc">&nbsp;		json.unlockAfterStartup = unlockAfterStartup.get();</b>
+<b class="nc">&nbsp;		json.revealAfterMount = revealAfterMount.get();</b>
+<b class="nc">&nbsp;		json.usesReadOnlyMode = usesReadOnlyMode.get();</b>
+<b class="nc">&nbsp;		json.mountFlags = mountFlags.get();</b>
+<b class="nc">&nbsp;		json.maxCleartextFilenameLength = maxCleartextFilenameLength.get();</b>
+<b class="nc">&nbsp;		json.actionAfterUnlock = actionAfterUnlock.get();</b>
+<b class="nc">&nbsp;		json.autoLockWhenIdle = autoLockWhenIdle.get();</b>
+<b class="nc">&nbsp;		json.autoLockIdleSeconds = autoLockIdleSeconds.get();</b>
+<b class="nc">&nbsp;		json.mountPoint = mountPoint.map(Path::toString).getValue();</b>
+<b class="nc">&nbsp;		json.mountService = mountService.get();</b>
+<b class="nc">&nbsp;		json.port = port.get();</b>
+<b class="nc">&nbsp;		return json;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@VisibleForTesting
+&nbsp;	static String normalizeDisplayName(String original) {
+<b class="nc">&nbsp;		if (original.isBlank() || &quot;.&quot;.equals(original) || &quot;..&quot;.equals(original)) {</b>
+<b class="nc">&nbsp;			return &quot;_&quot;;</b>
+&nbsp;		}
+&nbsp;
+&nbsp;		// replace whitespaces (tabs, linebreaks, ...) by simple space (0x20)
+<b class="nc">&nbsp;		var withoutFancyWhitespaces = CharMatcher.whitespace().collapseFrom(original, &#39; &#39;);</b>
+&nbsp;
+&nbsp;		// replace control chars as well as chars that aren&#39;t allowed in file names on standard file systems by underscore
+<b class="nc">&nbsp;		return CharMatcher.anyOf(&quot;&lt;&gt;:\&quot;/\\|?*&quot;).or(CharMatcher.javaIsoControl()).collapseFrom(withoutFancyWhitespaces, &#39;_&#39;);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/* Hashcode/Equals */
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public int hashCode() {
+<b class="nc">&nbsp;		return Objects.hash(id);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public boolean equals(Object obj) {
+<b class="nc">&nbsp;		if (obj instanceof VaultSettings other &amp;&amp; obj.getClass().equals(this.getClass())) {</b>
+<b class="nc">&nbsp;			return Objects.equals(this.id, other.id);</b>
+&nbsp;		} else {
+<b class="nc">&nbsp;			return false;</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,121 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Constants</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.common</a>
+</div>
+
+<h1>Coverage Summary for Class: Constants (org.cryptomator.common)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Constants</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.common;
+&nbsp;
+&nbsp;import org.cryptomator.ui.keyloading.masterkeyfile.MasterkeyFileLoadingStrategy;
+&nbsp;
+&nbsp;import java.net.URI;
+&nbsp;
+&nbsp;public interface Constants {
+&nbsp;
+&nbsp;	String MASTERKEY_FILENAME = &quot;masterkey.cryptomator&quot;;
+&nbsp;	String MASTERKEY_BACKUP_SUFFIX = &quot;.bkup&quot;;
+&nbsp;	String VAULTCONFIG_FILENAME = &quot;vault.cryptomator&quot;;
+&nbsp;	String CRYPTOMATOR_FILENAME_EXT = &quot;.cryptomator&quot;;
+&nbsp;	String CRYPTOMATOR_FILENAME_GLOB = &quot;*.cryptomator&quot;;
+<b class="nc">&nbsp;	URI DEFAULT_KEY_ID = URI.create(MasterkeyFileLoadingStrategy.SCHEME + &quot;:&quot; + MASTERKEY_FILENAME);</b>
+<b class="nc">&nbsp;	byte[] PEPPER = new byte[0];</b>
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

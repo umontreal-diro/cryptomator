@@ -1,0 +1,223 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > VaultStatisticsModule</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.stats</a>
+</div>
+
+<h1>Coverage Summary for Class: VaultStatisticsModule (org.cryptomator.ui.stats)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">VaultStatisticsModule</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">VaultStatisticsModule$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.stats;
+&nbsp;
+&nbsp;import dagger.Binds;
+&nbsp;import dagger.Module;
+&nbsp;import dagger.Provides;
+&nbsp;import dagger.multibindings.IntoMap;
+&nbsp;import javafx.beans.value.ChangeListener;
+&nbsp;import javafx.beans.value.ObservableValue;
+&nbsp;import javafx.scene.Scene;
+&nbsp;import javafx.stage.Stage;
+&nbsp;import org.cryptomator.common.vaults.Vault;
+&nbsp;import org.cryptomator.common.vaults.VaultState;
+&nbsp;import org.cryptomator.ui.common.DefaultSceneFactory;
+&nbsp;import org.cryptomator.ui.common.FxmlLoaderFactory;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;import org.cryptomator.ui.common.FxControllerKey;
+&nbsp;import org.cryptomator.ui.common.FxmlFile;
+&nbsp;import org.cryptomator.ui.common.FxmlScene;
+&nbsp;import org.cryptomator.ui.common.StageFactory;
+&nbsp;
+&nbsp;import javax.inject.Provider;
+&nbsp;import java.lang.ref.WeakReference;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;
+&nbsp;@Module
+<b class="nc">&nbsp;abstract class VaultStatisticsModule {</b>
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@VaultStatisticsWindow
+&nbsp;	@VaultStatisticsScoped
+&nbsp;	static FxmlLoaderFactory provideFxmlLoaderFactory(Map&lt;Class&lt;? extends FxController&gt;, Provider&lt;FxController&gt;&gt; factories, DefaultSceneFactory sceneFactory, ResourceBundle resourceBundle) {
+<b class="nc">&nbsp;		return new FxmlLoaderFactory(factories, sceneFactory, resourceBundle);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@VaultStatisticsWindow
+&nbsp;	@VaultStatisticsScoped
+&nbsp;	static Stage provideStage(StageFactory factory, ResourceBundle resourceBundle, @VaultStatisticsWindow Vault vault) {
+<b class="nc">&nbsp;		Stage stage = factory.create();</b>
+<b class="nc">&nbsp;		stage.setTitle(String.format(resourceBundle.getString(&quot;stats.title&quot;), vault.getDisplayName()));</b>
+<b class="nc">&nbsp;		stage.setResizable(false);</b>
+<b class="nc">&nbsp;		var weakStage = new WeakReference&lt;&gt;(stage);</b>
+<b class="nc">&nbsp;		vault.stateProperty().addListener(new ChangeListener&lt;&gt;() {</b>
+&nbsp;			@Override
+&nbsp;			public void changed(ObservableValue&lt;? extends VaultState.Value&gt; observable, VaultState.Value oldValue, VaultState.Value newValue) {
+<b class="nc">&nbsp;				if (newValue != VaultState.Value.UNLOCKED) {</b>
+<b class="nc">&nbsp;					Stage stage = weakStage.get();</b>
+<b class="nc">&nbsp;					if (stage != null) {</b>
+<b class="nc">&nbsp;						stage.hide();</b>
+&nbsp;					}
+<b class="nc">&nbsp;					observable.removeListener(this);</b>
+&nbsp;				}
+&nbsp;			}
+&nbsp;		});
+<b class="nc">&nbsp;		stage.setOnCloseRequest(windowEvent -&gt; vault.showingStatsProperty().setValue(false));</b>
+<b class="nc">&nbsp;		return stage;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@FxmlScene(FxmlFile.VAULT_STATISTICS)
+&nbsp;	@VaultStatisticsScoped
+&nbsp;	static Scene provideVaultStatisticsScene(@VaultStatisticsWindow FxmlLoaderFactory fxmlLoaders) {
+<b class="nc">&nbsp;		return fxmlLoaders.createScene(FxmlFile.VAULT_STATISTICS);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	// ------------------
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(VaultStatisticsController.class)
+&nbsp;	abstract FxController bindVaultStatisticsController(VaultStatisticsController controller);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

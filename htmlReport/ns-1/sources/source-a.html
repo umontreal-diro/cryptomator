@@ -1,0 +1,275 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > PropertiesDecorator</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.common</a>
+</div>
+
+<h1>Coverage Summary for Class: PropertiesDecorator (org.cryptomator.common)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PropertiesDecorator</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    2,2%
+  </span>
+  <span class="absValue">
+    (1/46)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    4,2%
+  </span>
+  <span class="absValue">
+    (2/48)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.common;
+&nbsp;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.io.InputStream;
+&nbsp;import java.io.OutputStream;
+&nbsp;import java.io.PrintStream;
+&nbsp;import java.io.PrintWriter;
+&nbsp;import java.io.Reader;
+&nbsp;import java.io.Writer;
+&nbsp;import java.nio.charset.Charset;
+&nbsp;import java.util.Collection;
+&nbsp;import java.util.Enumeration;
+&nbsp;import java.util.InvalidPropertiesFormatException;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Properties;
+&nbsp;import java.util.Set;
+&nbsp;import java.util.function.BiConsumer;
+&nbsp;import java.util.function.BiFunction;
+&nbsp;import java.util.function.Function;
+&nbsp;
+&nbsp;class PropertiesDecorator extends Properties {
+&nbsp;
+&nbsp;	protected final Properties delegate;
+&nbsp;
+<b class="fc">&nbsp;	PropertiesDecorator(Properties delegate) {</b>
+<b class="fc">&nbsp;		this.delegate = delegate;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public String getProperty(String key) {return delegate.getProperty(key);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public String getProperty(String key, String defaultValue) {return delegate.getProperty(key, defaultValue);}</b>
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public synchronized Object setProperty(String key, String value) {
+<b class="nc">&nbsp;		return delegate.setProperty(key, value);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public synchronized void load(Reader reader) throws IOException {delegate.load(reader);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public synchronized void load(InputStream inStream) throws IOException {delegate.load(inStream);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public void store(Writer writer, String comments) throws IOException {delegate.store(writer, comments);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public void store(OutputStream out, @Nullable String comments) throws IOException {delegate.store(out, comments);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public synchronized void loadFromXML(InputStream in) throws IOException, InvalidPropertiesFormatException {delegate.loadFromXML(in);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public void storeToXML(OutputStream os, String comment) throws IOException {delegate.storeToXML(os, comment);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public void storeToXML(OutputStream os, String comment, String encoding) throws IOException {delegate.storeToXML(os, comment, encoding);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public void storeToXML(OutputStream os, String comment, Charset charset) throws IOException {delegate.storeToXML(os, comment, charset);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public Enumeration&lt;?&gt; propertyNames() {return delegate.propertyNames();}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public Set&lt;String&gt; stringPropertyNames() {return delegate.stringPropertyNames();}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public void list(PrintStream out) {delegate.list(out);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public void list(PrintWriter out) {delegate.list(out);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public int size() {return delegate.size();}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public boolean isEmpty() {return delegate.isEmpty();}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public Enumeration&lt;Object&gt; keys() {return delegate.keys();}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public Enumeration&lt;Object&gt; elements() {return delegate.elements();}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public boolean contains(Object value) {return delegate.contains(value);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public boolean containsValue(Object value) {return delegate.containsValue(value);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public boolean containsKey(Object key) {return delegate.containsKey(key);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public Object get(Object key) {return delegate.get(key);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public synchronized Object put(Object key, Object value) {return delegate.put(key, value);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public synchronized Object remove(Object key) {return delegate.remove(key);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public synchronized void putAll(Map&lt;?, ?&gt; t) {delegate.putAll(t);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public synchronized void clear() {delegate.clear();}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public synchronized String toString() {return delegate.toString();}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public Set&lt;Object&gt; keySet() {return delegate.keySet();}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public Collection&lt;Object&gt; values() {return delegate.values();}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public Set&lt;Map.Entry&lt;Object, Object&gt;&gt; entrySet() {return delegate.entrySet();}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public synchronized boolean equals(Object o) {return delegate.equals(o);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public synchronized int hashCode() {return delegate.hashCode();}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public Object getOrDefault(Object key, Object defaultValue) {return delegate.getOrDefault(key, defaultValue);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public synchronized void forEach(BiConsumer&lt;? super Object, ? super Object&gt; action) {delegate.forEach(action);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public synchronized void replaceAll(BiFunction&lt;? super Object, ? super Object, ?&gt; function) {delegate.replaceAll(function);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public synchronized Object putIfAbsent(Object key, Object value) {return delegate.putIfAbsent(key, value);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public synchronized boolean remove(Object key, Object value) {return delegate.remove(key, value);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public synchronized boolean replace(Object key, Object oldValue, Object newValue) {return delegate.replace(key, oldValue, newValue);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public synchronized Object replace(Object key, Object value) {return delegate.replace(key, value);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public synchronized Object computeIfAbsent(Object key, Function&lt;? super Object, ?&gt; mappingFunction) {return delegate.computeIfAbsent(key, mappingFunction);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public synchronized Object computeIfPresent(Object key, BiFunction&lt;? super Object, ? super Object, ?&gt; remappingFunction) {return delegate.computeIfPresent(key, remappingFunction);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public synchronized Object compute(Object key, BiFunction&lt;? super Object, ? super Object, ?&gt; remappingFunction) {return delegate.compute(key, remappingFunction);}</b>
+&nbsp;
+&nbsp;	@Override
+<b class="nc">&nbsp;	public synchronized Object merge(Object key, Object value, BiFunction&lt;? super Object, ? super Object, ?&gt; remappingFunction) {return delegate.merge(key, value, remappingFunction);}</b>
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public synchronized Object clone() {
+<b class="nc">&nbsp;		var delegateClone = (Properties) delegate.clone();</b>
+<b class="nc">&nbsp;		return new PropertiesDecorator(delegateClone);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

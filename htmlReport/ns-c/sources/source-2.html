@@ -1,0 +1,234 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AutoAnimator</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.common</a>
+</div>
+
+<h1>Coverage Summary for Class: AutoAnimator (org.cryptomator.ui.common)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AutoAnimator</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">AutoAnimator$Builder</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/26)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.common;
+&nbsp;
+&nbsp;import com.tobiasdiez.easybind.EasyBind;
+&nbsp;import com.tobiasdiez.easybind.Subscription;
+&nbsp;
+&nbsp;import javafx.animation.Animation;
+&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+&nbsp;import javafx.beans.value.ObservableValue;
+&nbsp;
+&nbsp;/**
+&nbsp; * Animation which starts and stops automatically based on an observable condition.
+&nbsp; * &lt;p&gt;
+&nbsp; * During creation the consumer can optionally define actions to be executed everytime before the animation starts and after it stops.
+&nbsp; */
+&nbsp;public class AutoAnimator {
+&nbsp;
+&nbsp;	private final Animation animation;
+&nbsp;	private final ObservableValue&lt;Boolean&gt; condition;
+&nbsp;	private final Runnable beforeStart;
+&nbsp;	private final Runnable afterStop;
+&nbsp;	private final Subscription sub;
+&nbsp;
+<b class="nc">&nbsp;	AutoAnimator(Animation animation, ObservableValue&lt;Boolean&gt; condition, Runnable beforeStart, Runnable afterStop) {</b>
+<b class="nc">&nbsp;		this.animation = animation;</b>
+<b class="nc">&nbsp;		this.condition = condition;</b>
+<b class="nc">&nbsp;		this.beforeStart = beforeStart;</b>
+<b class="nc">&nbsp;		this.afterStop = afterStop;</b>
+<b class="nc">&nbsp;		this.sub = EasyBind.subscribe(condition, this::togglePlay);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void playFromStart() {
+<b class="nc">&nbsp;		beforeStart.run();</b>
+<b class="nc">&nbsp;		animation.playFromStart();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void stop() {
+<b class="nc">&nbsp;		animation.stop();</b>
+<b class="nc">&nbsp;		afterStop.run();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void togglePlay(boolean play) {
+<b class="nc">&nbsp;		if (play) {</b>
+<b class="nc">&nbsp;			this.playFromStart();</b>
+&nbsp;		} else {
+<b class="nc">&nbsp;			this.stop();</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	public static Builder animate(Animation animation) {
+<b class="nc">&nbsp;		return new Builder(animation);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public static class Builder {
+&nbsp;
+&nbsp;		private final Animation animation;
+<b class="nc">&nbsp;		private ObservableValue&lt;Boolean&gt; condition = new SimpleBooleanProperty(true);</b>
+<b class="nc">&nbsp;		private Runnable beforeStart = () -&gt; {};</b>
+<b class="nc">&nbsp;		private Runnable afterStop = () -&gt; {};</b>
+&nbsp;
+<b class="nc">&nbsp;		private Builder(Animation animation) {</b>
+<b class="nc">&nbsp;			this.animation = animation;</b>
+&nbsp;		}
+&nbsp;
+&nbsp;		public Builder onCondition(ObservableValue&lt;Boolean&gt; condition) {
+<b class="nc">&nbsp;			this.condition = condition;</b>
+<b class="nc">&nbsp;			return this;</b>
+&nbsp;		}
+&nbsp;
+&nbsp;		public Builder beforeStart(Runnable beforeStart) {
+<b class="nc">&nbsp;			this.beforeStart = beforeStart;</b>
+<b class="nc">&nbsp;			return this;</b>
+&nbsp;		}
+&nbsp;
+&nbsp;		public Builder afterStop(Runnable afterStop) {
+<b class="nc">&nbsp;			this.afterStop = afterStop;</b>
+<b class="nc">&nbsp;			return this;</b>
+&nbsp;		}
+&nbsp;
+&nbsp;		public AutoAnimator build() {
+<b class="nc">&nbsp;			return new AutoAnimator(animation, condition, beforeStart, afterStop);</b>
+&nbsp;		}
+&nbsp;
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

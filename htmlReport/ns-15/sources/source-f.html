@@ -1,0 +1,441 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > RegisterDeviceController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.keyloading.hub</a>
+</div>
+
+<h1>Coverage Summary for Class: RegisterDeviceController (org.cryptomator.ui.keyloading.hub)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RegisterDeviceController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/26)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/116)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">RegisterDeviceController$CreateDeviceDto</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">RegisterDeviceController$UserDto</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/26)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/119)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.keyloading.hub;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+&nbsp;import com.fasterxml.jackson.annotation.JsonProperty;
+&nbsp;import com.fasterxml.jackson.core.JacksonException;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import com.google.common.io.BaseEncoding;
+&nbsp;import com.nimbusds.jose.JWEObject;
+&nbsp;import dagger.Lazy;
+&nbsp;import org.cryptomator.common.settings.DeviceKey;
+&nbsp;import org.cryptomator.cryptolib.common.P384KeyPair;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;import org.cryptomator.ui.common.FxmlFile;
+&nbsp;import org.cryptomator.ui.common.FxmlScene;
+&nbsp;import org.cryptomator.ui.keyloading.KeyLoading;
+&nbsp;import org.cryptomator.ui.keyloading.KeyLoadingScoped;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import javax.inject.Inject;
+&nbsp;import javax.inject.Named;
+&nbsp;import javafx.application.Platform;
+&nbsp;import javafx.beans.binding.Bindings;
+&nbsp;import javafx.beans.property.BooleanProperty;
+&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.scene.Scene;
+&nbsp;import javafx.scene.control.Button;
+&nbsp;import javafx.scene.control.ContentDisplay;
+&nbsp;import javafx.scene.control.TextField;
+&nbsp;import javafx.stage.Stage;
+&nbsp;import javafx.stage.WindowEvent;
+&nbsp;import java.io.IOException;
+&nbsp;import java.io.InterruptedIOException;
+&nbsp;import java.io.UncheckedIOException;
+&nbsp;import java.net.InetAddress;
+&nbsp;import java.net.http.HttpClient;
+&nbsp;import java.net.http.HttpRequest;
+&nbsp;import java.net.http.HttpResponse;
+&nbsp;import java.nio.charset.StandardCharsets;
+&nbsp;import java.security.interfaces.ECPublicKey;
+&nbsp;import java.text.ParseException;
+&nbsp;import java.time.Duration;
+&nbsp;import java.time.Instant;
+&nbsp;import java.util.Base64;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Objects;
+&nbsp;import java.util.concurrent.CompletableFuture;
+&nbsp;import java.util.concurrent.CompletionException;
+&nbsp;import java.util.concurrent.ExecutorService;
+&nbsp;import java.util.concurrent.atomic.AtomicReference;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+<b class="nc">&nbsp;@KeyLoadingScoped</b>
+&nbsp;public class RegisterDeviceController implements FxController {
+&nbsp;
+<b class="nc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(RegisterDeviceController.class);</b>
+<b class="nc">&nbsp;	private static final ObjectMapper JSON = new ObjectMapper().setDefaultLeniency(true);</b>
+<b class="nc">&nbsp;	private static final Duration REQ_TIMEOUT = Duration.ofSeconds(10);</b>
+&nbsp;
+&nbsp;	private final Stage window;
+&nbsp;	private final HubConfig hubConfig;
+&nbsp;	private final String bearerToken;
+&nbsp;	private final Lazy&lt;Scene&gt; registerSuccessScene;
+&nbsp;	private final Lazy&lt;Scene&gt; registerFailedScene;
+&nbsp;	private final Lazy&lt;Scene&gt; deviceAlreadyExistsScene;
+&nbsp;	private final String deviceId;
+&nbsp;	private final P384KeyPair deviceKeyPair;
+&nbsp;	private final CompletableFuture&lt;ReceivedKey&gt; result;
+&nbsp;	private final HttpClient httpClient;
+&nbsp;
+<b class="nc">&nbsp;	private final BooleanProperty invalidSetupCode = new SimpleBooleanProperty(false);</b>
+<b class="nc">&nbsp;	private final BooleanProperty workInProgress = new SimpleBooleanProperty(false);</b>
+&nbsp;	public TextField setupCodeField;
+&nbsp;	public TextField deviceNameField;
+&nbsp;	public Button registerBtn;
+&nbsp;
+&nbsp;	@Inject
+<b class="nc">&nbsp;	public RegisterDeviceController(@KeyLoading Stage window, ExecutorService executor, HubConfig hubConfig, @Named(&quot;deviceId&quot;) String deviceId, DeviceKey deviceKey, CompletableFuture&lt;ReceivedKey&gt; result, @Named(&quot;bearerToken&quot;) AtomicReference&lt;String&gt; bearerToken, @FxmlScene(FxmlFile.HUB_REGISTER_SUCCESS) Lazy&lt;Scene&gt; registerSuccessScene, @FxmlScene(FxmlFile.HUB_REGISTER_FAILED) Lazy&lt;Scene&gt; registerFailedScene, @FxmlScene(FxmlFile.HUB_REGISTER_DEVICE_ALREADY_EXISTS) Lazy&lt;Scene&gt; deviceAlreadyExistsScene) {</b>
+<b class="nc">&nbsp;		this.window = window;</b>
+<b class="nc">&nbsp;		this.hubConfig = hubConfig;</b>
+<b class="nc">&nbsp;		this.deviceId = deviceId;</b>
+<b class="nc">&nbsp;		this.deviceKeyPair = Objects.requireNonNull(deviceKey.get());</b>
+<b class="nc">&nbsp;		this.result = result;</b>
+<b class="nc">&nbsp;		this.bearerToken = Objects.requireNonNull(bearerToken.get());</b>
+<b class="nc">&nbsp;		this.registerSuccessScene = registerSuccessScene;</b>
+<b class="nc">&nbsp;		this.registerFailedScene = registerFailedScene;</b>
+<b class="nc">&nbsp;		this.deviceAlreadyExistsScene = deviceAlreadyExistsScene;</b>
+<b class="nc">&nbsp;		this.window.addEventHandler(WindowEvent.WINDOW_HIDING, this::windowClosed);</b>
+<b class="nc">&nbsp;		this.httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).executor(executor).build();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void initialize() {
+<b class="nc">&nbsp;		deviceNameField.setText(determineHostname());</b>
+<b class="nc">&nbsp;		deviceNameField.disableProperty().bind(workInProgress);</b>
+<b class="nc">&nbsp;		setupCodeField.textProperty().addListener(observable -&gt; invalidSetupCode.set(false));</b>
+<b class="nc">&nbsp;		setupCodeField.disableProperty().bind(workInProgress);</b>
+<b class="nc">&nbsp;		var missingSetupCode = setupCodeField.textProperty().isEmpty();</b>
+<b class="nc">&nbsp;		var missingDeviceName = deviceNameField.textProperty().isEmpty();</b>
+<b class="nc">&nbsp;		registerBtn.disableProperty().bind(workInProgress.or(missingSetupCode).or(missingDeviceName));</b>
+<b class="nc">&nbsp;		registerBtn.contentDisplayProperty().bind(Bindings.when(workInProgress).then(ContentDisplay.LEFT).otherwise(ContentDisplay.TEXT_ONLY));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private String determineHostname() {
+&nbsp;		try {
+<b class="nc">&nbsp;			var hostName = InetAddress.getLocalHost().getHostName();</b>
+<b class="nc">&nbsp;			return Objects.requireNonNullElse(hostName, &quot;&quot;);</b>
+<b class="nc">&nbsp;		} catch (IOException e) {</b>
+<b class="nc">&nbsp;			return &quot;&quot;;</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void register() {
+<b class="nc">&nbsp;		workInProgress.set(true);</b>
+&nbsp;
+&nbsp;
+<b class="nc">&nbsp;		var userReq = HttpRequest.newBuilder(hubConfig.URIs.API.&quot;users/me&quot;) //</b>
+<b class="nc">&nbsp;				.GET() //</b>
+<b class="nc">&nbsp;				.timeout(REQ_TIMEOUT) //</b>
+<b class="nc">&nbsp;				.header(&quot;Authorization&quot;, &quot;Bearer &quot; + bearerToken) //</b>
+<b class="nc">&nbsp;				.header(&quot;Content-Type&quot;, &quot;application/json&quot;) //</b>
+<b class="nc">&nbsp;				.build();</b>
+<b class="nc">&nbsp;		httpClient.sendAsync(userReq, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8)) //</b>
+<b class="nc">&nbsp;				.thenApply(response -&gt; {</b>
+<b class="nc">&nbsp;					if (response.statusCode() == 200) {</b>
+<b class="nc">&nbsp;						var dto = fromJson(response.body());</b>
+<b class="nc">&nbsp;						return Objects.requireNonNull(dto, &quot;null or empty response body&quot;);</b>
+&nbsp;					} else {
+<b class="nc">&nbsp;						throw new RuntimeException(&quot;Server answered with unexpected status code &quot; + response.statusCode());</b>
+&nbsp;					}
+<b class="nc">&nbsp;				}).thenApply(user -&gt; {</b>
+&nbsp;					try {
+<b class="nc">&nbsp;						assert user.privateKey != null &amp;&amp; user.publicKey != null; // api/vaults/{v}/user-tokens/me would have returned 403, if user wasn&#39;t fully set up yet</b>
+<b class="nc">&nbsp;						var userPublicKey = JWEHelper.decodeECPublicKey(Base64.getDecoder().decode(user.publicKey));</b>
+<b class="nc">&nbsp;						migrateLegacyDevices(userPublicKey); // TODO: remove eventually, when most users have migrated to Hub 1.3.x or newer</b>
+<b class="nc">&nbsp;						var userKey = JWEHelper.decryptUserKey(JWEObject.parse(user.privateKey), setupCodeField.getText());</b>
+<b class="nc">&nbsp;						return JWEHelper.encryptUserKey(userKey, deviceKeyPair.getPublic());</b>
+<b class="nc">&nbsp;					} catch (ParseException | JWEHelper.KeyDecodeFailedException e) {</b>
+<b class="nc">&nbsp;						throw new RuntimeException(&quot;Server answered with unparsable user key&quot;, e);</b>
+&nbsp;					}
+<b class="nc">&nbsp;				}).thenCompose(jwe -&gt; {</b>
+<b class="nc">&nbsp;					var now = Instant.now().toString();</b>
+<b class="nc">&nbsp;					var dto = new CreateDeviceDto(deviceId, deviceNameField.getText(), BaseEncoding.base64().encode(deviceKeyPair.getPublic().getEncoded()), &quot;DESKTOP&quot;, jwe.serialize(), now);</b>
+<b class="nc">&nbsp;					var json = toJson(dto);</b>
+<b class="nc">&nbsp;					var deviceUri = hubConfig.URIs.API.&quot;devices/\{deviceId}&quot;;</b>
+<b class="nc">&nbsp;					var putDeviceReq = HttpRequest.newBuilder(deviceUri) //</b>
+<b class="nc">&nbsp;							.PUT(HttpRequest.BodyPublishers.ofString(json, StandardCharsets.UTF_8)) //</b>
+<b class="nc">&nbsp;							.timeout(REQ_TIMEOUT) //</b>
+<b class="nc">&nbsp;							.header(&quot;Authorization&quot;, &quot;Bearer &quot; + bearerToken) //</b>
+<b class="nc">&nbsp;							.header(&quot;Content-Type&quot;, &quot;application/json&quot;) //</b>
+<b class="nc">&nbsp;							.build();</b>
+<b class="nc">&nbsp;					return httpClient.sendAsync(putDeviceReq, HttpResponse.BodyHandlers.discarding());</b>
+<b class="nc">&nbsp;				}).whenCompleteAsync((response, throwable) -&gt; {</b>
+<b class="nc">&nbsp;					if (response != null) {</b>
+<b class="nc">&nbsp;						this.handleRegisterDeviceResponse(response);</b>
+&nbsp;					} else {
+<b class="nc">&nbsp;						this.setupFailed(throwable);</b>
+&nbsp;					}
+<b class="nc">&nbsp;					workInProgress.set(false);</b>
+&nbsp;				}, Platform::runLater);
+&nbsp;	}
+&nbsp;
+&nbsp;	private void migrateLegacyDevices(ECPublicKey userPublicKey) {
+&nbsp;		try {
+&nbsp;			// GET legacy access tokens
+<b class="nc">&nbsp;			var getUri = hubConfig.URIs.API.&quot;devices/\{deviceId}/legacy-access-tokens&quot;;</b>
+<b class="nc">&nbsp;			var getReq = HttpRequest.newBuilder(getUri).GET().timeout(REQ_TIMEOUT).header(&quot;Authorization&quot;, &quot;Bearer &quot; + bearerToken).build();</b>
+<b class="nc">&nbsp;			var getRes = httpClient.send(getReq, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));</b>
+<b class="nc">&nbsp;			if (getRes.statusCode() != 200) {</b>
+<b class="nc">&nbsp;				LOG.debug(&quot;GET {} resulted in status code {}. Skipping migration.&quot;, getUri, getRes.statusCode());</b>
+&nbsp;				return;
+&nbsp;			}
+<b class="nc">&nbsp;			Map&lt;String, String&gt; legacyAccessTokens = JSON.readerForMapOf(String.class).readValue(getRes.body());</b>
+<b class="nc">&nbsp;			if (legacyAccessTokens.isEmpty()) {</b>
+&nbsp;				return; // no migration required
+&nbsp;			}
+&nbsp;
+&nbsp;			// POST new access tokens
+<b class="nc">&nbsp;			Map&lt;String, String&gt; newAccessTokens = legacyAccessTokens.entrySet().stream().&lt;Map.Entry&lt;String, String&gt;&gt;mapMulti((entry, consumer) -&gt; {</b>
+<b class="nc">&nbsp;				try (var vaultKey = JWEHelper.decryptVaultKey(JWEObject.parse(entry.getValue()), deviceKeyPair.getPrivate())) {</b>
+<b class="nc">&nbsp;					var newAccessToken = JWEHelper.encryptVaultKey(vaultKey, userPublicKey).serialize();</b>
+<b class="nc">&nbsp;					consumer.accept(Map.entry(entry.getKey(), newAccessToken));</b>
+<b class="nc">&nbsp;				} catch (ParseException | JWEHelper.InvalidJweKeyException e) {</b>
+<b class="nc">&nbsp;					LOG.warn(&quot;Failed to decrypt legacy access token for vault {}. Skipping migration.&quot;, entry.getKey());</b>
+&nbsp;				}
+<b class="nc">&nbsp;			}).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));</b>
+<b class="nc">&nbsp;			var postUri = hubConfig.URIs.API.&quot;users/me/access-tokens&quot;;</b>
+<b class="nc">&nbsp;			var postBody = JSON.writer().writeValueAsString(newAccessTokens);</b>
+<b class="nc">&nbsp;			var postReq = HttpRequest.newBuilder(postUri).POST(HttpRequest.BodyPublishers.ofString(postBody)).timeout(REQ_TIMEOUT).header(&quot;Authorization&quot;, &quot;Bearer &quot; + bearerToken).build();</b>
+<b class="nc">&nbsp;			var postRes = httpClient.send(postReq, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));</b>
+<b class="nc">&nbsp;			if (postRes.statusCode() != 200) {</b>
+<b class="nc">&nbsp;				throw new IOException(STR.&quot;Unexpected response from POST \{postUri}: \{postRes.statusCode()}&quot;);</b>
+&nbsp;			}
+<b class="nc">&nbsp;		} catch (IOException e) {</b>
+&nbsp;			// log and ignore: this is merely a best-effort attempt of migrating legacy devices. Failure is uncritical as this is merely a convenience feature.
+<b class="nc">&nbsp;			LOG.error(&quot;Legacy Device Migration failed.&quot;, e);</b>
+<b class="nc">&nbsp;		} catch (InterruptedException e) {</b>
+<b class="nc">&nbsp;			Thread.currentThread().interrupt();</b>
+<b class="nc">&nbsp;			throw new UncheckedIOException(new InterruptedIOException(&quot;Legacy Device Migration interrupted&quot;));</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private UserDto fromJson(String json) {
+&nbsp;		try {
+<b class="nc">&nbsp;			return JSON.reader().readValue(json, UserDto.class);</b>
+<b class="nc">&nbsp;		} catch (IOException e) {</b>
+<b class="nc">&nbsp;			throw new IllegalStateException(&quot;Failed to deserialize DTO&quot;, e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private String toJson(CreateDeviceDto dto) {
+&nbsp;		try {
+<b class="nc">&nbsp;			return JSON.writer().writeValueAsString(dto);</b>
+<b class="nc">&nbsp;		} catch (JacksonException e) {</b>
+<b class="nc">&nbsp;			throw new IllegalStateException(&quot;Failed to serialize DTO&quot;, e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private void handleRegisterDeviceResponse(HttpResponse&lt;Void&gt; response) {
+<b class="nc">&nbsp;		if (response.statusCode() == 201) {</b>
+<b class="nc">&nbsp;			LOG.debug(&quot;Device registration for hub instance {} successful.&quot;, hubConfig.authSuccessUrl);</b>
+<b class="nc">&nbsp;			window.setScene(registerSuccessScene.get());</b>
+<b class="nc">&nbsp;		} else if (response.statusCode() == 409) {</b>
+<b class="nc">&nbsp;			setupFailed(new DeviceAlreadyExistsException());</b>
+&nbsp;		} else {
+<b class="nc">&nbsp;			setupFailed(new IllegalStateException(&quot;Unexpected http status code &quot; + response.statusCode()));</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private void setupFailed(Throwable cause) {
+<b class="nc">&nbsp;		switch (cause) {</b>
+<b class="nc">&nbsp;			case CompletionException e when e.getCause() instanceof JWEHelper.InvalidJweKeyException -&gt; invalidSetupCode.set(true);</b>
+<b class="nc">&nbsp;			case DeviceAlreadyExistsException e -&gt; {</b>
+<b class="nc">&nbsp;				LOG.debug(&quot;Device already registered in hub instance {} for different user&quot;, hubConfig.authSuccessUrl);</b>
+<b class="nc">&nbsp;				window.setScene(deviceAlreadyExistsScene.get());</b>
+&nbsp;			}
+&nbsp;			default -&gt; {
+<b class="nc">&nbsp;				LOG.warn(&quot;Device setup failed.&quot;, cause);</b>
+<b class="nc">&nbsp;				window.setScene(registerFailedScene.get());</b>
+&nbsp;			}
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void close() {
+<b class="nc">&nbsp;		window.close();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void windowClosed(WindowEvent windowEvent) {
+<b class="nc">&nbsp;		result.cancel(true);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	//--- Getters &amp; Setters
+&nbsp;	public BooleanProperty invalidSetupCodeProperty() {
+<b class="nc">&nbsp;		return invalidSetupCode;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isInvalidSetupCode() {
+<b class="nc">&nbsp;		return invalidSetupCode.get();</b>
+&nbsp;	}
+&nbsp;
+<b class="nc">&nbsp;	@JsonIgnoreProperties(ignoreUnknown = true)</b>
+<b class="nc">&nbsp;	private record UserDto(String id, String name, String publicKey, String privateKey, String setupCode) {}</b>
+&nbsp;
+<b class="nc">&nbsp;	private record CreateDeviceDto(@JsonProperty(required = true) String id, //</b>
+&nbsp;								   @JsonProperty(required = true) String name, //
+&nbsp;								   @JsonProperty(required = true) String publicKey, //
+&nbsp;								   @JsonProperty(required = true, defaultValue = &quot;DESKTOP&quot;) String type, //
+&nbsp;								   @JsonProperty(required = true) String userPrivateKey, //
+&nbsp;								   @JsonProperty(required = true) String creationTime) {}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

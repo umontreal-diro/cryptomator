@@ -1,0 +1,209 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Server</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ipc</a>
+</div>
+
+<h1>Coverage Summary for Class: Server (org.cryptomator.ipc)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Server</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/35)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ipc;
+&nbsp;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import java.io.EOFException;
+&nbsp;import java.io.IOException;
+&nbsp;import java.net.StandardProtocolFamily;
+&nbsp;import java.net.UnixDomainSocketAddress;
+&nbsp;import java.nio.channels.AlreadyBoundException;
+&nbsp;import java.nio.channels.AsynchronousCloseException;
+&nbsp;import java.nio.channels.ClosedChannelException;
+&nbsp;import java.nio.channels.ServerSocketChannel;
+&nbsp;import java.nio.channels.UnsupportedAddressTypeException;
+&nbsp;import java.nio.file.Files;
+&nbsp;import java.nio.file.Path;
+&nbsp;import java.util.concurrent.Executor;
+&nbsp;
+&nbsp;class Server implements IpcCommunicator {
+&nbsp;
+<b class="nc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(Server.class);</b>
+&nbsp;
+&nbsp;	private final ServerSocketChannel serverSocketChannel;
+&nbsp;	private final Path socketPath;
+&nbsp;
+<b class="nc">&nbsp;	private Server(ServerSocketChannel serverSocketChannel, Path socketPath) {</b>
+<b class="nc">&nbsp;		this.serverSocketChannel = serverSocketChannel;</b>
+<b class="nc">&nbsp;		this.socketPath = socketPath;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public static Server create(Path socketPath) throws IOException {
+<b class="nc">&nbsp;		Files.createDirectories(socketPath.getParent());</b>
+<b class="nc">&nbsp;		var address = UnixDomainSocketAddress.of(socketPath);</b>
+<b class="nc">&nbsp;		ServerSocketChannel ch = null;</b>
+&nbsp;		try {
+<b class="nc">&nbsp;			ch = ServerSocketChannel.open(StandardProtocolFamily.UNIX);</b>
+<b class="nc">&nbsp;			ch.bind(address);</b>
+<b class="nc">&nbsp;			LOG.info(&quot;Spawning IPC server listening on socket {}&quot;, socketPath);</b>
+<b class="nc">&nbsp;			return new Server(ch, socketPath);</b>
+<b class="nc">&nbsp;		} catch (IOException | AlreadyBoundException | UnsupportedAddressTypeException e) {</b>
+<b class="nc">&nbsp;			if (ch != null) {</b>
+<b class="nc">&nbsp;				ch.close();</b>
+&nbsp;			}
+<b class="nc">&nbsp;			throw e;</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public boolean isClient() {
+<b class="nc">&nbsp;		return false;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void listen(IpcMessageListener listener, Executor executor) {
+<b class="nc">&nbsp;		executor.execute(() -&gt; {</b>
+<b class="nc">&nbsp;			while (serverSocketChannel.isOpen()) {</b>
+<b class="nc">&nbsp;				try (var ch = serverSocketChannel.accept()) {</b>
+<b class="nc">&nbsp;					while (ch.isConnected()) {</b>
+<b class="nc">&nbsp;						var msg = IpcMessage.receive(ch);</b>
+<b class="nc">&nbsp;						listener.handleMessage(msg);</b>
+&nbsp;					}
+<b class="nc">&nbsp;				} catch (AsynchronousCloseException e) {</b>
+&nbsp;					return; // serverSocketChannel closed or listener interrupted
+<b class="nc">&nbsp;				} catch (EOFException | ClosedChannelException e) {</b>
+&nbsp;					// continue with next connected client
+<b class="nc">&nbsp;				} catch (IOException e) {</b>
+<b class="nc">&nbsp;					LOG.error(&quot;Failed to read IPC message&quot;, e);</b>
+&nbsp;				}
+&nbsp;			}
+&nbsp;		});
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void send(IpcMessage message, Executor executor) {
+<b class="nc">&nbsp;		executor.execute(() -&gt; {</b>
+<b class="nc">&nbsp;			try (var ch = serverSocketChannel.accept()) {</b>
+<b class="nc">&nbsp;				message.send(ch);</b>
+<b class="nc">&nbsp;			} catch (IOException e) {</b>
+<b class="nc">&nbsp;				LOG.error(&quot;Failed to send IPC message&quot;, e);</b>
+&nbsp;			}
+&nbsp;		});
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void close() throws IOException {
+&nbsp;		try {
+<b class="nc">&nbsp;			serverSocketChannel.close();</b>
+&nbsp;		} finally {
+<b class="nc">&nbsp;			Files.deleteIfExists(socketPath);</b>
+<b class="nc">&nbsp;			LOG.debug(&quot;IPC server closed&quot;);</b>
+<b class="nc">&nbsp;		}</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

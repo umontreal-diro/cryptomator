@@ -25,11 +25,27 @@ jobs:
           cache: 'maven'
       - name: Build and Test
         run: |
-          export MAVEN_OPTS="-XX:+PrintFlagsFinal" 
-          xvfb-run mvn -B verify -Djavafx.platform=linux jacoco:report -Pcoverage
-          unset MAVEN_OPTS
+          # Flags to test
+          flags=(
+            "-Xms512m" 
+            "-XX:+UseG1GC"
+            "-XX:+PrintGCDetails"
+            "-XX:+HeapDumpOnOutOfMemoryError"
+            "-XX:+UseCompressedOops"
+          )
+
+        
+          for flag in "${flags[@]}"; do
+            echo "Using MAVEN_OPTS: $flag"  
+            export MAVEN_OPTS="$flag"
+
+          
+            xvfb-run mvn -B verify -Djavafx.platform=linux jacoco:report -Pcoverage
+
+            unset MAVEN_OPTS  # Clear MAVEN_OPTS for the next iteration
+          done
       - name: Get JaCoCo Coverage
-        id: coverage  
+        id: coverage
         run: |
           coverage=$(python3 config/coverage.py target/site/jacoco/jacoco.csv) 
           echo "COVERAGE=$coverage" >> $GITHUB_ENV

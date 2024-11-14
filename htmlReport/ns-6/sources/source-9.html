@@ -1,0 +1,392 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > VaultStats</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.common.vaults</a>
+</div>
+
+<h1>Coverage Summary for Class: VaultStats (org.cryptomator.common.vaults)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">VaultStats</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/34)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/82)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">VaultStats$UpdateStatsService</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">VaultStats$UpdateStatsService$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/40)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/91)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.common.vaults;
+&nbsp;
+&nbsp;import org.cryptomator.cryptofs.CryptoFileSystem;
+&nbsp;import org.cryptomator.cryptofs.CryptoFileSystemStats;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import javax.inject.Inject;
+&nbsp;import javafx.application.Platform;
+&nbsp;import javafx.beans.Observable;
+&nbsp;import javafx.beans.property.DoubleProperty;
+&nbsp;import javafx.beans.property.LongProperty;
+&nbsp;import javafx.beans.property.ObjectProperty;
+&nbsp;import javafx.beans.property.SimpleDoubleProperty;
+&nbsp;import javafx.beans.property.SimpleLongProperty;
+&nbsp;import javafx.beans.property.SimpleObjectProperty;
+&nbsp;import javafx.concurrent.ScheduledService;
+&nbsp;import javafx.concurrent.Task;
+&nbsp;import javafx.util.Duration;
+&nbsp;import java.time.Instant;
+&nbsp;import java.util.Optional;
+&nbsp;import java.util.concurrent.ExecutorService;
+&nbsp;import java.util.concurrent.atomic.AtomicReference;
+&nbsp;
+<b class="nc">&nbsp;@PerVault</b>
+&nbsp;public class VaultStats {
+&nbsp;
+<b class="nc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(VaultStats.class);</b>
+&nbsp;
+&nbsp;	private final AtomicReference&lt;CryptoFileSystem&gt; fs;
+&nbsp;	private final VaultState state;
+&nbsp;	private final ScheduledService&lt;Optional&lt;CryptoFileSystemStats&gt;&gt; updateService;
+<b class="nc">&nbsp;	private final LongProperty bytesPerSecondRead = new SimpleLongProperty();</b>
+<b class="nc">&nbsp;	private final LongProperty bytesPerSecondWritten = new SimpleLongProperty();</b>
+<b class="nc">&nbsp;	private final LongProperty bytesPerSecondEncrypted = new SimpleLongProperty();</b>
+<b class="nc">&nbsp;	private final LongProperty bytesPerSecondDecrypted = new SimpleLongProperty();</b>
+<b class="nc">&nbsp;	private final DoubleProperty cacheHitRate = new SimpleDoubleProperty();</b>
+<b class="nc">&nbsp;	private final LongProperty totalBytesRead = new SimpleLongProperty();</b>
+<b class="nc">&nbsp;	private final LongProperty totalBytesWritten = new SimpleLongProperty();</b>
+<b class="nc">&nbsp;	private final LongProperty totalBytesEncrypted = new SimpleLongProperty();</b>
+<b class="nc">&nbsp;	private final LongProperty totalBytesDecrypted = new SimpleLongProperty();</b>
+<b class="nc">&nbsp;	private final LongProperty filesRead = new SimpleLongProperty();</b>
+<b class="nc">&nbsp;	private final LongProperty filesWritten = new SimpleLongProperty();</b>
+<b class="nc">&nbsp;	private final LongProperty filesAccessed = new SimpleLongProperty();</b>
+<b class="nc">&nbsp;	private final LongProperty totalFilesAccessed = new SimpleLongProperty();</b>
+<b class="nc">&nbsp;	private final ObjectProperty&lt;Instant&gt; lastActivity = new SimpleObjectProperty&lt;&gt;();</b>
+&nbsp;
+&nbsp;	@Inject
+<b class="nc">&nbsp;	VaultStats(AtomicReference&lt;CryptoFileSystem&gt; fs, VaultState state, ExecutorService executor) {</b>
+<b class="nc">&nbsp;		this.fs = fs;</b>
+<b class="nc">&nbsp;		this.state = state;</b>
+<b class="nc">&nbsp;		this.updateService = new UpdateStatsService();</b>
+<b class="nc">&nbsp;		updateService.setExecutor(executor);</b>
+<b class="nc">&nbsp;		updateService.setPeriod(Duration.seconds(1));</b>
+&nbsp;
+<b class="nc">&nbsp;		state.addListener(this::vaultStateChanged);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void vaultStateChanged(@SuppressWarnings(&quot;unused&quot;) Observable observable) {
+<b class="nc">&nbsp;		if (VaultState.Value.UNLOCKED == state.get()) {</b>
+<b class="nc">&nbsp;			assert fs.get() != null;</b>
+<b class="nc">&nbsp;			LOG.debug(&quot;start recording stats&quot;);</b>
+<b class="nc">&nbsp;			Platform.runLater(() -&gt; {</b>
+<b class="nc">&nbsp;				lastActivity.set(Instant.now());</b>
+<b class="nc">&nbsp;				updateService.restart();</b>
+&nbsp;			});
+&nbsp;		} else {
+<b class="nc">&nbsp;			LOG.debug(&quot;stop recording stats&quot;);</b>
+<b class="nc">&nbsp;			Platform.runLater(() -&gt; updateService.cancel());</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private void updateStats(Optional&lt;CryptoFileSystemStats&gt; stats) {
+<b class="nc">&nbsp;		assert Platform.isFxApplicationThread();</b>
+<b class="nc">&nbsp;		bytesPerSecondRead.set(stats.map(CryptoFileSystemStats::pollBytesRead).orElse(0L));</b>
+<b class="nc">&nbsp;		bytesPerSecondWritten.set(stats.map(CryptoFileSystemStats::pollBytesWritten).orElse(0L));</b>
+<b class="nc">&nbsp;		cacheHitRate.set(stats.map(this::getCacheHitRate).orElse(0.0));</b>
+<b class="nc">&nbsp;		bytesPerSecondDecrypted.set(stats.map(CryptoFileSystemStats::pollBytesDecrypted).orElse(0L));</b>
+<b class="nc">&nbsp;		bytesPerSecondEncrypted.set(stats.map(CryptoFileSystemStats::pollBytesEncrypted).orElse(0L));</b>
+<b class="nc">&nbsp;		totalBytesRead.set(stats.map(CryptoFileSystemStats::pollTotalBytesRead).orElse(0L));</b>
+<b class="nc">&nbsp;		totalBytesWritten.set(stats.map(CryptoFileSystemStats::pollTotalBytesWritten).orElse(0L));</b>
+<b class="nc">&nbsp;		totalBytesEncrypted.set(stats.map(CryptoFileSystemStats::pollTotalBytesEncrypted).orElse(0L));</b>
+<b class="nc">&nbsp;		totalBytesDecrypted.set(stats.map(CryptoFileSystemStats::pollTotalBytesDecrypted).orElse(0L));</b>
+<b class="nc">&nbsp;		var oldAccessCount = filesRead.get() + filesWritten.get();</b>
+<b class="nc">&nbsp;		filesRead.set(stats.map(CryptoFileSystemStats::pollAmountOfAccessesRead).orElse(0L));</b>
+<b class="nc">&nbsp;		filesWritten.set(stats.map(CryptoFileSystemStats::pollAmountOfAccessesWritten).orElse(0L));</b>
+<b class="nc">&nbsp;		filesAccessed.set(stats.map(CryptoFileSystemStats::pollAmountOfAccesses).orElse(0L));</b>
+<b class="nc">&nbsp;		totalFilesAccessed.set(stats.map(CryptoFileSystemStats::pollTotalAmountOfAccesses).orElse(0L));</b>
+<b class="nc">&nbsp;		var newAccessCount = filesRead.get() + filesWritten.get();</b>
+&nbsp;
+&nbsp;		// check for any I/O activity
+<b class="nc">&nbsp;		if (newAccessCount &gt; oldAccessCount) {</b>
+<b class="nc">&nbsp;			lastActivity.set(Instant.now());</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private double getCacheHitRate(CryptoFileSystemStats stats) {
+<b class="nc">&nbsp;		long accesses = stats.pollChunkCacheAccesses();</b>
+<b class="nc">&nbsp;		long hits = stats.pollChunkCacheHits();</b>
+<b class="nc">&nbsp;		if (accesses == 0) {</b>
+<b class="nc">&nbsp;			return 0.0;</b>
+&nbsp;		} else {
+<b class="nc">&nbsp;			return hits / (double) accesses;</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+<b class="nc">&nbsp;	private class UpdateStatsService extends ScheduledService&lt;Optional&lt;CryptoFileSystemStats&gt;&gt; {</b>
+&nbsp;
+<b class="nc">&nbsp;		private UpdateStatsService() {</b>
+<b class="nc">&nbsp;			setOnFailed(event -&gt; LOG.error(&quot;Error in UpdateStateService.&quot;, getException()));</b>
+&nbsp;		}
+&nbsp;
+&nbsp;		@Override
+&nbsp;		protected Task&lt;Optional&lt;CryptoFileSystemStats&gt;&gt; createTask() {
+<b class="nc">&nbsp;			return new Task&lt;&gt;() {</b>
+&nbsp;				@Override
+&nbsp;				protected Optional&lt;CryptoFileSystemStats&gt; call() {
+<b class="nc">&nbsp;					return Optional.ofNullable(fs.get()).map(CryptoFileSystem::getStats);</b>
+&nbsp;				}
+&nbsp;			};
+&nbsp;		}
+&nbsp;
+&nbsp;		@Override
+&nbsp;		protected void succeeded() {
+<b class="nc">&nbsp;			assert getValue() != null;</b>
+<b class="nc">&nbsp;			updateStats(getValue());</b>
+<b class="nc">&nbsp;			super.succeeded();</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/* Observables */
+&nbsp;
+&nbsp;	public LongProperty bytesPerSecondReadProperty() {
+<b class="nc">&nbsp;		return bytesPerSecondRead;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public long getBytesPerSecondRead() {
+<b class="nc">&nbsp;		return bytesPerSecondRead.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public LongProperty bytesPerSecondWrittenProperty() {
+<b class="nc">&nbsp;		return bytesPerSecondWritten;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public long getBytesPerSecondWritten() {
+<b class="nc">&nbsp;		return bytesPerSecondWritten.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public LongProperty bytesPerSecondEncryptedProperty() {
+<b class="nc">&nbsp;		return bytesPerSecondEncrypted;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public long getBytesPerSecondEncrypted() {
+<b class="nc">&nbsp;		return bytesPerSecondEncrypted.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public LongProperty bytesPerSecondDecryptedProperty() {
+<b class="nc">&nbsp;		return bytesPerSecondDecrypted;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public long getBytesPerSecondDecrypted() {
+<b class="nc">&nbsp;		return bytesPerSecondDecrypted.get();</b>
+&nbsp;	}
+&nbsp;
+<b class="nc">&nbsp;	public DoubleProperty cacheHitRateProperty() { return cacheHitRate; }</b>
+&nbsp;
+&nbsp;	public double getCacheHitRate() {
+<b class="nc">&nbsp;		return cacheHitRate.get();</b>
+&nbsp;	}
+&nbsp;
+<b class="nc">&nbsp;	public LongProperty totalBytesReadProperty() {return totalBytesRead;}</b>
+&nbsp;
+<b class="nc">&nbsp;	public long getTotalBytesRead() { return totalBytesRead.get();}</b>
+&nbsp;
+<b class="nc">&nbsp;	public LongProperty totalBytesWrittenProperty() {return totalBytesWritten;}</b>
+&nbsp;
+<b class="nc">&nbsp;	public long getTotalBytesWritten() { return totalBytesWritten.get();}</b>
+&nbsp;
+<b class="nc">&nbsp;	public LongProperty totalBytesEncryptedProperty() {return totalBytesEncrypted;}</b>
+&nbsp;
+<b class="nc">&nbsp;	public long getTotalBytesEncrypted() { return totalBytesEncrypted.get();}</b>
+&nbsp;
+<b class="nc">&nbsp;	public LongProperty totalBytesDecryptedProperty() {return totalBytesDecrypted;}</b>
+&nbsp;
+<b class="nc">&nbsp;	public long getTotalBytesDecrypted() { return totalBytesDecrypted.get();}</b>
+&nbsp;
+<b class="nc">&nbsp;	public LongProperty filesRead() { return filesRead;}</b>
+&nbsp;
+<b class="nc">&nbsp;	public long getFilesRead() { return filesRead.get();}</b>
+&nbsp;
+<b class="nc">&nbsp;	public LongProperty filesWritten() {return filesWritten;}</b>
+&nbsp;
+<b class="nc">&nbsp;	public long getFilesWritten() {return filesWritten.get();}</b>
+&nbsp;
+&nbsp;	public LongProperty filesAccessed() {
+<b class="nc">&nbsp;		return filesAccessed;}</b>
+&nbsp;
+<b class="nc">&nbsp;	public long getFilesAccessed() {return filesAccessed.get();}</b>
+&nbsp;
+&nbsp;	public LongProperty totalFilesAccessed(){
+<b class="nc">&nbsp;		return totalFilesAccessed;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public long getTotalFilesAccessed(){
+<b class="nc">&nbsp;		return totalFilesAccessed.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObjectProperty&lt;Instant&gt; lastActivityProperty() {
+<b class="nc">&nbsp;		return lastActivity;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Instant getLastActivity() {
+<b class="nc">&nbsp;		return lastActivity.get();</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

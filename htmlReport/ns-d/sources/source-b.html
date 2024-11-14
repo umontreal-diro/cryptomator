@@ -1,0 +1,190 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > PasswordStrengthIndicator</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.controls</a>
+</div>
+
+<h1>Coverage Summary for Class: PasswordStrengthIndicator (org.cryptomator.ui.controls)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PasswordStrengthIndicator</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/42)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.controls;
+&nbsp;
+&nbsp;import com.tobiasdiez.easybind.EasyBind;
+&nbsp;
+&nbsp;import javafx.beans.binding.BooleanBinding;
+&nbsp;import javafx.beans.property.IntegerProperty;
+&nbsp;import javafx.beans.property.SimpleIntegerProperty;
+&nbsp;import javafx.scene.layout.HBox;
+&nbsp;import javafx.scene.layout.Priority;
+&nbsp;import javafx.scene.layout.Region;
+&nbsp;
+&nbsp;public class PasswordStrengthIndicator extends HBox {
+&nbsp;
+&nbsp;	private static final String STYLECLASS = &quot;password-strength-indicator&quot;;
+&nbsp;	private static final String SEGMENT_CLASS = &quot;segment&quot;;
+&nbsp;	private static final String ACTIVE_SEGMENT_CLASS = &quot;active&quot;;
+&nbsp;	private static final String STRENGTH_0_CLASS = &quot;strength-0&quot;;
+&nbsp;	private static final String STRENGTH_1_CLASS = &quot;strength-1&quot;;
+&nbsp;	private static final String STRENGTH_2_CLASS = &quot;strength-2&quot;;
+&nbsp;	private static final String STRENGTH_3_CLASS = &quot;strength-3&quot;;
+&nbsp;	private static final String STRENGTH_4_CLASS = &quot;strength-4&quot;;
+&nbsp;
+&nbsp;	private final Region s0;
+&nbsp;	private final Region s1;
+&nbsp;	private final Region s2;
+&nbsp;	private final Region s3;
+&nbsp;	private final Region s4;
+<b class="nc">&nbsp;	private final IntegerProperty strength = new SimpleIntegerProperty();</b>
+<b class="nc">&nbsp;	private final BooleanBinding isStrength0 = strength.isEqualTo(0);</b>
+<b class="nc">&nbsp;	private final BooleanBinding isStrength1 = strength.isEqualTo(1);</b>
+<b class="nc">&nbsp;	private final BooleanBinding isStrength2 = strength.isEqualTo(2);</b>
+<b class="nc">&nbsp;	private final BooleanBinding isStrength3 = strength.isEqualTo(3);</b>
+<b class="nc">&nbsp;	private final BooleanBinding isStrength4 = strength.isEqualTo(4);</b>
+<b class="nc">&nbsp;	private final BooleanBinding isMinimumStrength0 = strength.greaterThanOrEqualTo(0);</b>
+<b class="nc">&nbsp;	private final BooleanBinding isMinimumStrength1 = strength.greaterThanOrEqualTo(1);</b>
+<b class="nc">&nbsp;	private final BooleanBinding isMinimumStrength2 = strength.greaterThanOrEqualTo(2);</b>
+<b class="nc">&nbsp;	private final BooleanBinding isMinimumStrength3 = strength.greaterThanOrEqualTo(3);</b>
+<b class="nc">&nbsp;	private final BooleanBinding isMinimumStrength4 = strength.greaterThanOrEqualTo(4);</b>
+&nbsp;
+<b class="nc">&nbsp;	public PasswordStrengthIndicator() {</b>
+<b class="nc">&nbsp;		this.s0 = new Region();</b>
+<b class="nc">&nbsp;		this.s1 = new Region();</b>
+<b class="nc">&nbsp;		this.s2 = new Region();</b>
+<b class="nc">&nbsp;		this.s3 = new Region();</b>
+<b class="nc">&nbsp;		this.s4 = new Region();</b>
+&nbsp;
+<b class="nc">&nbsp;		getChildren().addAll(s0, s1, s2, s3, s4);</b>
+<b class="nc">&nbsp;		setHgrow(s0, Priority.ALWAYS);</b>
+<b class="nc">&nbsp;		setHgrow(s1, Priority.ALWAYS);</b>
+<b class="nc">&nbsp;		setHgrow(s2, Priority.ALWAYS);</b>
+<b class="nc">&nbsp;		setHgrow(s3, Priority.ALWAYS);</b>
+<b class="nc">&nbsp;		setHgrow(s4, Priority.ALWAYS);</b>
+&nbsp;
+<b class="nc">&nbsp;		getStyleClass().add(STYLECLASS);</b>
+<b class="nc">&nbsp;		s0.getStyleClass().add(SEGMENT_CLASS);</b>
+<b class="nc">&nbsp;		s1.getStyleClass().add(SEGMENT_CLASS);</b>
+<b class="nc">&nbsp;		s2.getStyleClass().add(SEGMENT_CLASS);</b>
+<b class="nc">&nbsp;		s3.getStyleClass().add(SEGMENT_CLASS);</b>
+<b class="nc">&nbsp;		s4.getStyleClass().add(SEGMENT_CLASS);</b>
+&nbsp;
+<b class="nc">&nbsp;		EasyBind.includeWhen(s0.getStyleClass(), ACTIVE_SEGMENT_CLASS, isMinimumStrength0);</b>
+<b class="nc">&nbsp;		EasyBind.includeWhen(s1.getStyleClass(), ACTIVE_SEGMENT_CLASS, isMinimumStrength1);</b>
+<b class="nc">&nbsp;		EasyBind.includeWhen(s2.getStyleClass(), ACTIVE_SEGMENT_CLASS, isMinimumStrength2);</b>
+<b class="nc">&nbsp;		EasyBind.includeWhen(s3.getStyleClass(), ACTIVE_SEGMENT_CLASS, isMinimumStrength3);</b>
+<b class="nc">&nbsp;		EasyBind.includeWhen(s4.getStyleClass(), ACTIVE_SEGMENT_CLASS, isMinimumStrength4);</b>
+<b class="nc">&nbsp;		EasyBind.includeWhen(getStyleClass(), STRENGTH_0_CLASS, isStrength0);</b>
+<b class="nc">&nbsp;		EasyBind.includeWhen(getStyleClass(), STRENGTH_1_CLASS, isStrength1);</b>
+<b class="nc">&nbsp;		EasyBind.includeWhen(getStyleClass(), STRENGTH_2_CLASS, isStrength2);</b>
+<b class="nc">&nbsp;		EasyBind.includeWhen(getStyleClass(), STRENGTH_3_CLASS, isStrength3);</b>
+<b class="nc">&nbsp;		EasyBind.includeWhen(getStyleClass(), STRENGTH_4_CLASS, isStrength4);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/* Observables */
+&nbsp;
+&nbsp;	public IntegerProperty strengthProperty() {
+<b class="nc">&nbsp;		return strength;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public int getStrength() {
+<b class="nc">&nbsp;		return strength.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void setStrength(int strength) {
+<b class="nc">&nbsp;		this.strength.set(strength);</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

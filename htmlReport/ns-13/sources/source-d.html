@@ -1,0 +1,380 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ResultListCellController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.health</a>
+</div>
+
+<h1>Coverage Summary for Class: ResultListCellController (org.cryptomator.ui.health)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ResultListCellController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/27)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/21)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/81)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ResultListCellController$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/28)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/21)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/83)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.health;
+&nbsp;
+&nbsp;import com.tobiasdiez.easybind.EasyBind;
+&nbsp;import com.tobiasdiez.easybind.Subscription;
+&nbsp;import org.cryptomator.cryptofs.health.api.DiagnosticResult;
+&nbsp;import org.cryptomator.ui.common.Animations;
+&nbsp;import org.cryptomator.ui.common.AutoAnimator;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;import org.cryptomator.ui.controls.FontAwesome5Icon;
+&nbsp;import org.cryptomator.ui.controls.FontAwesome5IconView;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import javax.inject.Inject;
+&nbsp;import javafx.beans.binding.Bindings;
+&nbsp;import javafx.beans.binding.BooleanBinding;
+&nbsp;import javafx.beans.binding.ObjectBinding;
+&nbsp;import javafx.beans.property.ObjectProperty;
+&nbsp;import javafx.beans.property.SimpleObjectProperty;
+&nbsp;import javafx.beans.value.ObservableValue;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.scene.control.Tooltip;
+&nbsp;import javafx.util.Duration;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;
+&nbsp;// unscoped because each cell needs its own controller
+&nbsp;public class ResultListCellController implements FxController {
+&nbsp;
+<b class="nc">&nbsp;	private static final FontAwesome5Icon INFO_ICON = FontAwesome5Icon.INFO_CIRCLE;</b>
+<b class="nc">&nbsp;	private static final FontAwesome5Icon GOOD_ICON = FontAwesome5Icon.CHECK;</b>
+<b class="nc">&nbsp;	private static final FontAwesome5Icon WARN_ICON = FontAwesome5Icon.EXCLAMATION_TRIANGLE;</b>
+<b class="nc">&nbsp;	private static final FontAwesome5Icon CRIT_ICON = FontAwesome5Icon.TIMES;</b>
+&nbsp;
+&nbsp;
+&nbsp;	private final ObjectProperty&lt;Result&gt; result;
+&nbsp;	private final ObservableValue&lt;DiagnosticResult.Severity&gt; severity;
+&nbsp;	private final ObservableValue&lt;String&gt; description;
+&nbsp;	private final ResultFixApplier fixApplier;
+&nbsp;	private final ObservableValue&lt;Result.FixState&gt; fixState;
+&nbsp;	private final ObjectBinding&lt;FontAwesome5Icon&gt; severityGlyph;
+&nbsp;	private final BooleanBinding fixable;
+&nbsp;	private final BooleanBinding fixing;
+&nbsp;	private final BooleanBinding fixed;
+&nbsp;	private final BooleanBinding fixFailed;
+&nbsp;	private final BooleanBinding fixRunningOrDone;
+&nbsp;	private final ObservableValue&lt;FontAwesome5Icon&gt; fixGlyph;
+&nbsp;	private final List&lt;Subscription&gt; subscriptions;
+&nbsp;	private final Tooltip fixStateTip;
+&nbsp;	private final Tooltip severityTip;
+&nbsp;	private AutoAnimator fixRunningRotator;
+&nbsp;	private final ResourceBundle resourceBundle;
+&nbsp;
+&nbsp;	/* FXML */
+&nbsp;	public FontAwesome5IconView severityView;
+&nbsp;	public FontAwesome5IconView fixView;
+&nbsp;
+&nbsp;	@Inject
+<b class="nc">&nbsp;	public ResultListCellController(ResultFixApplier fixApplier, ResourceBundle resourceBundle) {</b>
+<b class="nc">&nbsp;		this.resourceBundle = resourceBundle;</b>
+<b class="nc">&nbsp;		this.result = new SimpleObjectProperty&lt;&gt;(null);</b>
+<b class="nc">&nbsp;		this.severity = result.map(Result::diagnosis).map(DiagnosticResult::getSeverity);</b>
+<b class="nc">&nbsp;		this.description = result.map(Result::getDescription).orElse(&quot;&quot;);</b>
+<b class="nc">&nbsp;		this.fixApplier = fixApplier;</b>
+<b class="nc">&nbsp;		this.fixState = result.flatMap(Result::fixState);</b>
+<b class="nc">&nbsp;		this.severityGlyph = Bindings.createObjectBinding(this::getSeverityGlyph, result);</b>
+<b class="nc">&nbsp;		this.fixable = Bindings.createBooleanBinding(this::isFixable, fixState);</b>
+<b class="nc">&nbsp;		this.fixing = Bindings.createBooleanBinding(this::isFixing, fixState);</b>
+<b class="nc">&nbsp;		this.fixed = Bindings.createBooleanBinding(this::isFixed, fixState);</b>
+<b class="nc">&nbsp;		this.fixFailed = Bindings.createBooleanBinding(this::isFixFailed, fixState);</b>
+<b class="nc">&nbsp;		this.fixRunningOrDone = fixing.or(fixed).or(fixFailed);</b>
+<b class="nc">&nbsp;		this.fixGlyph = fixState.map(this::getFixGlyph);</b>
+<b class="nc">&nbsp;		this.subscriptions = new ArrayList&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;		this.fixStateTip = new Tooltip();</b>
+<b class="nc">&nbsp;		fixStateTip.textProperty().bind(fixState.map(this::getFixStateDescription));</b>
+<b class="nc">&nbsp;		fixStateTip.setShowDelay(Duration.millis(100));</b>
+&nbsp;
+<b class="nc">&nbsp;		this.severityTip = new Tooltip();</b>
+<b class="nc">&nbsp;		severityTip.textProperty().bind(severity.map(this::getSeverityDescription));</b>
+<b class="nc">&nbsp;		severityTip.setShowDelay(Duration.millis(150));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public FontAwesome5Icon getFixGlyph(Result.FixState state) {
+<b class="nc">&nbsp;		return switch (state) {</b>
+<b class="nc">&nbsp;			case FIXING -&gt; FontAwesome5Icon.SPINNER;</b>
+<b class="nc">&nbsp;			case FIXED -&gt; FontAwesome5Icon.CHECK;</b>
+<b class="nc">&nbsp;			case FIX_FAILED -&gt; FontAwesome5Icon.TIMES;</b>
+<b class="nc">&nbsp;			default -&gt; null;</b>
+&nbsp;		};
+&nbsp;	}
+&nbsp;
+&nbsp;	private String getFixStateDescription(Result.FixState fixState) {
+<b class="nc">&nbsp;		return switch (fixState) {</b>
+<b class="nc">&nbsp;			case FIXED -&gt; resourceBundle.getString(&quot;health.fix.successTip&quot;);</b>
+<b class="nc">&nbsp;			case FIX_FAILED -&gt; resourceBundle.getString(&quot;health.fix.failTip&quot;);</b>
+<b class="nc">&nbsp;			default -&gt; &quot;&quot;;</b>
+&nbsp;		};
+&nbsp;	}
+&nbsp;
+&nbsp;	private String getSeverityDescription(DiagnosticResult.Severity severity) {
+<b class="nc">&nbsp;		return resourceBundle.getString(switch (severity) {</b>
+<b class="nc">&nbsp;			case GOOD -&gt; &quot;health.result.severityTip.good&quot;;</b>
+<b class="nc">&nbsp;			case INFO -&gt; &quot;health.result.severityTip.info&quot;;</b>
+<b class="nc">&nbsp;			case WARN -&gt; &quot;health.result.severityTip.warn&quot;;</b>
+<b class="nc">&nbsp;			case CRITICAL -&gt; &quot;health.result.severityTip.crit&quot;;</b>
+&nbsp;		});
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void initialize() {
+&nbsp;		// see getGlyph() for relevant glyphs:
+<b class="nc">&nbsp;		subscriptions.addAll(List.of(EasyBind.includeWhen(severityView.getStyleClass(), &quot;glyph-icon-muted&quot;, severity.map(DiagnosticResult.Severity.INFO::equals).orElse(false)), //</b>
+<b class="nc">&nbsp;				EasyBind.includeWhen(severityView.getStyleClass(), &quot;glyph-icon-primary&quot;, severity.map(DiagnosticResult.Severity.GOOD::equals).orElse(false)), //</b>
+<b class="nc">&nbsp;				EasyBind.includeWhen(severityView.getStyleClass(), &quot;glyph-icon-orange&quot;, severity.map(DiagnosticResult.Severity.WARN::equals).orElse(false)), //</b>
+<b class="nc">&nbsp;				EasyBind.includeWhen(severityView.getStyleClass(), &quot;glyph-icon-red&quot;, severity.map(DiagnosticResult.Severity.CRITICAL::equals).orElse(false)) //</b>
+&nbsp;		));
+&nbsp;
+<b class="nc">&nbsp;		var animation = Animations.createDiscrete360Rotation(fixView);</b>
+<b class="nc">&nbsp;		this.fixRunningRotator = AutoAnimator.animate(animation) //</b>
+<b class="nc">&nbsp;				.onCondition(fixing) //</b>
+<b class="nc">&nbsp;				.afterStop(() -&gt; fixView.setRotate(0)) //</b>
+<b class="nc">&nbsp;				.build();</b>
+<b class="nc">&nbsp;		fixState.addListener(((observable, oldValue, newValue) -&gt; {</b>
+<b class="nc">&nbsp;			if (newValue == Result.FixState.FIXED || newValue == Result.FixState.FIX_FAILED) {</b>
+<b class="nc">&nbsp;				Tooltip.install(fixView, fixStateTip);</b>
+&nbsp;			}
+&nbsp;		}));
+<b class="nc">&nbsp;		Tooltip.install(severityView, severityTip);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void fix() {
+<b class="nc">&nbsp;		Result r = result.get();</b>
+<b class="nc">&nbsp;		if (r != null) {</b>
+<b class="nc">&nbsp;			fixApplier.fix(r);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;
+&nbsp;	/* Getter &amp; Setter */
+&nbsp;
+&nbsp;	public Result getResult() {
+<b class="nc">&nbsp;		return result.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void setResult(Result result) {
+<b class="nc">&nbsp;		this.result.set(result);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObjectProperty&lt;Result&gt; resultProperty() {
+<b class="nc">&nbsp;		return result;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObservableValue&lt;String&gt; descriptionProperty() {
+<b class="nc">&nbsp;		return description;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public String getDescription() {
+<b class="nc">&nbsp;		return description.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObjectBinding&lt;FontAwesome5Icon&gt; severityGlyphProperty() {
+<b class="nc">&nbsp;		return severityGlyph;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public FontAwesome5Icon getSeverityGlyph() {
+<b class="nc">&nbsp;		var r = result.get();</b>
+<b class="nc">&nbsp;		if (r == null) {</b>
+<b class="nc">&nbsp;			return null;</b>
+&nbsp;		}
+<b class="nc">&nbsp;		return switch (r.diagnosis().getSeverity()) {</b>
+<b class="nc">&nbsp;			case INFO -&gt; INFO_ICON;</b>
+<b class="nc">&nbsp;			case GOOD -&gt; GOOD_ICON;</b>
+<b class="nc">&nbsp;			case WARN -&gt; WARN_ICON;</b>
+<b class="nc">&nbsp;			case CRITICAL -&gt; CRIT_ICON;</b>
+&nbsp;		};
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObservableValue&lt;FontAwesome5Icon&gt; fixGlyphProperty() {
+<b class="nc">&nbsp;		return fixGlyph;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public FontAwesome5Icon getFixGlyph() {
+<b class="nc">&nbsp;		return fixGlyph.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BooleanBinding fixableProperty() {
+<b class="nc">&nbsp;		return fixable;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isFixable() {
+<b class="nc">&nbsp;		return Result.FixState.FIXABLE.equals(fixState.getValue());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BooleanBinding fixingProperty() {
+<b class="nc">&nbsp;		return fixing;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isFixing() {
+<b class="nc">&nbsp;		return Result.FixState.FIXING.equals(fixState.getValue());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BooleanBinding fixedProperty() {
+<b class="nc">&nbsp;		return fixed;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isFixed() {
+<b class="nc">&nbsp;		return Result.FixState.FIXED.equals(fixState.getValue());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BooleanBinding fixFailedProperty() {
+<b class="nc">&nbsp;		return fixFailed;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Boolean isFixFailed() {
+<b class="nc">&nbsp;		return Result.FixState.FIX_FAILED.equals(fixState.getValue());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BooleanBinding fixRunningOrDoneProperty() {
+<b class="nc">&nbsp;		return fixRunningOrDone;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isFixRunningOrDone() {
+<b class="nc">&nbsp;		return fixRunningOrDone.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

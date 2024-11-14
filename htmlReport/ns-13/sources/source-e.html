@@ -1,0 +1,209 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ResultListCellFactory</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.health</a>
+</div>
+
+<h1>Coverage Summary for Class: ResultListCellFactory (org.cryptomator.ui.health)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ResultListCellFactory</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ResultListCellFactory$Cell</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.health;
+&nbsp;
+&nbsp;
+&nbsp;import org.cryptomator.ui.common.FxmlLoaderFactory;
+&nbsp;
+&nbsp;import javax.inject.Inject;
+&nbsp;import javafx.fxml.FXMLLoader;
+&nbsp;import javafx.scene.Parent;
+&nbsp;import javafx.scene.control.ContentDisplay;
+&nbsp;import javafx.scene.control.ListCell;
+&nbsp;import javafx.scene.control.ListView;
+&nbsp;import javafx.util.Callback;
+&nbsp;import java.io.IOException;
+&nbsp;import java.io.UncheckedIOException;
+&nbsp;
+&nbsp;@HealthCheckScoped
+&nbsp;public class ResultListCellFactory implements Callback&lt;ListView&lt;Result&gt;, ListCell&lt;Result&gt;&gt; {
+&nbsp;
+&nbsp;	private final FxmlLoaderFactory fxmlLoaders;
+&nbsp;
+&nbsp;	@Inject
+<b class="nc">&nbsp;	ResultListCellFactory(@HealthCheckWindow FxmlLoaderFactory fxmlLoaders) {</b>
+<b class="nc">&nbsp;		this.fxmlLoaders = fxmlLoaders;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public ListCell&lt;Result&gt; call(ListView&lt;Result&gt; param) {
+&nbsp;		try {
+<b class="nc">&nbsp;			FXMLLoader fxmlLoader = fxmlLoaders.load(&quot;/fxml/health_result_listcell.fxml&quot;);</b>
+<b class="nc">&nbsp;			return new ResultListCellFactory.Cell(fxmlLoader.getRoot(), fxmlLoader.getController());</b>
+<b class="nc">&nbsp;		} catch (IOException e) {</b>
+<b class="nc">&nbsp;			throw new UncheckedIOException(&quot;Failed to load /fxml/health_result_listcell.fxml.&quot;, e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private static class Cell extends ListCell&lt;Result&gt; {
+&nbsp;
+&nbsp;		private final Parent node;
+&nbsp;		private final ResultListCellController controller;
+&nbsp;
+<b class="nc">&nbsp;		public Cell(Parent node, ResultListCellController controller) {</b>
+<b class="nc">&nbsp;			this.node = node;</b>
+<b class="nc">&nbsp;			this.controller = controller;</b>
+&nbsp;		}
+&nbsp;
+&nbsp;		@Override
+&nbsp;		protected void updateItem(Result item, boolean empty) {
+<b class="nc">&nbsp;			super.updateItem(item, empty);</b>
+<b class="nc">&nbsp;			if (item == null || empty) {</b>
+<b class="nc">&nbsp;				setText(null);</b>
+<b class="nc">&nbsp;				setGraphic(null);</b>
+&nbsp;			} else {
+<b class="nc">&nbsp;				controller.setResult(item);</b>
+<b class="nc">&nbsp;				setContentDisplay(ContentDisplay.GRAPHIC_ONLY);</b>
+<b class="nc">&nbsp;				setGraphic(node);</b>
+&nbsp;			}
+&nbsp;		}
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

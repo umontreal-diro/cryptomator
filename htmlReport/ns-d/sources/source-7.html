@@ -1,0 +1,184 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > FormattedLabel</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.controls</a>
+</div>
+
+<h1>Coverage Summary for Class: FormattedLabel (org.cryptomator.ui.controls)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FormattedLabel</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/20)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.controls;
+&nbsp;
+&nbsp;import javafx.beans.binding.Bindings;
+&nbsp;import javafx.beans.binding.StringBinding;
+&nbsp;import javafx.beans.property.ObjectProperty;
+&nbsp;import javafx.beans.property.SimpleObjectProperty;
+&nbsp;import javafx.beans.property.SimpleStringProperty;
+&nbsp;import javafx.beans.property.StringProperty;
+&nbsp;import javafx.scene.control.Label;
+&nbsp;
+&nbsp;public class FormattedLabel extends Label {
+&nbsp;
+<b class="nc">&nbsp;	private final StringProperty format = new SimpleStringProperty(&quot;&quot;);</b>
+<b class="nc">&nbsp;	private final ObjectProperty&lt;Object&gt; arg1 = new SimpleObjectProperty&lt;&gt;();</b>
+<b class="nc">&nbsp;	private final ObjectProperty&lt;Object&gt; arg2 = new SimpleObjectProperty&lt;&gt;();</b>
+<b class="nc">&nbsp;	private final ObjectProperty&lt;Object&gt; arg3 = new SimpleObjectProperty&lt;&gt;();</b>
+&nbsp;	// add arg4, arg5, ... on demand
+&nbsp;
+<b class="nc">&nbsp;	public FormattedLabel() {</b>
+<b class="nc">&nbsp;		textProperty().bind(createStringBinding());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	protected StringBinding createStringBinding() {
+<b class="nc">&nbsp;		return Bindings.createStringBinding(this::updateText, format, arg1, arg2, arg3);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private String updateText() {
+<b class="nc">&nbsp;		return String.format(format.get(), arg1.get(), arg2.get(), arg3.get());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/* Observables */
+&nbsp;
+&nbsp;	public StringProperty formatProperty() {
+<b class="nc">&nbsp;		return format;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public String getFormat() {
+<b class="nc">&nbsp;		return format.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void setFormat(String format) {
+<b class="nc">&nbsp;		this.format.set(format);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObjectProperty&lt;Object&gt; arg1Property() {
+<b class="nc">&nbsp;		return arg1;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Object getArg1() {
+<b class="nc">&nbsp;		return arg1.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void setArg1(Object arg1) {
+<b class="nc">&nbsp;		this.arg1.set(arg1);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObjectProperty&lt;Object&gt; arg2Property() {
+<b class="nc">&nbsp;		return arg2;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Object getArg2() {
+<b class="nc">&nbsp;		return arg2.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void setArg2(Object arg2) {
+<b class="nc">&nbsp;		this.arg2.set(arg2);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObjectProperty&lt;Object&gt; arg3Property() {
+<b class="nc">&nbsp;		return arg3;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Object getArg3() {
+<b class="nc">&nbsp;		return arg3.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void setArg3(Object arg3) {
+<b class="nc">&nbsp;		this.arg3.set(arg3);</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

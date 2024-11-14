@@ -1,0 +1,253 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > MainWindowModule</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.mainwindow</a>
+</div>
+
+<h1>Coverage Summary for Class: MainWindowModule (org.cryptomator.ui.mainwindow)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MainWindowModule</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/15)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.mainwindow;
+&nbsp;
+&nbsp;import dagger.Binds;
+&nbsp;import dagger.Module;
+&nbsp;import dagger.Provides;
+&nbsp;import dagger.multibindings.IntoMap;
+&nbsp;import org.cryptomator.common.vaults.Vault;
+&nbsp;import org.cryptomator.ui.addvaultwizard.AddVaultWizardComponent;
+&nbsp;import org.cryptomator.ui.error.ErrorComponent;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;import org.cryptomator.ui.common.FxControllerKey;
+&nbsp;import org.cryptomator.ui.common.FxmlFile;
+&nbsp;import org.cryptomator.ui.common.FxmlLoaderFactory;
+&nbsp;import org.cryptomator.ui.common.FxmlScene;
+&nbsp;import org.cryptomator.ui.common.StageFactory;
+&nbsp;import org.cryptomator.ui.common.StageInitializer;
+&nbsp;import org.cryptomator.ui.fxapp.PrimaryStage;
+&nbsp;import org.cryptomator.ui.health.HealthCheckComponent;
+&nbsp;import org.cryptomator.ui.migration.MigrationComponent;
+&nbsp;import org.cryptomator.ui.removevault.RemoveVaultComponent;
+&nbsp;import org.cryptomator.ui.stats.VaultStatisticsComponent;
+&nbsp;import org.cryptomator.ui.wrongfilealert.WrongFileAlertComponent;
+&nbsp;
+&nbsp;import javax.inject.Named;
+&nbsp;import javax.inject.Provider;
+&nbsp;import javafx.beans.property.ObjectProperty;
+&nbsp;import javafx.beans.property.SimpleObjectProperty;
+&nbsp;import javafx.scene.Scene;
+&nbsp;import javafx.stage.Modality;
+&nbsp;import javafx.stage.Stage;
+&nbsp;import javafx.stage.StageStyle;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;
+&nbsp;@Module(subcomponents = {AddVaultWizardComponent.class, MigrationComponent.class, RemoveVaultComponent.class, VaultStatisticsComponent.class, WrongFileAlertComponent.class, ErrorComponent.class})
+<b class="nc">&nbsp;abstract class MainWindowModule {</b>
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@MainWindow
+&nbsp;	@MainWindowScoped
+&nbsp;	static Stage provideMainWindow(@PrimaryStage Stage stage, StageInitializer initializer) {
+<b class="nc">&nbsp;		initializer.accept(stage);</b>
+<b class="nc">&nbsp;		stage.setTitle(&quot;Cryptomator&quot;);</b>
+<b class="nc">&nbsp;		stage.initStyle(StageStyle.UNDECORATED);</b>
+<b class="nc">&nbsp;		stage.setMinWidth(650);</b>
+<b class="nc">&nbsp;		stage.setMinHeight(440);</b>
+<b class="nc">&nbsp;		return stage;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@MainWindowScoped
+&nbsp;	static ObjectProperty&lt;Vault&gt; provideSelectedVault() {
+<b class="nc">&nbsp;		return new SimpleObjectProperty&lt;&gt;();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@MainWindow
+&nbsp;	@MainWindowScoped
+&nbsp;	static FxmlLoaderFactory provideFxmlLoaderFactory(Map&lt;Class&lt;? extends FxController&gt;, Provider&lt;FxController&gt;&gt; factories, MainWindowSceneFactory sceneFactory, ResourceBundle resourceBundle) {
+<b class="nc">&nbsp;		return new FxmlLoaderFactory(factories, sceneFactory, resourceBundle);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@MainWindowScoped
+&nbsp;	@Named(&quot;errorWindow&quot;)
+&nbsp;	static Stage provideErrorStage(@MainWindow Stage window, StageFactory factory, ResourceBundle resourceBundle) {
+<b class="nc">&nbsp;		Stage stage = factory.create();</b>
+<b class="nc">&nbsp;		stage.setTitle(resourceBundle.getString(&quot;main.vaultDetail.error.windowTitle&quot;));</b>
+<b class="nc">&nbsp;		stage.initModality(Modality.APPLICATION_MODAL);</b>
+<b class="nc">&nbsp;		stage.initOwner(window);</b>
+<b class="nc">&nbsp;		return stage;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@FxmlScene(FxmlFile.MAIN_WINDOW)
+&nbsp;	@MainWindowScoped
+&nbsp;	static Scene provideMainScene(@MainWindow FxmlLoaderFactory fxmlLoaders) {
+<b class="nc">&nbsp;		return fxmlLoaders.createScene(FxmlFile.MAIN_WINDOW);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	// ------------------
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(MainWindowController.class)
+&nbsp;	abstract FxController bindMainWindowController(MainWindowController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(MainWindowTitleController.class)
+&nbsp;	abstract FxController bindMainWindowTitleController(MainWindowTitleController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(ResizeController.class)
+&nbsp;	abstract FxController bindResizeController(ResizeController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(VaultListController.class)
+&nbsp;	abstract FxController bindVaultListController(VaultListController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(VaultListContextMenuController.class)
+&nbsp;	abstract FxController bindVaultListContextMenuController(VaultListContextMenuController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(VaultDetailController.class)
+&nbsp;	abstract FxController bindVaultDetailController(VaultDetailController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(WelcomeController.class)
+&nbsp;	abstract FxController bindWelcomeController(WelcomeController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(VaultDetailLockedController.class)
+&nbsp;	abstract FxController bindVaultDetailLockedController(VaultDetailLockedController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(VaultDetailUnlockedController.class)
+&nbsp;	abstract FxController bindVaultDetailUnlockedController(VaultDetailUnlockedController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(VaultDetailMissingVaultController.class)
+&nbsp;	abstract FxController bindVaultDetailMissingVaultController(VaultDetailMissingVaultController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(VaultDetailNeedsMigrationController.class)
+&nbsp;	abstract FxController bindVaultDetailNeedsMigrationController(VaultDetailNeedsMigrationController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(VaultDetailUnknownErrorController.class)
+&nbsp;	abstract FxController bindVaultDetailUnknownErrorController(VaultDetailUnknownErrorController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(VaultListCellController.class)
+&nbsp;	abstract FxController bindVaultListCellController(VaultListCellController controller);
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

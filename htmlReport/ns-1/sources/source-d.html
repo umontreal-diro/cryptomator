@@ -1,0 +1,221 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > SubstitutingProperties</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.common</a>
+</div>
+
+<h1>Coverage Summary for Class: SubstitutingProperties (org.cryptomator.common)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SubstitutingProperties</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    57,1%
+  </span>
+  <span class="absValue">
+    (8/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    66,7%
+  </span>
+  <span class="absValue">
+    (16/24)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">SubstitutingProperties$Source</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    57,1%
+  </span>
+  <span class="absValue">
+    (8/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    70,4%
+  </span>
+  <span class="absValue">
+    (19/27)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.common;
+&nbsp;
+&nbsp;import org.jetbrains.annotations.VisibleForTesting;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Properties;
+&nbsp;import java.util.regex.Matcher;
+&nbsp;import java.util.regex.Pattern;
+&nbsp;
+&nbsp;public class SubstitutingProperties extends PropertiesDecorator {
+&nbsp;
+<b class="fc">&nbsp;	private static final Pattern TEMPLATE = Pattern.compile(&quot;@\\{(\\w+)}&quot;);</b>
+&nbsp;
+&nbsp;	private final Map&lt;String, String&gt; env;
+&nbsp;
+&nbsp;	public SubstitutingProperties(Properties props, Map&lt;String, String&gt; systemEnvironment) {
+<b class="fc">&nbsp;		super(props);</b>
+<b class="fc">&nbsp;		this.env = systemEnvironment;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public String getProperty(String key) {
+<b class="fc">&nbsp;		var value = delegate.getProperty(key);</b>
+<b class="fc">&nbsp;		if (key.startsWith(&quot;cryptomator.&quot;) &amp;&amp; value != null) {</b>
+<b class="fc">&nbsp;			return process(value);</b>
+&nbsp;		} else {
+<b class="fc">&nbsp;			return value;</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public String getProperty(String key, String defaultValue) {
+<b class="fc">&nbsp;		var result = getProperty(key);</b>
+<b class="pc">&nbsp;		return result != null ? result : defaultValue;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@VisibleForTesting
+&nbsp;	String process(String value) {
+<b class="fc">&nbsp;		return TEMPLATE.matcher(value).replaceAll(match -&gt; //</b>
+<b class="pc">&nbsp;				switch (match.group(1)) {</b>
+<b class="nc">&nbsp;					case &quot;appdir&quot; -&gt; resolveFrom(&quot;APPDIR&quot;, Source.ENV);</b>
+<b class="nc">&nbsp;					case &quot;appdata&quot; -&gt; resolveFrom(&quot;APPDATA&quot;, Source.ENV);</b>
+<b class="nc">&nbsp;					case &quot;localappdata&quot; -&gt; resolveFrom(&quot;LOCALAPPDATA&quot;, Source.ENV);</b>
+<b class="fc">&nbsp;					case &quot;userhome&quot; -&gt; resolveFrom(&quot;user.home&quot;, Source.PROPS);</b>
+&nbsp;					default -&gt; {
+<b class="nc">&nbsp;						LoggerFactory.getLogger(SubstitutingProperties.class).warn(&quot;Unknown variable {} in property value {}.&quot;, match.group(), value);</b>
+<b class="nc">&nbsp;						yield match.group();</b>
+&nbsp;					}
+&nbsp;				});
+&nbsp;	}
+&nbsp;
+&nbsp;	private String resolveFrom(String key, Source src) {
+<b class="pc">&nbsp;		var val = switch (src) {</b>
+<b class="nc">&nbsp;			case ENV -&gt; env.get(key);</b>
+<b class="fc">&nbsp;			case PROPS -&gt; delegate.getProperty(key);</b>
+&nbsp;		};
+<b class="pc">&nbsp;		if (val == null) {</b>
+<b class="nc">&nbsp;			LoggerFactory.getLogger(SubstitutingProperties.class).warn(&quot;Variable {} used for substitution not found in {}. Replaced with empty string.&quot;, key, src);</b>
+<b class="nc">&nbsp;			return &quot;&quot;;</b>
+&nbsp;		} else {
+<b class="fc">&nbsp;			return Matcher.quoteReplacement(val);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+<b class="fc">&nbsp;	private enum Source {</b>
+<b class="fc">&nbsp;		ENV,</b>
+<b class="fc">&nbsp;		PROPS;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

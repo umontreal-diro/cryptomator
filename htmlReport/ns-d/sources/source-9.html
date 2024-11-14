@@ -1,0 +1,210 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > NiceSecurePasswordField</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.controls</a>
+</div>
+
+<h1>Coverage Summary for Class: NiceSecurePasswordField (org.cryptomator.ui.controls)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">NiceSecurePasswordField</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/42)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.controls;
+&nbsp;
+&nbsp;import org.cryptomator.common.Passphrase;
+&nbsp;
+&nbsp;import javafx.beans.Observable;
+&nbsp;import javafx.beans.binding.Bindings;
+&nbsp;import javafx.beans.property.StringProperty;
+&nbsp;import javafx.geometry.Pos;
+&nbsp;import javafx.scene.control.ContentDisplay;
+&nbsp;import javafx.scene.control.ToggleButton;
+&nbsp;import javafx.scene.layout.HBox;
+&nbsp;import javafx.scene.layout.StackPane;
+&nbsp;
+&nbsp;public class NiceSecurePasswordField extends StackPane {
+&nbsp;
+&nbsp;	private static final String STYLE_CLASS = &quot;nice-secure-password-field&quot;;
+&nbsp;	private static final String ICONS_STYLE_CLASS = &quot;icons&quot;;
+&nbsp;	private static final String REVEAL_BUTTON_STYLE_CLASS = &quot;reveal-button&quot;;
+&nbsp;	private static final int ICON_SPACING = 6;
+&nbsp;	private static final double ICON_SIZE = 14.0;
+&nbsp;
+<b class="nc">&nbsp;	private final SecurePasswordField passwordField = new SecurePasswordField();</b>
+<b class="nc">&nbsp;	private final FontAwesome5IconView capsLockedIcon = new FontAwesome5IconView();</b>
+<b class="nc">&nbsp;	private final FontAwesome5IconView nonPrintableCharsIcon = new FontAwesome5IconView();</b>
+<b class="nc">&nbsp;	private final FontAwesome5IconView revealPasswordIcon = new FontAwesome5IconView();</b>
+<b class="nc">&nbsp;	private final ToggleButton revealPasswordButton = new ToggleButton(null, revealPasswordIcon);</b>
+<b class="nc">&nbsp;	private final HBox iconContainer = new HBox(ICON_SPACING, nonPrintableCharsIcon, capsLockedIcon, revealPasswordButton);</b>
+&nbsp;
+<b class="nc">&nbsp;	public NiceSecurePasswordField() {</b>
+<b class="nc">&nbsp;		getStyleClass().add(STYLE_CLASS);</b>
+&nbsp;
+<b class="nc">&nbsp;		iconContainer.setAlignment(Pos.CENTER_RIGHT);</b>
+<b class="nc">&nbsp;		iconContainer.setMaxWidth(Double.NEGATIVE_INFINITY);</b>
+<b class="nc">&nbsp;		iconContainer.setPrefWidth(42); // TODO</b>
+<b class="nc">&nbsp;		iconContainer.getStyleClass().add(ICONS_STYLE_CLASS);</b>
+<b class="nc">&nbsp;		StackPane.setAlignment(iconContainer, Pos.CENTER_RIGHT);</b>
+&nbsp;
+<b class="nc">&nbsp;		capsLockedIcon.setGlyph(FontAwesome5Icon.ARROW_UP);</b>
+<b class="nc">&nbsp;		capsLockedIcon.setGlyphSize(ICON_SIZE);</b>
+<b class="nc">&nbsp;		capsLockedIcon.visibleProperty().bind(passwordField.capsLockedProperty());</b>
+<b class="nc">&nbsp;		capsLockedIcon.managedProperty().bind(passwordField.capsLockedProperty());</b>
+&nbsp;
+<b class="nc">&nbsp;		nonPrintableCharsIcon.setGlyph(FontAwesome5Icon.EXCLAMATION_TRIANGLE);</b>
+<b class="nc">&nbsp;		nonPrintableCharsIcon.setGlyphSize(ICON_SIZE);</b>
+<b class="nc">&nbsp;		nonPrintableCharsIcon.visibleProperty().bind(passwordField.containingNonPrintableCharsProperty());</b>
+<b class="nc">&nbsp;		nonPrintableCharsIcon.managedProperty().bind(passwordField.containingNonPrintableCharsProperty());</b>
+&nbsp;
+<b class="nc">&nbsp;		revealPasswordIcon.setGlyph(FontAwesome5Icon.EYE);</b>
+<b class="nc">&nbsp;		revealPasswordIcon.glyphProperty().bind(Bindings.when(revealPasswordButton.selectedProperty()).then(FontAwesome5Icon.EYE_SLASH).otherwise(FontAwesome5Icon.EYE));</b>
+<b class="nc">&nbsp;		revealPasswordIcon.setGlyphSize(ICON_SIZE);</b>
+&nbsp;
+<b class="nc">&nbsp;		revealPasswordButton.setContentDisplay(ContentDisplay.LEFT);</b>
+<b class="nc">&nbsp;		revealPasswordButton.setFocusTraversable(false);</b>
+<b class="nc">&nbsp;		revealPasswordButton.visibleProperty().bind(passwordField.focusedProperty());</b>
+<b class="nc">&nbsp;		revealPasswordButton.managedProperty().bind(passwordField.focusedProperty());</b>
+<b class="nc">&nbsp;		revealPasswordButton.getStyleClass().add(REVEAL_BUTTON_STYLE_CLASS);</b>
+&nbsp;
+<b class="nc">&nbsp;		passwordField.revealPasswordProperty().bind(revealPasswordButton.selectedProperty());</b>
+&nbsp;
+<b class="nc">&nbsp;		getChildren().addAll(passwordField, iconContainer);</b>
+<b class="nc">&nbsp;		disabledProperty().addListener(this::disabledChanged);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void disabledChanged(@SuppressWarnings(&quot;unused&quot;) Observable observable) {
+<b class="nc">&nbsp;		revealPasswordButton.setSelected(false);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/* Passthrough */
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void requestFocus() {
+<b class="nc">&nbsp;		passwordField.requestFocus();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public String getText() {
+<b class="nc">&nbsp;		return passwordField.getText();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public StringProperty textProperty() {
+<b class="nc">&nbsp;		return passwordField.textProperty();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Passphrase getCharacters() {
+<b class="nc">&nbsp;		return passwordField.getCharacters();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void setPassword(CharSequence password) {
+<b class="nc">&nbsp;		passwordField.setPassword(password);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void setPassword(char[] password) {
+<b class="nc">&nbsp;		passwordField.setPassword(password);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void wipe() {
+<b class="nc">&nbsp;		passwordField.wipe();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void selectAll() {
+<b class="nc">&nbsp;		passwordField.selectAll();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void selectRange(int anchor, int caretPosition) {
+<b class="nc">&nbsp;		passwordField.selectRange(anchor, caretPosition);</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

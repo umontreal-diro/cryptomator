@@ -1,0 +1,225 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > WordEncoder</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.recoverykey</a>
+</div>
+
+<h1>Coverage Summary for Class: WordEncoder (org.cryptomator.ui.recoverykey)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">WordEncoder</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/45)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.recoverykey;
+&nbsp;
+&nbsp;import com.google.common.base.Preconditions;
+&nbsp;import com.google.common.base.Splitter;
+&nbsp;import com.google.common.base.Strings;
+&nbsp;
+&nbsp;import javax.inject.Inject;
+&nbsp;import javax.inject.Singleton;
+&nbsp;import java.io.BufferedReader;
+&nbsp;import java.io.IOException;
+&nbsp;import java.io.InputStream;
+&nbsp;import java.io.InputStreamReader;
+&nbsp;import java.io.Reader;
+&nbsp;import java.nio.charset.StandardCharsets;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;import java.util.stream.IntStream;
+&nbsp;
+<b class="nc">&nbsp;@Singleton</b>
+&nbsp;class WordEncoder {
+&nbsp;
+&nbsp;	private static final String DEFAULT_WORD_FILE = &quot;/i18n/4096words_en.txt&quot;;
+&nbsp;	private static final int WORD_COUNT = 4096;
+&nbsp;	private static final char DELIMITER = &#39; &#39;;
+&nbsp;
+&nbsp;	private final List&lt;String&gt; words;
+&nbsp;	private final Map&lt;String, Integer&gt; indices;
+&nbsp;
+&nbsp;	@Inject
+&nbsp;	public WordEncoder() {
+<b class="nc">&nbsp;		this(DEFAULT_WORD_FILE);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public List&lt;String&gt; getWords() {
+<b class="nc">&nbsp;		return words;</b>
+&nbsp;	}
+&nbsp;
+<b class="nc">&nbsp;	public WordEncoder(String wordFile) {</b>
+<b class="nc">&nbsp;		try (InputStream in = getClass().getResourceAsStream(wordFile); //</b>
+<b class="nc">&nbsp;			 Reader reader = new InputStreamReader(in, StandardCharsets.US_ASCII.newDecoder()); //</b>
+<b class="nc">&nbsp;			 BufferedReader bufferedReader = new BufferedReader(reader)) {</b>
+<b class="nc">&nbsp;			this.words = bufferedReader.lines().limit(WORD_COUNT).collect(Collectors.toUnmodifiableList());</b>
+<b class="nc">&nbsp;		} catch (IOException e) {</b>
+<b class="nc">&nbsp;			throw new IllegalArgumentException(&quot;Unreadable file: &quot; + wordFile, e);</b>
+&nbsp;		}
+<b class="nc">&nbsp;		if (words.size() &lt; WORD_COUNT) {</b>
+<b class="nc">&nbsp;			throw new IllegalArgumentException(&quot;Insufficient input file: &quot; + wordFile);</b>
+&nbsp;		}
+<b class="nc">&nbsp;		this.indices = Map.ofEntries(IntStream.range(0, WORD_COUNT).mapToObj(i -&gt; Map.entry(words.get(i), i)).toArray(Map.Entry[]::new));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Encodes the given input as a sequence of words.
+&nbsp;	 *
+&nbsp;	 * @param input A multiple of three bytes
+&nbsp;	 * @return A String that can be {@link #decode(String) decoded} to the input again.
+&nbsp;	 * @throws IllegalArgumentException If input is not a multiple of three bytes
+&nbsp;	 */
+&nbsp;	public String encodePadded(byte[] input) {
+<b class="nc">&nbsp;		Preconditions.checkArgument(input.length % 3 == 0, &quot;input needs to be padded to a multiple of three&quot;);</b>
+<b class="nc">&nbsp;		StringBuilder sb = new StringBuilder();</b>
+<b class="nc">&nbsp;		for (int i = 0; i &lt; input.length; i += 3) {</b>
+<b class="nc">&nbsp;			byte b1 = input[i];</b>
+<b class="nc">&nbsp;			byte b2 = input[i + 1];</b>
+<b class="nc">&nbsp;			byte b3 = input[i + 2];</b>
+<b class="nc">&nbsp;			int firstWordIndex = (0xFF0 &amp; (b1 &lt;&lt; 4)) + (0x00F &amp; (b2 &gt;&gt; 4)); // 0xFFF000</b>
+<b class="nc">&nbsp;			int secondWordIndex = (0xF00 &amp; (b2 &lt;&lt; 8)) + (0x0FF &amp; b3); // 0x000FFF</b>
+<b class="nc">&nbsp;			assert firstWordIndex &lt; WORD_COUNT;</b>
+<b class="nc">&nbsp;			assert secondWordIndex &lt; WORD_COUNT;</b>
+<b class="nc">&nbsp;			sb.append(words.get(firstWordIndex)).append(DELIMITER);</b>
+<b class="nc">&nbsp;			sb.append(words.get(secondWordIndex)).append(DELIMITER);</b>
+&nbsp;		}
+<b class="nc">&nbsp;		if (sb.length() &gt; 0) {</b>
+<b class="nc">&nbsp;			sb.setLength(sb.length() - 1); // remove last space</b>
+&nbsp;		}
+<b class="nc">&nbsp;		return sb.toString();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Decodes a String that has previously been {@link #encodePadded(byte[]) encoded} to a word sequence.
+&nbsp;	 *
+&nbsp;	 * @param encoded The word sequence
+&nbsp;	 * @return Decoded bytes
+&nbsp;	 * @throws IllegalArgumentException If the encoded string doesn&#39;t consist of a multiple of two words or one of the words is unknown to this encoder.
+&nbsp;	 */
+&nbsp;	public byte[] decode(String encoded) {
+<b class="nc">&nbsp;		List&lt;String&gt; split = Splitter.on(DELIMITER).omitEmptyStrings().splitToList(Strings.nullToEmpty(encoded));</b>
+<b class="nc">&nbsp;		Preconditions.checkArgument(split.size() % 2 == 0, &quot;%s needs to be a multiple of two words&quot;, encoded);</b>
+<b class="nc">&nbsp;		byte[] result = new byte[split.size() / 2 * 3];</b>
+<b class="nc">&nbsp;		for (int i = 0; i &lt; split.size(); i += 2) {</b>
+<b class="nc">&nbsp;			String w1 = split.get(i);</b>
+<b class="nc">&nbsp;			String w2 = split.get(i + 1);</b>
+<b class="nc">&nbsp;			int firstWordIndex = indices.getOrDefault(w1, -1);</b>
+<b class="nc">&nbsp;			int secondWordIndex = indices.getOrDefault(w2, -1);</b>
+<b class="nc">&nbsp;			Preconditions.checkArgument(firstWordIndex != -1, &quot;%s not in dictionary&quot;, w1);</b>
+<b class="nc">&nbsp;			Preconditions.checkArgument(secondWordIndex != -1, &quot;%s not in dictionary&quot;, w2);</b>
+<b class="nc">&nbsp;			byte b1 = (byte) (0xFF &amp; (firstWordIndex &gt;&gt; 4));</b>
+<b class="nc">&nbsp;			byte b2 = (byte) ((0xF0 &amp; (firstWordIndex &lt;&lt; 4)) + (0x0F &amp; (secondWordIndex &gt;&gt; 8)));</b>
+<b class="nc">&nbsp;			byte b3 = (byte) (0xFF &amp; secondWordIndex);</b>
+<b class="nc">&nbsp;			result[i / 2 * 3] = b1;</b>
+<b class="nc">&nbsp;			result[i / 2 * 3 + 1] = b2;</b>
+<b class="nc">&nbsp;			result[i / 2 * 3 + 2] = b3;</b>
+&nbsp;		}
+<b class="nc">&nbsp;		return result;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

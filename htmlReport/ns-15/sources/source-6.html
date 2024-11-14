@@ -1,0 +1,341 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > HubKeyLoadingModule</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.keyloading.hub</a>
+</div>
+
+<h1>Coverage Summary for Class: HubKeyLoadingModule (org.cryptomator.ui.keyloading.hub)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">HubKeyLoadingModule</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/24)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.keyloading.hub;
+&nbsp;
+&nbsp;import com.google.common.io.BaseEncoding;
+&nbsp;import dagger.Binds;
+&nbsp;import dagger.Module;
+&nbsp;import dagger.Provides;
+&nbsp;import dagger.multibindings.IntoMap;
+&nbsp;import dagger.multibindings.StringKey;
+&nbsp;import org.cryptomator.common.settings.DeviceKey;
+&nbsp;import org.cryptomator.common.vaults.Vault;
+&nbsp;import org.cryptomator.cryptolib.common.MessageDigestSupplier;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;import org.cryptomator.ui.common.FxControllerKey;
+&nbsp;import org.cryptomator.ui.common.FxmlFile;
+&nbsp;import org.cryptomator.ui.common.FxmlLoaderFactory;
+&nbsp;import org.cryptomator.ui.common.FxmlScene;
+&nbsp;import org.cryptomator.ui.keyloading.KeyLoading;
+&nbsp;import org.cryptomator.ui.keyloading.KeyLoadingScoped;
+&nbsp;import org.cryptomator.ui.keyloading.KeyLoadingStrategy;
+&nbsp;
+&nbsp;import javax.inject.Named;
+&nbsp;import javafx.scene.Scene;
+&nbsp;import java.io.IOException;
+&nbsp;import java.io.UncheckedIOException;
+&nbsp;import java.util.Objects;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;import java.util.concurrent.CompletableFuture;
+&nbsp;import java.util.concurrent.atomic.AtomicReference;
+&nbsp;
+&nbsp;@Module
+<b class="nc">&nbsp;public abstract class HubKeyLoadingModule {</b>
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@KeyLoadingScoped
+&nbsp;	static HubConfig provideHubConfig(@KeyLoading Vault vault) {
+&nbsp;		try {
+<b class="nc">&nbsp;			return vault.getVaultConfigCache().get().getHeader(&quot;hub&quot;, HubConfig.class);</b>
+<b class="nc">&nbsp;		} catch (IOException e) {</b>
+<b class="nc">&nbsp;			throw new UncheckedIOException(e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@KeyLoadingScoped
+&nbsp;	@Named(&quot;windowTitle&quot;)
+&nbsp;	static String provideWindowTitle(@KeyLoading Vault vault, ResourceBundle resourceBundle) {
+<b class="nc">&nbsp;		return String.format(resourceBundle.getString(&quot;unlock.title&quot;), vault.getDisplayName());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@KeyLoadingScoped
+&nbsp;	@Named(&quot;deviceId&quot;)
+&nbsp;	static String provideDeviceId(DeviceKey deviceKey) {
+<b class="nc">&nbsp;		var publicKey = Objects.requireNonNull(deviceKey.get()).getPublic().getEncoded();</b>
+<b class="nc">&nbsp;		try (var instance = MessageDigestSupplier.SHA256.instance()) {</b>
+<b class="nc">&nbsp;			var hashedKey = instance.get().digest(publicKey);</b>
+<b class="nc">&nbsp;			return BaseEncoding.base16().encode(hashedKey);</b>
+<b class="nc">&nbsp;		}</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@Named(&quot;bearerToken&quot;)
+&nbsp;	@KeyLoadingScoped
+&nbsp;	static AtomicReference&lt;String&gt; provideBearerTokenRef() {
+<b class="nc">&nbsp;		return new AtomicReference&lt;&gt;();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@KeyLoadingScoped
+&nbsp;	static CompletableFuture&lt;ReceivedKey&gt; provideResult() {
+<b class="nc">&nbsp;		return new CompletableFuture&lt;&gt;();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@KeyLoadingScoped
+&nbsp;	@StringKey(HubKeyLoadingStrategy.SCHEME_HUB_HTTP)
+&nbsp;	abstract KeyLoadingStrategy bindHubKeyLoadingStrategyToHubHttp(HubKeyLoadingStrategy strategy);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@KeyLoadingScoped
+&nbsp;	@StringKey(HubKeyLoadingStrategy.SCHEME_HUB_HTTPS)
+&nbsp;	abstract KeyLoadingStrategy bindHubKeyLoadingStrategyToHubHttps(HubKeyLoadingStrategy strategy);
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@FxmlScene(FxmlFile.HUB_NO_KEYCHAIN)
+&nbsp;	@KeyLoadingScoped
+&nbsp;	static Scene provideHubNoKeychainScene(@KeyLoading FxmlLoaderFactory fxmlLoaders) {
+<b class="nc">&nbsp;		return fxmlLoaders.createScene(FxmlFile.HUB_NO_KEYCHAIN);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@FxmlScene(FxmlFile.HUB_AUTH_FLOW)
+&nbsp;	@KeyLoadingScoped
+&nbsp;	static Scene provideHubAuthFlowScene(@KeyLoading FxmlLoaderFactory fxmlLoaders) {
+<b class="nc">&nbsp;		return fxmlLoaders.createScene(FxmlFile.HUB_AUTH_FLOW);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@FxmlScene(FxmlFile.HUB_INVALID_LICENSE)
+&nbsp;	@KeyLoadingScoped
+&nbsp;	static Scene provideInvalidLicenseScene(@KeyLoading FxmlLoaderFactory fxmlLoaders) {
+<b class="nc">&nbsp;		return fxmlLoaders.createScene(FxmlFile.HUB_INVALID_LICENSE);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@FxmlScene(FxmlFile.HUB_RECEIVE_KEY)
+&nbsp;	@KeyLoadingScoped
+&nbsp;	static Scene provideHubReceiveKeyScene(@KeyLoading FxmlLoaderFactory fxmlLoaders) {
+<b class="nc">&nbsp;		return fxmlLoaders.createScene(FxmlFile.HUB_RECEIVE_KEY);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@FxmlScene(FxmlFile.HUB_LEGACY_REGISTER_DEVICE)
+&nbsp;	@KeyLoadingScoped
+&nbsp;	static Scene provideHubLegacyRegisterDeviceScene(@KeyLoading FxmlLoaderFactory fxmlLoaders) {
+<b class="nc">&nbsp;		return fxmlLoaders.createScene(FxmlFile.HUB_LEGACY_REGISTER_DEVICE);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@FxmlScene(FxmlFile.HUB_LEGACY_REGISTER_SUCCESS)
+&nbsp;	@KeyLoadingScoped
+&nbsp;	static Scene provideHubLegacyRegisterSuccessScene(@KeyLoading FxmlLoaderFactory fxmlLoaders) {
+<b class="nc">&nbsp;		return fxmlLoaders.createScene(FxmlFile.HUB_LEGACY_REGISTER_SUCCESS);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@FxmlScene(FxmlFile.HUB_REGISTER_SUCCESS)
+&nbsp;	@KeyLoadingScoped
+&nbsp;	static Scene provideHubRegisterSuccessScene(@KeyLoading FxmlLoaderFactory fxmlLoaders) {
+<b class="nc">&nbsp;		return fxmlLoaders.createScene(FxmlFile.HUB_REGISTER_SUCCESS);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@FxmlScene(FxmlFile.HUB_REGISTER_FAILED)
+&nbsp;	@KeyLoadingScoped
+&nbsp;	static Scene provideHubRegisterFailedScene(@KeyLoading FxmlLoaderFactory fxmlLoaders) {
+<b class="nc">&nbsp;		return fxmlLoaders.createScene(FxmlFile.HUB_REGISTER_FAILED);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@FxmlScene(FxmlFile.HUB_REGISTER_DEVICE)
+&nbsp;	@KeyLoadingScoped
+&nbsp;	static Scene provideHubRegisterDeviceScene(@KeyLoading FxmlLoaderFactory fxmlLoaders) {
+<b class="nc">&nbsp;		return fxmlLoaders.createScene(FxmlFile.HUB_REGISTER_DEVICE);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@FxmlScene(FxmlFile.HUB_REGISTER_DEVICE_ALREADY_EXISTS)
+&nbsp;	@KeyLoadingScoped
+&nbsp;	static Scene provideHubRegisterDeviceAlreadyExistsScene(@KeyLoading FxmlLoaderFactory fxmlLoaders) {
+<b class="nc">&nbsp;		return fxmlLoaders.createScene(FxmlFile.HUB_REGISTER_DEVICE_ALREADY_EXISTS);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@FxmlScene(FxmlFile.HUB_UNAUTHORIZED_DEVICE)
+&nbsp;	@KeyLoadingScoped
+&nbsp;	static Scene provideHubUnauthorizedDeviceScene(@KeyLoading FxmlLoaderFactory fxmlLoaders) {
+<b class="nc">&nbsp;		return fxmlLoaders.createScene(FxmlFile.HUB_UNAUTHORIZED_DEVICE);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@FxmlScene(FxmlFile.HUB_REQUIRE_ACCOUNT_INIT)
+&nbsp;	@KeyLoadingScoped
+&nbsp;	static Scene provideRequireAccountInitScene(@KeyLoading FxmlLoaderFactory fxmlLoaders) {
+<b class="nc">&nbsp;		return fxmlLoaders.createScene(FxmlFile.HUB_REQUIRE_ACCOUNT_INIT);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(NoKeychainController.class)
+&nbsp;	abstract FxController bindNoKeychainController(NoKeychainController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(AuthFlowController.class)
+&nbsp;	abstract FxController bindAuthFlowController(AuthFlowController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(InvalidLicenseController.class)
+&nbsp;	abstract FxController bindInvalidLicenseController(InvalidLicenseController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(ReceiveKeyController.class)
+&nbsp;	abstract FxController bindReceiveKeyController(ReceiveKeyController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(RegisterDeviceController.class)
+&nbsp;	abstract FxController bindRegisterDeviceController(RegisterDeviceController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(LegacyRegisterDeviceController.class)
+&nbsp;	abstract FxController bindLegacyRegisterDeviceController(LegacyRegisterDeviceController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(LegacyRegisterSuccessController.class)
+&nbsp;	abstract FxController bindLegacyRegisterSuccessController(LegacyRegisterSuccessController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(RegisterSuccessController.class)
+&nbsp;	abstract FxController bindRegisterSuccessController(RegisterSuccessController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(RegisterFailedController.class)
+&nbsp;	abstract FxController bindRegisterFailedController(RegisterFailedController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(UnauthorizedDeviceController.class)
+&nbsp;	abstract FxController bindUnauthorizedDeviceController(UnauthorizedDeviceController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(RequireAccountInitController.class)
+&nbsp;	abstract FxController bindRequireAccountInitController(RequireAccountInitController controller);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,330 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > RecoveryKeyValidateController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.recoverykey</a>
+</div>
+
+<h1>Coverage Summary for Class: RecoveryKeyValidateController (org.cryptomator.ui.recoverykey)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RecoveryKeyValidateController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/60)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">RecoveryKeyValidateController$RecoveryKeyState</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/64)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.recoverykey;
+&nbsp;
+&nbsp;
+&nbsp;import com.google.common.base.CharMatcher;
+&nbsp;import com.google.common.base.Strings;
+&nbsp;import org.cryptomator.common.Nullable;
+&nbsp;import org.cryptomator.common.ObservableUtil;
+&nbsp;import org.cryptomator.common.vaults.Vault;
+&nbsp;import org.cryptomator.cryptofs.VaultConfig;
+&nbsp;import org.cryptomator.cryptofs.VaultConfigLoadException;
+&nbsp;import org.cryptomator.cryptofs.VaultKeyInvalidException;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import javafx.beans.property.ObjectProperty;
+&nbsp;import javafx.beans.property.SimpleObjectProperty;
+&nbsp;import javafx.beans.property.StringProperty;
+&nbsp;import javafx.beans.value.ObservableValue;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.scene.control.TextArea;
+&nbsp;import javafx.scene.control.TextFormatter;
+&nbsp;import javafx.scene.input.KeyCode;
+&nbsp;import javafx.scene.input.KeyEvent;
+&nbsp;
+<b class="nc">&nbsp;public class RecoveryKeyValidateController implements FxController {</b>
+&nbsp;
+<b class="nc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(RecoveryKeyCreationController.class);</b>
+<b class="nc">&nbsp;	private static final CharMatcher ALLOWED_CHARS = CharMatcher.inRange(&#39;a&#39;, &#39;z&#39;).or(CharMatcher.is(&#39; &#39;));</b>
+&nbsp;
+&nbsp;	private final Vault vault;
+&nbsp;	private final VaultConfig.UnverifiedVaultConfig unverifiedVaultConfig;
+&nbsp;	private final StringProperty recoveryKey;
+&nbsp;	private final ObservableValue&lt;Boolean&gt; recoveryKeyCorrect;
+&nbsp;	private final ObservableValue&lt;Boolean&gt; recoveryKeyWrong;
+&nbsp;	private final ObservableValue&lt;Boolean&gt; recoveryKeyInvalid;
+&nbsp;	private final RecoveryKeyFactory recoveryKeyFactory;
+&nbsp;	private final ObjectProperty&lt;RecoveryKeyState&gt; recoveryKeyState;
+&nbsp;	private final AutoCompleter autoCompleter;
+&nbsp;
+&nbsp;	private volatile boolean isWrongKey;
+&nbsp;
+&nbsp;	public TextArea textarea;
+&nbsp;
+<b class="nc">&nbsp;	public RecoveryKeyValidateController(Vault vault, @Nullable VaultConfig.UnverifiedVaultConfig vaultConfig, StringProperty recoveryKey, RecoveryKeyFactory recoveryKeyFactory) {</b>
+<b class="nc">&nbsp;		this.vault = vault;</b>
+<b class="nc">&nbsp;		this.unverifiedVaultConfig = vaultConfig;</b>
+<b class="nc">&nbsp;		this.recoveryKey = recoveryKey;</b>
+<b class="nc">&nbsp;		this.recoveryKeyFactory = recoveryKeyFactory;</b>
+<b class="nc">&nbsp;		this.autoCompleter = new AutoCompleter(recoveryKeyFactory.getDictionary());</b>
+<b class="nc">&nbsp;		this.recoveryKeyState = new SimpleObjectProperty&lt;&gt;();</b>
+<b class="nc">&nbsp;		this.recoveryKeyCorrect = ObservableUtil.mapWithDefault(recoveryKeyState, RecoveryKeyState.CORRECT::equals, false);</b>
+<b class="nc">&nbsp;		this.recoveryKeyWrong = ObservableUtil.mapWithDefault(recoveryKeyState, RecoveryKeyState.WRONG::equals, false);</b>
+<b class="nc">&nbsp;		this.recoveryKeyInvalid = ObservableUtil.mapWithDefault(recoveryKeyState, RecoveryKeyState.INVALID::equals, false);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void initialize() {
+<b class="nc">&nbsp;		recoveryKey.bind(textarea.textProperty());</b>
+<b class="nc">&nbsp;		textarea.textProperty().addListener(((observable, oldValue, newValue) -&gt; validateRecoveryKey()));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private TextFormatter.Change filterTextChange(TextFormatter.Change change) {
+<b class="nc">&nbsp;		if (Strings.isNullOrEmpty(change.getText())) {</b>
+&nbsp;			// pass-through caret/selection changes that don&#39;t affect the text
+<b class="nc">&nbsp;			return change;</b>
+&nbsp;		}
+<b class="nc">&nbsp;		if (!ALLOWED_CHARS.matchesAllOf(change.getText())) {</b>
+<b class="nc">&nbsp;			return null; // reject change</b>
+&nbsp;		}
+&nbsp;
+<b class="nc">&nbsp;		String text = change.getControlNewText();</b>
+<b class="nc">&nbsp;		int caretPos = change.getCaretPosition();</b>
+<b class="nc">&nbsp;		if (caretPos == text.length() || text.charAt(caretPos) == &#39; &#39;) { // are we at the end of a word?</b>
+<b class="nc">&nbsp;			int beginOfWord = Math.max(text.substring(0, caretPos).lastIndexOf(&#39; &#39;) + 1, 0);</b>
+<b class="nc">&nbsp;			String currentWord = text.substring(beginOfWord, caretPos);</b>
+<b class="nc">&nbsp;			var suggestion = autoCompleter.autocomplete(currentWord);</b>
+<b class="nc">&nbsp;			if (suggestion.isPresent()) {</b>
+<b class="nc">&nbsp;				String completion = suggestion.get().substring(currentWord.length());</b>
+<b class="nc">&nbsp;				change.setText(change.getText() + completion);</b>
+<b class="nc">&nbsp;				change.setAnchor(caretPos + completion.length());</b>
+&nbsp;			}
+&nbsp;		}
+<b class="nc">&nbsp;		return change;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void onKeyPressed(KeyEvent keyEvent) {
+<b class="nc">&nbsp;		if (keyEvent.getCode() == KeyCode.TAB &amp;&amp; textarea.getAnchor() &gt; textarea.getCaretPosition()) {</b>
+&nbsp;			// apply autocompletion:
+<b class="nc">&nbsp;			int pos = textarea.getAnchor();</b>
+<b class="nc">&nbsp;			textarea.insertText(pos, &quot; &quot;);</b>
+<b class="nc">&nbsp;			textarea.positionCaret(pos + 1);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Checks, if vault config is signed with the given key.
+&nbsp;	 *
+&nbsp;	 * @param key byte array of possible signing key
+&nbsp;	 * @return true, if vault config is signed with this key
+&nbsp;	 */
+&nbsp;	private boolean checkKeyAgainstVaultConfig(byte[] key) {
+<b class="nc">&nbsp;		assert unverifiedVaultConfig != null;</b>
+&nbsp;		try {
+<b class="nc">&nbsp;			var config = unverifiedVaultConfig.verify(key, unverifiedVaultConfig.allegedVaultVersion());</b>
+<b class="nc">&nbsp;			LOG.info(&quot;Provided recovery key matches vault config signature for vault {}&quot;, config.getId());</b>
+<b class="nc">&nbsp;			return true;</b>
+<b class="nc">&nbsp;		} catch (VaultKeyInvalidException e) {</b>
+<b class="nc">&nbsp;			LOG.debug(&quot;Provided recovery key does not match vault config signature.&quot;);</b>
+<b class="nc">&nbsp;			isWrongKey = true;</b>
+<b class="nc">&nbsp;			return false;</b>
+<b class="nc">&nbsp;		} catch (VaultConfigLoadException e) {</b>
+<b class="nc">&nbsp;			LOG.error(&quot;Failed to parse vault config&quot;, e);</b>
+<b class="nc">&nbsp;			return false;</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private void validateRecoveryKey() {
+<b class="nc">&nbsp;		isWrongKey = false;</b>
+<b class="nc">&nbsp;		var valid = recoveryKeyFactory.validateRecoveryKey(recoveryKey.get(), unverifiedVaultConfig != null ? this::checkKeyAgainstVaultConfig : null);</b>
+<b class="nc">&nbsp;		if (valid) {</b>
+<b class="nc">&nbsp;			recoveryKeyState.set(RecoveryKeyState.CORRECT);</b>
+<b class="nc">&nbsp;		} else if (isWrongKey) { //set via side effect in checkKeyAgainstVaultConfig()</b>
+<b class="nc">&nbsp;			recoveryKeyState.set(RecoveryKeyState.WRONG);</b>
+&nbsp;		} else {
+<b class="nc">&nbsp;			recoveryKeyState.set(RecoveryKeyState.INVALID);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/* Getter/Setter */
+&nbsp;
+&nbsp;	public Vault getVault() {
+<b class="nc">&nbsp;		return vault;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public TextFormatter getRecoveryKeyTextFormatter() {
+<b class="nc">&nbsp;		return new TextFormatter&lt;&gt;(this::filterTextChange);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObservableValue&lt;Boolean&gt; recoveryKeyInvalidProperty() {
+<b class="nc">&nbsp;		return recoveryKeyInvalid;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isRecoveryKeyInvalid() {
+<b class="nc">&nbsp;		return recoveryKeyInvalid.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObservableValue&lt;Boolean&gt; recoveryKeyCorrectProperty() {
+<b class="nc">&nbsp;		return recoveryKeyCorrect;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isRecoveryKeyCorrect() {
+<b class="nc">&nbsp;		return recoveryKeyCorrect.getValue();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObservableValue&lt;Boolean&gt; recoveryKeyWrongProperty() {
+<b class="nc">&nbsp;		return recoveryKeyWrong;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isRecoveryKeyWrong() {
+<b class="nc">&nbsp;		return recoveryKeyWrong.getValue();</b>
+&nbsp;	}
+&nbsp;
+<b class="nc">&nbsp;	private enum RecoveryKeyState {</b>
+&nbsp;		/**
+&nbsp;		 * Recovery key is a valid key and belongs to this vault
+&nbsp;		 */
+<b class="nc">&nbsp;		CORRECT,</b>
+&nbsp;		/**
+&nbsp;		 * Recovery key is a valid key, but does not belong to this vault
+&nbsp;		 */
+<b class="nc">&nbsp;		WRONG,</b>
+&nbsp;		/**
+&nbsp;		 * Recovery key is not a valid key.
+&nbsp;		 */
+<b class="nc">&nbsp;		INVALID;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

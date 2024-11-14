@@ -1,0 +1,146 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > LaunchAndSizeBasedTriggeringPolicy</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.logging</a>
+</div>
+
+<h1>Coverage Summary for Class: LaunchAndSizeBasedTriggeringPolicy (org.cryptomator.logging)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LaunchAndSizeBasedTriggeringPolicy</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.logging;
+&nbsp;
+&nbsp;import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
+&nbsp;import ch.qos.logback.core.rolling.TriggeringPolicyBase;
+&nbsp;import ch.qos.logback.core.util.FileSize;
+&nbsp;
+&nbsp;import java.io.File;
+&nbsp;
+&nbsp;/**
+&nbsp; * Triggers a roll-over either on the first log event or if watched log file reaches a certain size
+&nbsp; *
+&nbsp; * @param &lt;E&gt; Event type the policy possibly reacts to
+&nbsp; */
+&nbsp;public class LaunchAndSizeBasedTriggeringPolicy&lt;E&gt; extends TriggeringPolicyBase&lt;E&gt; {
+&nbsp;
+&nbsp;	LaunchBasedTriggeringPolicy&lt;E&gt; launchBasedTriggeringPolicy;
+&nbsp;	SizeBasedTriggeringPolicy&lt;E&gt; sizeBasedTriggeringPolicy;
+&nbsp;
+<b class="fc">&nbsp;	public LaunchAndSizeBasedTriggeringPolicy(FileSize threshold) {</b>
+<b class="fc">&nbsp;		this.launchBasedTriggeringPolicy = new LaunchBasedTriggeringPolicy&lt;&gt;();</b>
+<b class="fc">&nbsp;		this.sizeBasedTriggeringPolicy = new SizeBasedTriggeringPolicy&lt;&gt;();</b>
+<b class="fc">&nbsp;		sizeBasedTriggeringPolicy.setMaxFileSize(threshold);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public boolean isTriggeringEvent(File activeFile, E event) {
+<b class="fc">&nbsp;		return launchBasedTriggeringPolicy.isTriggeringEvent(activeFile, event) || sizeBasedTriggeringPolicy.isTriggeringEvent(activeFile, event);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

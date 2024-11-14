@@ -1,0 +1,239 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > CommonsModule</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.common</a>
+</div>
+
+<h1>Coverage Summary for Class: CommonsModule (org.cryptomator.common)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CommonsModule</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    28,6%
+  </span>
+  <span class="absValue">
+    (4/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    20,6%
+  </span>
+  <span class="absValue">
+    (7/34)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/*******************************************************************************
+&nbsp; * Copyright (c) 2017 Skymatic UG (haftungsbeschränkt).
+&nbsp; * All rights reserved. This program and the accompanying materials
+&nbsp; * are made available under the terms of the accompanying LICENSE file.
+&nbsp; *******************************************************************************/
+&nbsp;package org.cryptomator.common;
+&nbsp;
+&nbsp;import dagger.Module;
+&nbsp;import dagger.Provides;
+&nbsp;import org.cryptomator.common.keychain.KeychainModule;
+&nbsp;import org.cryptomator.common.mount.MountModule;
+&nbsp;import org.cryptomator.common.settings.Settings;
+&nbsp;import org.cryptomator.common.settings.SettingsProvider;
+&nbsp;import org.cryptomator.common.vaults.VaultComponent;
+&nbsp;import org.cryptomator.common.vaults.VaultListModule;
+&nbsp;import org.cryptomator.cryptolib.common.MasterkeyFileAccess;
+&nbsp;import org.cryptomator.integrations.revealpath.RevealPathService;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import javax.inject.Named;
+&nbsp;import javax.inject.Singleton;
+&nbsp;import java.security.NoSuchAlgorithmException;
+&nbsp;import java.security.SecureRandom;
+&nbsp;import java.util.Comparator;
+&nbsp;import java.util.Optional;
+&nbsp;import java.util.concurrent.ExecutorService;
+&nbsp;import java.util.concurrent.ScheduledExecutorService;
+&nbsp;import java.util.concurrent.SynchronousQueue;
+&nbsp;import java.util.concurrent.TimeUnit;
+&nbsp;import java.util.concurrent.atomic.AtomicInteger;
+&nbsp;
+&nbsp;@Module(subcomponents = {VaultComponent.class}, includes = {VaultListModule.class, KeychainModule.class, MountModule.class})
+<b class="nc">&nbsp;public abstract class CommonsModule {</b>
+&nbsp;
+<b class="fc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(CommonsModule.class);</b>
+&nbsp;	private static final int NUM_SCHEDULER_THREADS = 2;
+&nbsp;	private static final int NUM_CORE_BG_THREADS = 6;
+&nbsp;	private static final long BG_THREAD_KEEPALIVE_SECONDS = 60l;
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@Singleton
+&nbsp;	static Environment provideEnvironment() {
+<b class="fc">&nbsp;		return Environment.getInstance();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@SuppressWarnings(&quot;SpellCheckingInspection&quot;)
+&nbsp;	@Provides
+&nbsp;	@Singleton
+&nbsp;	@Named(&quot;licensePublicKey&quot;)
+&nbsp;	static String provideLicensePublicKey() {
+&nbsp;		// in PEM format without the dash-escaped begin/end lines
+<b class="nc">&nbsp;		return &quot;&quot;&quot;</b>
+&nbsp;				MIGbMBAGByqGSM49AgEGBSuBBAAjA4GGAAQB7NfnqiZbg2KTmoflmZ71PbXru7oW\
+&nbsp;				fmnV2yv3eDjlDfGruBrqz9TtXBZV/eYWt31xu1osIqaT12lKBvZ511aaAkIBeOEV\
+&nbsp;				gwcBIlJr6kUw7NKzeJt7r2rrsOyQoOG2nWc/Of/NBqA3mIZRHk5Aq1YupFdD26QE\
+&nbsp;				r0DzRyj4ixPIt38CQB8=\
+&nbsp;				&quot;&quot;&quot;;
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@Singleton
+&nbsp;	static SecureRandom provideCSPRNG() {
+&nbsp;		try {
+<b class="nc">&nbsp;			return SecureRandom.getInstanceStrong();</b>
+<b class="nc">&nbsp;		} catch (NoSuchAlgorithmException e) {</b>
+<b class="nc">&nbsp;			throw new IllegalStateException(&quot;A strong algorithm must exist in every Java platform.&quot;, e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@Singleton
+&nbsp;	static MasterkeyFileAccess provideMasterkeyFileAccess(SecureRandom csprng) {
+<b class="nc">&nbsp;		return new MasterkeyFileAccess(Constants.PEPPER, csprng);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@Singleton
+&nbsp;	@Named(&quot;SemVer&quot;)
+&nbsp;	static Comparator&lt;String&gt; providesSemVerComparator() {
+<b class="nc">&nbsp;		return new SemVerComparator();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@Singleton
+&nbsp;	static Optional&lt;RevealPathService&gt; provideRevealPathService() {
+<b class="nc">&nbsp;		return RevealPathService.get().findFirst();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@Singleton
+&nbsp;	static Settings provideSettings(SettingsProvider settingsProvider) {
+<b class="fc">&nbsp;		return settingsProvider.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@Singleton
+&nbsp;	static ScheduledExecutorService provideScheduledExecutorService(ShutdownHook shutdownHook) {
+<b class="fc">&nbsp;		final AtomicInteger threadNumber = new AtomicInteger(1);</b>
+<b class="fc">&nbsp;		ScheduledExecutorService executorService = new CatchingExecutors.CatchingScheduledThreadPoolExecutor(NUM_SCHEDULER_THREADS, r -&gt; {</b>
+<b class="nc">&nbsp;			String name = String.format(&quot;App Scheduled Executor %02d&quot;, threadNumber.getAndIncrement());</b>
+<b class="nc">&nbsp;			Thread t = new Thread(r);</b>
+<b class="nc">&nbsp;			t.setName(name);</b>
+<b class="nc">&nbsp;			t.setUncaughtExceptionHandler(CommonsModule::handleUncaughtExceptionInBackgroundThread);</b>
+<b class="nc">&nbsp;			t.setDaemon(true);</b>
+<b class="nc">&nbsp;			LOG.debug(&quot;Starting {}&quot;, t.getName());</b>
+<b class="nc">&nbsp;			return t;</b>
+&nbsp;		});
+<b class="fc">&nbsp;		shutdownHook.runOnShutdown(executorService::shutdown);</b>
+<b class="fc">&nbsp;		return executorService;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@Singleton
+&nbsp;	static ExecutorService provideExecutorService(ShutdownHook shutdownHook) {
+<b class="nc">&nbsp;		final AtomicInteger threadNumber = new AtomicInteger(1);</b>
+<b class="nc">&nbsp;		ExecutorService executorService = new CatchingExecutors.CatchingThreadPoolExecutor(NUM_CORE_BG_THREADS, Integer.MAX_VALUE, BG_THREAD_KEEPALIVE_SECONDS, TimeUnit.SECONDS, new SynchronousQueue&lt;&gt;(), r -&gt; {</b>
+<b class="nc">&nbsp;			String name = String.format(&quot;App Background Thread %03d&quot;, threadNumber.getAndIncrement());</b>
+<b class="nc">&nbsp;			Thread t = new Thread(r);</b>
+<b class="nc">&nbsp;			t.setName(name);</b>
+<b class="nc">&nbsp;			t.setUncaughtExceptionHandler(CommonsModule::handleUncaughtExceptionInBackgroundThread);</b>
+<b class="nc">&nbsp;			t.setDaemon(true);</b>
+<b class="nc">&nbsp;			LOG.debug(&quot;Starting {}&quot;, t.getName());</b>
+<b class="nc">&nbsp;			return t;</b>
+&nbsp;		});
+<b class="nc">&nbsp;		shutdownHook.runOnShutdown(executorService::shutdown);</b>
+<b class="nc">&nbsp;		return executorService;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private static void handleUncaughtExceptionInBackgroundThread(Thread thread, Throwable throwable) {
+<b class="nc">&nbsp;		LOG.error(&quot;Uncaught exception in &quot; + thread.getName(), throwable);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

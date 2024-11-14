@@ -1,0 +1,158 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ShareVaultModule</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.sharevault</a>
+</div>
+
+<h1>Coverage Summary for Class: ShareVaultModule (org.cryptomator.ui.sharevault)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ShareVaultModule</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.sharevault;
+&nbsp;
+&nbsp;import dagger.Binds;
+&nbsp;import dagger.Module;
+&nbsp;import dagger.Provides;
+&nbsp;import dagger.multibindings.IntoMap;
+&nbsp;import org.cryptomator.ui.common.DefaultSceneFactory;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;import org.cryptomator.ui.common.FxControllerKey;
+&nbsp;import org.cryptomator.ui.common.FxmlFile;
+&nbsp;import org.cryptomator.ui.common.FxmlLoaderFactory;
+&nbsp;import org.cryptomator.ui.common.FxmlScene;
+&nbsp;import org.cryptomator.ui.common.StageFactory;
+&nbsp;
+&nbsp;import javax.inject.Provider;
+&nbsp;import javafx.scene.Scene;
+&nbsp;import javafx.stage.Modality;
+&nbsp;import javafx.stage.Stage;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;
+&nbsp;@Module
+<b class="nc">&nbsp;abstract class ShareVaultModule {</b>
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@ShareVaultWindow
+&nbsp;	@ShareVaultScoped
+&nbsp;	static FxmlLoaderFactory provideFxmlLoaderFactory(Map&lt;Class&lt;? extends FxController&gt;, Provider&lt;FxController&gt;&gt; factories, DefaultSceneFactory sceneFactory, ResourceBundle resourceBundle) {
+<b class="nc">&nbsp;		return new FxmlLoaderFactory(factories, sceneFactory, resourceBundle);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@ShareVaultWindow
+&nbsp;	@ShareVaultScoped
+&nbsp;	static Stage provideStage(StageFactory factory, ResourceBundle resourceBundle) {
+<b class="nc">&nbsp;		Stage stage = factory.create();</b>
+<b class="nc">&nbsp;		stage.setResizable(false);</b>
+<b class="nc">&nbsp;		stage.initModality(Modality.APPLICATION_MODAL);</b>
+<b class="nc">&nbsp;		stage.setTitle(resourceBundle.getString(&quot;shareVault.title&quot;));</b>
+<b class="nc">&nbsp;		return stage;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@FxmlScene(FxmlFile.SHARE_VAULT)
+&nbsp;	@ShareVaultScoped
+&nbsp;	static Scene provideShareVaultScene(@ShareVaultWindow FxmlLoaderFactory fxmlLoaders) {
+<b class="nc">&nbsp;		return fxmlLoaders.createScene(FxmlFile.SHARE_VAULT);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(ShareVaultController.class)
+&nbsp;	abstract FxController bindShareVaultController(ShareVaultController controller);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

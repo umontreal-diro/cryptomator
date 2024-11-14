@@ -1,0 +1,470 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ReceiveKeyController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.keyloading.hub</a>
+</div>
+
+<h1>Coverage Summary for Class: ReceiveKeyController (org.cryptomator.ui.keyloading.hub)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ReceiveKeyController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/113)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ReceiveKeyController$ConfigDto</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ReceiveKeyController$DeviceDto</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/28)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/117)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.keyloading.hub;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+&nbsp;import com.fasterxml.jackson.annotation.JsonProperty;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import com.google.common.base.Preconditions;
+&nbsp;import com.nimbusds.jose.JWEObject;
+&nbsp;import dagger.Lazy;
+&nbsp;import org.cryptomator.common.vaults.Vault;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;import org.cryptomator.ui.common.FxmlFile;
+&nbsp;import org.cryptomator.ui.common.FxmlScene;
+&nbsp;import org.cryptomator.ui.keyloading.KeyLoading;
+&nbsp;import org.cryptomator.ui.keyloading.KeyLoadingScoped;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import javax.inject.Inject;
+&nbsp;import javax.inject.Named;
+&nbsp;import javafx.application.Platform;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.scene.Scene;
+&nbsp;import javafx.stage.Stage;
+&nbsp;import javafx.stage.WindowEvent;
+&nbsp;import java.io.IOException;
+&nbsp;import java.io.UncheckedIOException;
+&nbsp;import java.net.URI;
+&nbsp;import java.net.URISyntaxException;
+&nbsp;import java.net.http.HttpClient;
+&nbsp;import java.net.http.HttpRequest;
+&nbsp;import java.net.http.HttpResponse;
+&nbsp;import java.nio.charset.StandardCharsets;
+&nbsp;import java.text.ParseException;
+&nbsp;import java.time.Duration;
+&nbsp;import java.util.Objects;
+&nbsp;import java.util.concurrent.CompletableFuture;
+&nbsp;import java.util.concurrent.ExecutorService;
+&nbsp;import java.util.concurrent.atomic.AtomicReference;
+&nbsp;
+<b class="nc">&nbsp;@KeyLoadingScoped</b>
+&nbsp;public class ReceiveKeyController implements FxController {
+&nbsp;
+<b class="nc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(ReceiveKeyController.class);</b>
+&nbsp;	private static final String SCHEME_PREFIX = &quot;hub+&quot;;
+<b class="nc">&nbsp;	private static final ObjectMapper JSON = new ObjectMapper().setDefaultLeniency(true);</b>
+<b class="nc">&nbsp;	private static final Duration REQ_TIMEOUT = Duration.ofSeconds(10);</b>
+&nbsp;
+&nbsp;	private final Stage window;
+&nbsp;	private final HubConfig hubConfig;
+&nbsp;	private final String vaultId;
+&nbsp;	private final String deviceId;
+&nbsp;	private final String bearerToken;
+&nbsp;	private final CompletableFuture&lt;ReceivedKey&gt; result;
+&nbsp;	private final Lazy&lt;Scene&gt; registerDeviceScene;
+&nbsp;	private final Lazy&lt;Scene&gt; legacyRegisterDeviceScene;
+&nbsp;	private final Lazy&lt;Scene&gt; unauthorizedScene;
+&nbsp;	private final Lazy&lt;Scene&gt; accountInitializationScene;
+&nbsp;	private final Lazy&lt;Scene&gt; invalidLicenseScene;
+&nbsp;	private final HttpClient httpClient;
+&nbsp;
+&nbsp;	@Inject
+<b class="nc">&nbsp;	public ReceiveKeyController(@KeyLoading Vault vault, ExecutorService executor, @KeyLoading Stage window, HubConfig hubConfig, @Named(&quot;deviceId&quot;) String deviceId, @Named(&quot;bearerToken&quot;) AtomicReference&lt;String&gt; tokenRef, CompletableFuture&lt;ReceivedKey&gt; result, @FxmlScene(FxmlFile.HUB_REGISTER_DEVICE) Lazy&lt;Scene&gt; registerDeviceScene, @FxmlScene(FxmlFile.HUB_LEGACY_REGISTER_DEVICE) Lazy&lt;Scene&gt; legacyRegisterDeviceScene, @FxmlScene(FxmlFile.HUB_UNAUTHORIZED_DEVICE) Lazy&lt;Scene&gt; unauthorizedScene, @FxmlScene(FxmlFile.HUB_REQUIRE_ACCOUNT_INIT) Lazy&lt;Scene&gt; accountInitializationScene, @FxmlScene(FxmlFile.HUB_INVALID_LICENSE) Lazy&lt;Scene&gt; invalidLicenseScene) {</b>
+<b class="nc">&nbsp;		this.window = window;</b>
+<b class="nc">&nbsp;		this.hubConfig = hubConfig;</b>
+<b class="nc">&nbsp;		this.vaultId = extractVaultId(vault.getVaultConfigCache().getUnchecked().getKeyId()); // TODO: access vault config&#39;s JTI directly (requires changes in cryptofs)</b>
+<b class="nc">&nbsp;		this.deviceId = deviceId;</b>
+<b class="nc">&nbsp;		this.bearerToken = Objects.requireNonNull(tokenRef.get());</b>
+<b class="nc">&nbsp;		this.result = result;</b>
+<b class="nc">&nbsp;		this.registerDeviceScene = registerDeviceScene;</b>
+<b class="nc">&nbsp;		this.legacyRegisterDeviceScene = legacyRegisterDeviceScene;</b>
+<b class="nc">&nbsp;		this.unauthorizedScene = unauthorizedScene;</b>
+<b class="nc">&nbsp;		this.accountInitializationScene = accountInitializationScene;</b>
+<b class="nc">&nbsp;		this.invalidLicenseScene = invalidLicenseScene;</b>
+<b class="nc">&nbsp;		this.window.addEventHandler(WindowEvent.WINDOW_HIDING, this::windowClosed);</b>
+<b class="nc">&nbsp;		this.httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).executor(executor).build();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void initialize() {
+<b class="nc">&nbsp;		receiveKey();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void receiveKey() {
+<b class="nc">&nbsp;		requestApiConfig();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * STEP 0 (Request): GET /api/config
+&nbsp;	 */
+&nbsp;	private void requestApiConfig() {
+<b class="nc">&nbsp;		var configUri = hubConfig.URIs.API.&quot;config&quot;;</b>
+<b class="nc">&nbsp;		var request = HttpRequest.newBuilder(configUri) //</b>
+<b class="nc">&nbsp;				.GET() //</b>
+<b class="nc">&nbsp;				.timeout(REQ_TIMEOUT) //</b>
+<b class="nc">&nbsp;				.build();</b>
+<b class="nc">&nbsp;		httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.US_ASCII)) //</b>
+<b class="nc">&nbsp;				.thenAcceptAsync(this::receivedApiConfig, Platform::runLater) //</b>
+<b class="nc">&nbsp;				.exceptionally(this::retrievalFailed);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * STEP 0 (Response): GET /api/config
+&nbsp;	 *
+&nbsp;	 * @param response Response
+&nbsp;	 */
+&nbsp;	private void receivedApiConfig(HttpResponse&lt;String&gt; response) {
+<b class="nc">&nbsp;		LOG.debug(&quot;GET {} -&gt; Status Code {}&quot;, response.request().uri(), response.statusCode());</b>
+<b class="nc">&nbsp;		Preconditions.checkState(response.statusCode() == 200, &quot;Unexpected response &quot; + response.statusCode());</b>
+&nbsp;		try {
+<b class="nc">&nbsp;			var config = JSON.reader().readValue(response.body(), ConfigDto.class);</b>
+<b class="nc">&nbsp;			if (config.apiLevel &gt;= 1) {</b>
+<b class="nc">&nbsp;				requestDeviceData();</b>
+&nbsp;			} else {
+<b class="nc">&nbsp;				requestLegacyAccessToken();</b>
+&nbsp;			}
+<b class="nc">&nbsp;		} catch (IOException e) {</b>
+<b class="nc">&nbsp;			throw new UncheckedIOException(e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * STEP 1 (Request): GET user key for this device
+&nbsp;	 */
+&nbsp;	private void requestDeviceData() {
+<b class="nc">&nbsp;		var deviceUri = hubConfig.URIs.API.&quot;devices/\{deviceId}&quot;;</b>
+<b class="nc">&nbsp;		var request = HttpRequest.newBuilder(deviceUri) //</b>
+<b class="nc">&nbsp;				.header(&quot;Authorization&quot;, &quot;Bearer &quot; + bearerToken) //</b>
+<b class="nc">&nbsp;				.GET() //</b>
+<b class="nc">&nbsp;				.timeout(REQ_TIMEOUT) //</b>
+<b class="nc">&nbsp;				.build();</b>
+<b class="nc">&nbsp;		httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8)) //</b>
+<b class="nc">&nbsp;				.thenAcceptAsync(this::receivedDeviceData) //</b>
+<b class="nc">&nbsp;				.exceptionally(this::retrievalFailed);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * STEP 1 (Response): GET user key for this device
+&nbsp;	 *
+&nbsp;	 * @param response Response
+&nbsp;	 */
+&nbsp;	private void receivedDeviceData(HttpResponse&lt;String&gt; response) {
+<b class="nc">&nbsp;		LOG.debug(&quot;GET {} -&gt; Status Code {}&quot;, response.request().uri(), response.statusCode());</b>
+&nbsp;		try {
+<b class="nc">&nbsp;			switch (response.statusCode()) {</b>
+&nbsp;				case 200 -&gt; {
+<b class="nc">&nbsp;					var device = JSON.reader().readValue(response.body(), DeviceDto.class);</b>
+<b class="nc">&nbsp;					requestVaultMasterkey(device.userPrivateKey);</b>
+&nbsp;				}
+<b class="nc">&nbsp;				case 404 -&gt; Platform.runLater(this::needsDeviceRegistration);</b>
+<b class="nc">&nbsp;				default -&gt; throw new IllegalStateException(&quot;Unexpected response &quot; + response.statusCode());</b>
+&nbsp;			}
+<b class="nc">&nbsp;		} catch (IOException e) {</b>
+<b class="nc">&nbsp;			throw new UncheckedIOException(e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private void needsDeviceRegistration() {
+<b class="nc">&nbsp;		window.setScene(registerDeviceScene.get());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * STEP 2 (Request): GET vault key for this user
+&nbsp;	 */
+&nbsp;	private void requestVaultMasterkey(String encryptedUserKey) {
+<b class="nc">&nbsp;		var vaultKeyUri = hubConfig.URIs.API.&quot;vaults/\{vaultId}/access-token&quot;;</b>
+<b class="nc">&nbsp;		var request = HttpRequest.newBuilder(vaultKeyUri) //</b>
+<b class="nc">&nbsp;				.header(&quot;Authorization&quot;, &quot;Bearer &quot; + bearerToken) //</b>
+<b class="nc">&nbsp;				.GET() //</b>
+<b class="nc">&nbsp;				.timeout(REQ_TIMEOUT) //</b>
+<b class="nc">&nbsp;				.build();</b>
+<b class="nc">&nbsp;		httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.US_ASCII)) //</b>
+<b class="nc">&nbsp;				.thenAcceptAsync(response -&gt; receivedVaultMasterkey(encryptedUserKey, response), Platform::runLater) //</b>
+<b class="nc">&nbsp;				.exceptionally(this::retrievalFailed);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * STEP 2 (Response): GET vault key for this user
+&nbsp;	 *
+&nbsp;	 * @param response Response
+&nbsp;	 */
+&nbsp;	private void receivedVaultMasterkey(String encryptedUserKey, HttpResponse&lt;String&gt; response) {
+<b class="nc">&nbsp;		LOG.debug(&quot;GET {} -&gt; Status Code {}&quot;, response.request().uri(), response.statusCode());</b>
+<b class="nc">&nbsp;		switch (response.statusCode()) {</b>
+<b class="nc">&nbsp;			case 200 -&gt; receivedBothEncryptedKeys(response.body(), encryptedUserKey);</b>
+<b class="nc">&nbsp;			case 402 -&gt; licenseExceeded();</b>
+<b class="nc">&nbsp;			case 403, 410 -&gt; accessNotGranted(); // or vault has been archived, effectively disallowing access - TODO: add specific dialog?</b>
+<b class="nc">&nbsp;			case 449 -&gt; accountInitializationRequired();</b>
+<b class="nc">&nbsp;			default -&gt; throw new IllegalStateException(&quot;Unexpected response &quot; + response.statusCode());</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private void receivedBothEncryptedKeys(String encryptedVaultKey, String encryptedUserKey) {
+&nbsp;		try {
+<b class="nc">&nbsp;			var vaultKeyJwe = JWEObject.parse(encryptedVaultKey);</b>
+<b class="nc">&nbsp;			var userKeyJwe = JWEObject.parse(encryptedUserKey);</b>
+<b class="nc">&nbsp;			result.complete(ReceivedKey.vaultKeyAndUserKey(vaultKeyJwe, userKeyJwe));</b>
+<b class="nc">&nbsp;			window.close();</b>
+<b class="nc">&nbsp;		} catch (ParseException e) {</b>
+<b class="nc">&nbsp;			retrievalFailed(e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * LEGACY FALLBACK (Request): GET the legacy access token from Hub 1.x
+&nbsp;	 */
+&nbsp;	@Deprecated
+&nbsp;	private void requestLegacyAccessToken() {
+<b class="nc">&nbsp;		var legacyAccessTokenUri = hubConfig.URIs.API.&quot;vaults/\{vaultId}/keys/\{deviceId}&quot;;</b>
+<b class="nc">&nbsp;		var request = HttpRequest.newBuilder(legacyAccessTokenUri) //</b>
+<b class="nc">&nbsp;				.header(&quot;Authorization&quot;, &quot;Bearer &quot; + bearerToken) //</b>
+<b class="nc">&nbsp;				.GET() //</b>
+<b class="nc">&nbsp;				.timeout(REQ_TIMEOUT) //</b>
+<b class="nc">&nbsp;				.build();</b>
+<b class="nc">&nbsp;		httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.US_ASCII)) //</b>
+<b class="nc">&nbsp;				.thenAcceptAsync(this::receivedLegacyAccessTokenResponse, Platform::runLater) //</b>
+<b class="nc">&nbsp;				.exceptionally(this::retrievalFailed);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * LEGACY FALLBACK (Response)
+&nbsp;	 *
+&nbsp;	 * @param response Response
+&nbsp;	 */
+&nbsp;	@Deprecated
+&nbsp;	private void receivedLegacyAccessTokenResponse(HttpResponse&lt;String&gt; response) {
+&nbsp;		try {
+<b class="nc">&nbsp;			switch (response.statusCode()) {</b>
+<b class="nc">&nbsp;				case 200 -&gt; receivedLegacyAccessTokenSuccess(response.body());</b>
+<b class="nc">&nbsp;				case 402 -&gt; licenseExceeded();</b>
+<b class="nc">&nbsp;				case 403, 410 -&gt; accessNotGranted(); // or vault has been archived, effectively disallowing access</b>
+<b class="nc">&nbsp;				case 404 -&gt; needsLegacyDeviceRegistration();</b>
+<b class="nc">&nbsp;				default -&gt; throw new IOException(&quot;Unexpected response &quot; + response.statusCode());</b>
+&nbsp;			}
+<b class="nc">&nbsp;		} catch (IOException e) {</b>
+<b class="nc">&nbsp;			throw new UncheckedIOException(e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	@Deprecated
+&nbsp;	private void receivedLegacyAccessTokenSuccess(String rawToken) throws IOException {
+&nbsp;		try {
+<b class="nc">&nbsp;			var token = JWEObject.parse(rawToken);</b>
+<b class="nc">&nbsp;			result.complete(ReceivedKey.legacyDeviceKey(token));</b>
+<b class="nc">&nbsp;			window.close();</b>
+<b class="nc">&nbsp;		} catch (ParseException e) {</b>
+<b class="nc">&nbsp;			throw new IOException(&quot;Failed to parse JWE&quot;, e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private void licenseExceeded() {
+<b class="nc">&nbsp;		window.setScene(invalidLicenseScene.get());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Deprecated
+&nbsp;	private void needsLegacyDeviceRegistration() {
+<b class="nc">&nbsp;		window.setScene(legacyRegisterDeviceScene.get());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void accessNotGranted() {
+<b class="nc">&nbsp;		window.setScene(unauthorizedScene.get());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void accountInitializationRequired() {
+<b class="nc">&nbsp;		window.setScene(accountInitializationScene.get());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private Void retrievalFailed(Throwable cause) {
+<b class="nc">&nbsp;		result.completeExceptionally(cause);</b>
+<b class="nc">&nbsp;		return null;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void cancel() {
+<b class="nc">&nbsp;		window.close();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void windowClosed(WindowEvent windowEvent) {
+<b class="nc">&nbsp;		result.cancel(true);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private static URI appendPath(URI base, String path) {
+&nbsp;		try {
+<b class="nc">&nbsp;			var newPath = base.getPath() + path;</b>
+<b class="nc">&nbsp;			return new URI(base.getScheme(), base.getAuthority(), newPath, base.getQuery(), base.getFragment());</b>
+<b class="nc">&nbsp;		} catch (URISyntaxException e) {</b>
+<b class="nc">&nbsp;			throw new IllegalArgumentException(&quot;Can&#39;t append &#39;&quot; + path + &quot;&#39; to URI: &quot; + base, e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private static String extractVaultId(URI vaultKeyUri) {
+<b class="nc">&nbsp;		assert vaultKeyUri.getScheme().startsWith(SCHEME_PREFIX);</b>
+<b class="nc">&nbsp;		var path = vaultKeyUri.getPath();</b>
+<b class="nc">&nbsp;		return path.substring(path.lastIndexOf(&#39;/&#39;) + 1);</b>
+&nbsp;	}
+&nbsp;
+<b class="nc">&nbsp;	@JsonIgnoreProperties(ignoreUnknown = true)</b>
+<b class="nc">&nbsp;	private record DeviceDto(@JsonProperty(value = &quot;userPrivateKey&quot;, required = true) String userPrivateKey) {}</b>
+&nbsp;
+<b class="nc">&nbsp;	@JsonIgnoreProperties(ignoreUnknown = true)</b>
+<b class="nc">&nbsp;	private record ConfigDto(@JsonProperty(value = &quot;apiLevel&quot;) int apiLevel) {}</b>
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

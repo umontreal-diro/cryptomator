@@ -1,0 +1,234 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > KeyLoadingStrategy</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.keyloading</a>
+</div>
+
+<h1>Coverage Summary for Class: KeyLoadingStrategy (org.cryptomator.ui.keyloading)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">KeyLoadingStrategy</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/17)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">KeyLoadingStrategy$KeyLoadingStrategyUser</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/17)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.keyloading;
+&nbsp;
+&nbsp;import org.cryptomator.cryptolib.api.Masterkey;
+&nbsp;import org.cryptomator.cryptolib.api.MasterkeyLoader;
+&nbsp;import org.cryptomator.cryptolib.api.MasterkeyLoadingFailedException;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import java.net.URI;
+&nbsp;
+&nbsp;/**
+&nbsp; * A reusable, stateful {@link MasterkeyLoader}, that can deal with certain exceptions.
+&nbsp; */
+&nbsp;@FunctionalInterface
+&nbsp;public interface KeyLoadingStrategy extends MasterkeyLoader {
+&nbsp;
+<b class="nc">&nbsp;	Logger LOG = LoggerFactory.getLogger(KeyLoadingStrategy.class);</b>
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Loads a master key. This might be a long-running operation, as it may require user input or expensive computations.
+&nbsp;	 * &lt;p&gt;
+&nbsp;	 * If loading fails exceptionally, this strategy might be able to {@link #recoverFromException(MasterkeyLoadingFailedException) recover from this exception}, so it can be used in a further attempt.
+&nbsp;	 *
+&nbsp;	 * @param keyId An URI uniquely identifying the source and identity of the key
+&nbsp;	 * @return The raw key bytes. Must not be null
+&nbsp;	 * @throws MasterkeyLoadingFailedException Thrown when it is impossible to fulfill the request
+&nbsp;	 */
+&nbsp;	@Override
+&nbsp;	Masterkey loadKey(URI keyId) throws MasterkeyLoadingFailedException;
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Allows the loader to try and recover from an exception thrown during the last attempt.
+&nbsp;	 *
+&nbsp;	 * @param exception An exception thrown by {@link #loadKey(URI)}.
+&nbsp;	 * @return &lt;code&gt;true&lt;/code&gt; if this component was able to handle the exception and another attempt can be made to load a masterkey
+&nbsp;	 */
+&nbsp;	default boolean recoverFromException(MasterkeyLoadingFailedException exception) {
+<b class="nc">&nbsp;		return false;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Release any resources or do follow-up tasks after loading a key.
+&nbsp;	 *
+&nbsp;	 * @param unlockedSuccessfully &lt;code&gt;true&lt;/code&gt; if successfully unlocked a vault with the loaded key
+&nbsp;	 * @implNote This method might be invoked multiple times, depending on whether multiple attempts to load a key are started.
+&nbsp;	 */
+&nbsp;	default void cleanup(boolean unlockedSuccessfully) {
+&nbsp;		// no-op
+<b class="nc">&nbsp;	}</b>
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * A key loading strategy that will always fail by throwing a {@link MasterkeyLoadingFailedException}.
+&nbsp;	 *
+&nbsp;	 * @param exception The cause of the failure. If not already an {@link MasterkeyLoadingFailedException}, it will get wrapped.
+&nbsp;	 * @return A new KeyLoadingStrategy that will always fail with an {@link MasterkeyLoadingFailedException}.
+&nbsp;	 */
+&nbsp;	static KeyLoadingStrategy failed(Exception exception) {
+<b class="nc">&nbsp;		return keyid -&gt; {</b>
+<b class="nc">&nbsp;			if (exception instanceof MasterkeyLoadingFailedException e) {</b>
+<b class="nc">&nbsp;				throw e;</b>
+&nbsp;			} else {
+<b class="nc">&nbsp;				throw new MasterkeyLoadingFailedException(&quot;Can not load key&quot;, exception);</b>
+&nbsp;			}
+&nbsp;		};
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Makes the given &lt;code&gt;user&lt;/code&gt; apply this key loading strategy. If the user fails with a {@link MasterkeyLoadingFailedException},
+&nbsp;	 * an attempt is made to {@link #recoverFromException(MasterkeyLoadingFailedException) recover} from it. Any other exception will be rethrown.
+&nbsp;	 *
+&nbsp;	 * @param user Some method using this strategy. May be invoked multiple times in case of recoverable {@link MasterkeyLoadingFailedException}s
+&nbsp;	 * @param &lt;E&gt; Optional exception type thrown by &lt;code&gt;user&lt;/code&gt;
+&nbsp;	 * @throws MasterkeyLoadingFailedException If a non-recoverable exception is thrown by &lt;code&gt;user&lt;/code&gt;
+&nbsp;	 * @throws E Exception thrown by &lt;code&gt;user&lt;/code&gt; and rethrown by this method
+&nbsp;	 */
+&nbsp;	default &lt;E extends Exception&gt; void use(KeyLoadingStrategyUser&lt;E&gt; user) throws MasterkeyLoadingFailedException, E {
+<b class="nc">&nbsp;		boolean success = false;</b>
+&nbsp;		try {
+<b class="nc">&nbsp;			user.use(this);</b>
+<b class="nc">&nbsp;			success = true;</b>
+<b class="nc">&nbsp;		} catch (MasterkeyLoadingFailedException e) {</b>
+<b class="nc">&nbsp;			if (recoverFromException(e)) {</b>
+<b class="nc">&nbsp;				LOG.info(&quot;Unlock attempt threw {}. Reattempting...&quot;, e.getClass().getSimpleName());</b>
+<b class="nc">&nbsp;				use(user);</b>
+&nbsp;			} else {
+<b class="nc">&nbsp;				throw e;</b>
+&nbsp;			}
+&nbsp;		} finally {
+<b class="nc">&nbsp;			cleanup(success);</b>
+<b class="nc">&nbsp;		}</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FunctionalInterface
+&nbsp;	interface KeyLoadingStrategyUser&lt;E extends Exception&gt; {
+&nbsp;
+&nbsp;		void use(KeyLoadingStrategy strategy) throws MasterkeyLoadingFailedException, E;
+&nbsp;
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

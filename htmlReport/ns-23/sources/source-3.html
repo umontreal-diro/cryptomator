@@ -1,0 +1,191 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > MasterkeyOptionsController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.vaultoptions</a>
+</div>
+
+<h1>Coverage Summary for Class: MasterkeyOptionsController (org.cryptomator.ui.vaultoptions)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MasterkeyOptionsController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/19)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.vaultoptions;
+&nbsp;
+&nbsp;import org.cryptomator.common.keychain.KeychainManager;
+&nbsp;import org.cryptomator.common.vaults.Vault;
+&nbsp;import org.cryptomator.ui.changepassword.ChangePasswordComponent;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;import org.cryptomator.ui.forgetpassword.ForgetPasswordComponent;
+&nbsp;import org.cryptomator.ui.recoverykey.RecoveryKeyComponent;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import javax.inject.Inject;
+&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+&nbsp;import javafx.beans.value.ObservableValue;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.stage.Stage;
+&nbsp;
+<b class="nc">&nbsp;@VaultOptionsScoped</b>
+&nbsp;public class MasterkeyOptionsController implements FxController {
+&nbsp;
+<b class="nc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(MasterkeyOptionsController.class);</b>
+&nbsp;
+&nbsp;	private final Vault vault;
+&nbsp;	private final Stage window;
+&nbsp;	private final ChangePasswordComponent.Builder changePasswordWindow;
+&nbsp;	private final RecoveryKeyComponent.Factory recoveryKeyWindow;
+&nbsp;	private final ForgetPasswordComponent.Builder forgetPasswordWindow;
+&nbsp;	private final KeychainManager keychain;
+&nbsp;	private final ObservableValue&lt;Boolean&gt; passwordSaved;
+&nbsp;
+&nbsp;
+&nbsp;	@Inject
+<b class="nc">&nbsp;	MasterkeyOptionsController(@VaultOptionsWindow Vault vault, @VaultOptionsWindow Stage window, ChangePasswordComponent.Builder changePasswordWindow, RecoveryKeyComponent.Factory recoveryKeyWindow, ForgetPasswordComponent.Builder forgetPasswordWindow, KeychainManager keychain) {</b>
+<b class="nc">&nbsp;		this.vault = vault;</b>
+<b class="nc">&nbsp;		this.window = window;</b>
+<b class="nc">&nbsp;		this.changePasswordWindow = changePasswordWindow;</b>
+<b class="nc">&nbsp;		this.recoveryKeyWindow = recoveryKeyWindow;</b>
+<b class="nc">&nbsp;		this.forgetPasswordWindow = forgetPasswordWindow;</b>
+<b class="nc">&nbsp;		this.keychain = keychain;</b>
+<b class="nc">&nbsp;		if (keychain.isSupported() &amp;&amp; !keychain.isLocked()) {</b>
+<b class="nc">&nbsp;			this.passwordSaved = keychain.getPassphraseStoredProperty(vault.getId()).orElse(false);</b>
+&nbsp;		} else {
+<b class="nc">&nbsp;			this.passwordSaved = new SimpleBooleanProperty(false);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void changePassword() {
+<b class="nc">&nbsp;		changePasswordWindow.vault(vault).owner(window).build().showChangePasswordWindow();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void showRecoveryKey() {
+<b class="nc">&nbsp;		recoveryKeyWindow.create(vault, window).showRecoveryKeyCreationWindow();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void showRecoverVaultDialog() {
+<b class="nc">&nbsp;		recoveryKeyWindow.create(vault, window).showRecoveryKeyRecoverWindow();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void showForgetPasswordDialog() {
+<b class="nc">&nbsp;		assert keychain.isSupported();</b>
+<b class="nc">&nbsp;		forgetPasswordWindow.vault(vault).owner(window).build().showForgetPassword();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObservableValue&lt;Boolean&gt; passwordSavedProperty() {
+<b class="nc">&nbsp;		return passwordSaved;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isPasswordSaved() {
+<b class="nc">&nbsp;		return passwordSaved.getValue();</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

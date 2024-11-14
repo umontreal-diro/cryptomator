@@ -1,0 +1,148 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > FontAwesome5Spinner</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.controls</a>
+</div>
+
+<h1>Coverage Summary for Class: FontAwesome5Spinner (org.cryptomator.ui.controls)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FontAwesome5Spinner</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/11)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.controls;
+&nbsp;
+&nbsp;import org.cryptomator.ui.common.Animations;
+&nbsp;import org.cryptomator.ui.common.AutoAnimator;
+&nbsp;
+&nbsp;import javafx.beans.property.BooleanProperty;
+&nbsp;import javafx.beans.property.ObjectProperty;
+&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+&nbsp;
+&nbsp;/**
+&nbsp; * An animated progress spinner using the {@link FontAwesome5IconView} with the spinner glyph.
+&nbsp; * &lt;p&gt;
+&nbsp; * Using the default constructor, the animation is always played if the icon is visible. To animate on other conditions, use the constructor with the &quot;spinning&quot; property.
+&nbsp; */
+&nbsp;public class FontAwesome5Spinner extends FontAwesome5IconView {
+&nbsp;
+<b class="nc">&nbsp;	protected final BooleanProperty spinning = new SimpleBooleanProperty(this, &quot;spinning&quot;, true);</b>
+&nbsp;
+&nbsp;	private AutoAnimator animator;
+&nbsp;
+<b class="nc">&nbsp;	public FontAwesome5Spinner() {</b>
+<b class="nc">&nbsp;		setGlyph(FontAwesome5Icon.SPINNER);</b>
+<b class="nc">&nbsp;		var animation = Animations.createDiscrete360Rotation(this);</b>
+<b class="nc">&nbsp;		this.animator = AutoAnimator.animate(animation) //</b>
+<b class="nc">&nbsp;				.afterStop(() -&gt; setRotate(0)) //</b>
+<b class="nc">&nbsp;				.onCondition(spinning.and(visibleProperty())) //</b>
+<b class="nc">&nbsp;				.build();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/* Getter/Setter */
+&nbsp;
+&nbsp;	public BooleanProperty spinningProperty() {
+<b class="nc">&nbsp;		return spinning;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isSpinning() {
+<b class="nc">&nbsp;		return spinning.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void setSpinning(boolean spinning) {
+<b class="nc">&nbsp;		this.spinning.set(spinning);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

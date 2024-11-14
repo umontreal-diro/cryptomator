@@ -1,0 +1,172 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > VaultSettingsJson</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.common.settings</a>
+</div>
+
+<h1>Coverage Summary for Class: VaultSettingsJson (org.cryptomator.common.settings)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">VaultSettingsJson</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.common.settings;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.annotation.JsonAlias;
+&nbsp;import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+&nbsp;import com.fasterxml.jackson.annotation.JsonInclude;
+&nbsp;import com.fasterxml.jackson.annotation.JsonProperty;
+&nbsp;
+&nbsp;@JsonIgnoreProperties(ignoreUnknown = true)
+&nbsp;@JsonInclude(JsonInclude.Include.NON_NULL)
+<b class="nc">&nbsp;class VaultSettingsJson {</b>
+&nbsp;
+&nbsp;	@JsonProperty(value = &quot;id&quot;, required = true)
+&nbsp;	String id;
+&nbsp;
+&nbsp;	@JsonProperty(value = &quot;path&quot;)
+&nbsp;	String path;
+&nbsp;
+&nbsp;	@JsonProperty(&quot;displayName&quot;)
+&nbsp;	String displayName;
+&nbsp;
+<b class="nc">&nbsp;	@JsonProperty(&quot;unlockAfterStartup&quot;)</b>
+&nbsp;	boolean unlockAfterStartup = VaultSettings.DEFAULT_UNLOCK_AFTER_STARTUP;
+&nbsp;
+<b class="nc">&nbsp;	@JsonProperty(&quot;revealAfterMount&quot;)</b>
+&nbsp;	boolean revealAfterMount = VaultSettings.DEFAULT_REVEAL_AFTER_MOUNT;
+&nbsp;
+&nbsp;	@JsonProperty(&quot;mountPoint&quot;)
+&nbsp;	String mountPoint;
+&nbsp;
+<b class="nc">&nbsp;	@JsonProperty(&quot;usesReadOnlyMode&quot;)</b>
+&nbsp;	boolean usesReadOnlyMode = VaultSettings.DEFAULT_USES_READONLY_MODE;
+&nbsp;
+<b class="nc">&nbsp;	@JsonProperty(&quot;mountFlags&quot;)</b>
+&nbsp;	String mountFlags = VaultSettings.DEFAULT_MOUNT_FLAGS;
+&nbsp;
+<b class="nc">&nbsp;	@JsonProperty(&quot;maxCleartextFilenameLength&quot;)</b>
+&nbsp;	int maxCleartextFilenameLength = VaultSettings.DEFAULT_MAX_CLEARTEXT_FILENAME_LENGTH;
+&nbsp;
+<b class="nc">&nbsp;	@JsonProperty(&quot;actionAfterUnlock&quot;)</b>
+&nbsp;	WhenUnlocked actionAfterUnlock = VaultSettings.DEFAULT_ACTION_AFTER_UNLOCK;
+&nbsp;
+<b class="nc">&nbsp;	@JsonProperty(&quot;autoLockWhenIdle&quot;)</b>
+&nbsp;	boolean autoLockWhenIdle = VaultSettings.DEFAULT_AUTOLOCK_WHEN_IDLE;
+&nbsp;
+<b class="nc">&nbsp;	@JsonProperty(&quot;autoLockIdleSeconds&quot;)</b>
+&nbsp;	int autoLockIdleSeconds = VaultSettings.DEFAULT_AUTOLOCK_IDLE_SECONDS;
+&nbsp;
+&nbsp;	@JsonProperty(&quot;mountService&quot;)
+&nbsp;	String mountService;
+&nbsp;
+<b class="nc">&nbsp;	@JsonProperty(&quot;port&quot;)</b>
+&nbsp;	int port = VaultSettings.DEFAULT_PORT;
+&nbsp;
+&nbsp;	@Deprecated(since = &quot;1.7.0&quot;)
+&nbsp;	@JsonProperty(value = &quot;winDriveLetter&quot;, access = JsonProperty.Access.WRITE_ONLY) // WRITE_ONLY means value is &quot;written&quot; into the java object during deserialization. Upvote this: https://github.com/FasterXML/jackson-annotations/issues/233
+&nbsp;	String winDriveLetter;
+&nbsp;
+&nbsp;	@Deprecated(since = &quot;1.7.0&quot;)
+&nbsp;	@JsonProperty(value = &quot;useCustomMountPath&quot;, access = JsonProperty.Access.WRITE_ONLY) // WRITE_ONLY means value is &quot;written&quot; into the java object during deserialization. Upvote this: https://github.com/FasterXML/jackson-annotations/issues/233
+&nbsp;	@JsonAlias(&quot;usesIndividualMountPath&quot;)
+&nbsp;	boolean useCustomMountPath;
+&nbsp;
+&nbsp;	@Deprecated(since = &quot;1.7.0&quot;)
+&nbsp;	@JsonProperty(value = &quot;customMountPath&quot;, access = JsonProperty.Access.WRITE_ONLY) // WRITE_ONLY means value is &quot;written&quot; into the java object during deserialization. Upvote this: https://github.com/FasterXML/jackson-annotations/issues/233
+&nbsp;	@JsonAlias(&quot;individualMountPath&quot;)
+&nbsp;	String customMountPath;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

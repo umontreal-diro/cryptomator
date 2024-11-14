@@ -1,0 +1,266 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > RecoveryKeyFactory</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.recoverykey</a>
+</div>
+
+<h1>Coverage Summary for Class: RecoveryKeyFactory (org.cryptomator.ui.recoverykey)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RecoveryKeyFactory</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/50)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.recoverykey;
+&nbsp;
+&nbsp;import com.google.common.base.Preconditions;
+&nbsp;import com.google.common.hash.Hashing;
+&nbsp;import org.cryptomator.cryptofs.common.BackupHelper;
+&nbsp;import org.cryptomator.cryptolib.api.CryptoException;
+&nbsp;import org.cryptomator.cryptolib.api.InvalidPassphraseException;
+&nbsp;import org.cryptomator.cryptolib.api.Masterkey;
+&nbsp;import org.cryptomator.cryptolib.common.MasterkeyFileAccess;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;import org.jetbrains.annotations.VisibleForTesting;
+&nbsp;
+&nbsp;import javax.inject.Inject;
+&nbsp;import javax.inject.Singleton;
+&nbsp;import java.io.IOException;
+&nbsp;import java.nio.file.Files;
+&nbsp;import java.nio.file.Path;
+&nbsp;import java.nio.file.StandardCopyOption;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.Collection;
+&nbsp;import java.util.function.Predicate;
+&nbsp;
+&nbsp;import static org.cryptomator.common.Constants.MASTERKEY_BACKUP_SUFFIX;
+&nbsp;import static org.cryptomator.common.Constants.MASTERKEY_FILENAME;
+&nbsp;
+&nbsp;@Singleton
+&nbsp;public class RecoveryKeyFactory {
+&nbsp;
+&nbsp;	private final WordEncoder wordEncoder;
+&nbsp;	private final MasterkeyFileAccess masterkeyFileAccess;
+&nbsp;
+&nbsp;	@Inject
+<b class="nc">&nbsp;	public RecoveryKeyFactory(WordEncoder wordEncoder, MasterkeyFileAccess masterkeyFileAccess) {</b>
+<b class="nc">&nbsp;		this.wordEncoder = wordEncoder;</b>
+<b class="nc">&nbsp;		this.masterkeyFileAccess = masterkeyFileAccess;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Collection&lt;String&gt; getDictionary() {
+<b class="nc">&nbsp;		return wordEncoder.getWords();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * @param vaultPath Path to the storage location of a vault
+&nbsp;	 * @param password The vault&#39;s password
+&nbsp;	 * @return The recovery key of the vault at the given path
+&nbsp;	 * @throws IOException If the masterkey file could not be read
+&nbsp;	 * @throws InvalidPassphraseException If the provided password is wrong
+&nbsp;	 * @throws CryptoException In case of other cryptographic errors
+&nbsp;	 * @apiNote This is a long-running operation and should be invoked in a background thread
+&nbsp;	 */
+&nbsp;	public String createRecoveryKey(Path vaultPath, CharSequence password) throws IOException, InvalidPassphraseException, CryptoException {
+<b class="nc">&nbsp;		Path masterkeyPath = vaultPath.resolve(MASTERKEY_FILENAME);</b>
+<b class="nc">&nbsp;		byte[] rawKey = new byte[0];</b>
+<b class="nc">&nbsp;		try (var masterkey = masterkeyFileAccess.load(masterkeyPath, password)) {</b>
+<b class="nc">&nbsp;			rawKey = masterkey.getEncoded();</b>
+<b class="nc">&nbsp;			return createRecoveryKey(rawKey);</b>
+<b class="nc">&nbsp;		} finally {</b>
+<b class="nc">&nbsp;			Arrays.fill(rawKey, (byte) 0x00);</b>
+<b class="nc">&nbsp;		}</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@VisibleForTesting
+&nbsp;	String createRecoveryKey(byte[] rawKey) {
+<b class="nc">&nbsp;		Preconditions.checkArgument(rawKey.length == 64, &quot;key should be 64 bytes&quot;);</b>
+<b class="nc">&nbsp;		byte[] paddedKey = Arrays.copyOf(rawKey, 66);</b>
+&nbsp;		try {
+&nbsp;			// copy 16 most significant bits of CRC32(rawKey) to the end of paddedKey:
+<b class="nc">&nbsp;			Hashing.crc32().hashBytes(rawKey).writeBytesTo(paddedKey, 64, 2);</b>
+<b class="nc">&nbsp;			return wordEncoder.encodePadded(paddedKey);</b>
+&nbsp;		} finally {
+<b class="nc">&nbsp;			Arrays.fill(paddedKey, (byte) 0x00);</b>
+<b class="nc">&nbsp;		}</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Creates a completely new masterkey using a recovery key.
+&nbsp;	 *
+&nbsp;	 * @param vaultPath Path to the storage location of a vault
+&nbsp;	 * @param recoveryKey A recovery key for this vault
+&nbsp;	 * @param newPassword The new password used to encrypt the keys
+&nbsp;	 * @throws IOException If the masterkey file could not be written
+&nbsp;	 * @throws IllegalArgumentException If the recoveryKey is invalid
+&nbsp;	 * @apiNote This is a long-running operation and should be invoked in a background thread
+&nbsp;	 */
+&nbsp;	public void newMasterkeyFileWithPassphrase(Path vaultPath, String recoveryKey, CharSequence newPassword) throws IOException, IllegalArgumentException {
+<b class="nc">&nbsp;		final byte[] rawKey = decodeRecoveryKey(recoveryKey);</b>
+<b class="nc">&nbsp;		try (var masterkey = new Masterkey(rawKey)) {</b>
+<b class="nc">&nbsp;			Path masterkeyPath = vaultPath.resolve(MASTERKEY_FILENAME);</b>
+<b class="nc">&nbsp;			if (Files.exists(masterkeyPath)) {</b>
+<b class="nc">&nbsp;				byte[] oldMasterkeyBytes = Files.readAllBytes(masterkeyPath);</b>
+&nbsp;				// TODO: deduplicate with ChangePasswordController:
+<b class="nc">&nbsp;				Path backupKeyPath = vaultPath.resolve(MASTERKEY_FILENAME + BackupHelper.generateFileIdSuffix(oldMasterkeyBytes) + MASTERKEY_BACKUP_SUFFIX);</b>
+<b class="nc">&nbsp;				Files.move(masterkeyPath, backupKeyPath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);</b>
+&nbsp;			}
+<b class="nc">&nbsp;			masterkeyFileAccess.persist(masterkey, masterkeyPath, newPassword);</b>
+<b class="nc">&nbsp;		} finally {</b>
+<b class="nc">&nbsp;			Arrays.fill(rawKey, (byte) 0x00);</b>
+<b class="nc">&nbsp;		}</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Checks whether a String is a syntactically correct recovery key with a valid checksum
+&nbsp;	 *
+&nbsp;	 * @param recoveryKey A word sequence which might be a recovery key
+&nbsp;	 * @return &lt;code&gt;true&lt;/code&gt; if this seems to be a legitimate recovery key
+&nbsp;	 */
+&nbsp;	public boolean validateRecoveryKey(String recoveryKey) {
+<b class="nc">&nbsp;		return validateRecoveryKey(recoveryKey, null);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Checks whether a String is a syntactically correct recovery key with a valid checksum and passes the extended validation.
+&nbsp;	 *
+&nbsp;	 * @param recoveryKey A word sequence which might be a recovery key
+&nbsp;	 * @param extendedValidation Additional verification of the decoded key (optional)
+&nbsp;	 * @return &lt;code&gt;true&lt;/code&gt; if this seems to be a legitimate recovery key and passes the extended validation
+&nbsp;	 */
+&nbsp;	public boolean validateRecoveryKey(String recoveryKey, @Nullable Predicate&lt;byte[]&gt; extendedValidation) {
+<b class="nc">&nbsp;		byte[] key = new byte[0];</b>
+&nbsp;		try {
+<b class="nc">&nbsp;			key = decodeRecoveryKey(recoveryKey);</b>
+<b class="nc">&nbsp;			if (extendedValidation != null) {</b>
+<b class="nc">&nbsp;				return extendedValidation.test(key);</b>
+&nbsp;			} else {
+<b class="nc">&nbsp;				return true;</b>
+&nbsp;			}
+<b class="nc">&nbsp;		} catch (IllegalArgumentException e) {</b>
+<b class="nc">&nbsp;			return false;</b>
+&nbsp;		} finally {
+<b class="nc">&nbsp;			Arrays.fill(key, (byte) 0x00);</b>
+<b class="nc">&nbsp;		}</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private byte[] decodeRecoveryKey(String recoveryKey) throws IllegalArgumentException {
+<b class="nc">&nbsp;		byte[] paddedKey = new byte[0];</b>
+&nbsp;		try {
+<b class="nc">&nbsp;			paddedKey = wordEncoder.decode(recoveryKey);</b>
+<b class="nc">&nbsp;			Preconditions.checkArgument(paddedKey.length == 66, &quot;Recovery key doesn&#39;t consist of 66 bytes.&quot;);</b>
+<b class="nc">&nbsp;			byte[] rawKey = Arrays.copyOf(paddedKey, 64);</b>
+<b class="nc">&nbsp;			byte[] expectedCrc16 = Arrays.copyOfRange(paddedKey, 64, 66);</b>
+<b class="nc">&nbsp;			byte[] actualCrc32 = Hashing.crc32().hashBytes(rawKey).asBytes();</b>
+<b class="nc">&nbsp;			byte[] actualCrc16 = Arrays.copyOf(actualCrc32, 2);</b>
+<b class="nc">&nbsp;			Preconditions.checkArgument(Arrays.equals(expectedCrc16, actualCrc16), &quot;Recovery key has invalid CRC.&quot;);</b>
+<b class="nc">&nbsp;			return rawKey;</b>
+&nbsp;		} finally {
+<b class="nc">&nbsp;			Arrays.fill(paddedKey, (byte) 0x00);</b>
+<b class="nc">&nbsp;		}</b>
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

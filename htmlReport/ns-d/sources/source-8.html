@@ -1,0 +1,162 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > FormattedString</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.controls</a>
+</div>
+
+<h1>Coverage Summary for Class: FormattedString (org.cryptomator.ui.controls)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FormattedString</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/13)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.controls;
+&nbsp;
+&nbsp;import javafx.beans.binding.Bindings;
+&nbsp;import javafx.beans.binding.StringBinding;
+&nbsp;import javafx.beans.property.ObjectProperty;
+&nbsp;import javafx.beans.property.SimpleObjectProperty;
+&nbsp;import javafx.beans.property.SimpleStringProperty;
+&nbsp;import javafx.beans.property.StringProperty;
+&nbsp;
+&nbsp;public class FormattedString {
+&nbsp;
+<b class="nc">&nbsp;	private final StringProperty format = new SimpleStringProperty(&quot;&quot;);</b>
+<b class="nc">&nbsp;	private final ObjectProperty&lt;Object&gt; arg1 = new SimpleObjectProperty&lt;&gt;();</b>
+&nbsp;	// add arg2, arg3, ... on demand
+&nbsp;	private final StringBinding value;
+&nbsp;
+<b class="nc">&nbsp;	public FormattedString() {</b>
+<b class="nc">&nbsp;		this.value = Bindings.createStringBinding(this::computeValue, format, arg1);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	protected String computeValue() {
+<b class="nc">&nbsp;		return String.format(format.get(), arg1.get());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/* Observables */
+&nbsp;
+&nbsp;	public StringProperty formatProperty() {
+<b class="nc">&nbsp;		return format;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public String getFormat() {
+<b class="nc">&nbsp;		return format.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void setFormat(String format) {
+<b class="nc">&nbsp;		this.format.set(format);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public ObjectProperty&lt;Object&gt; arg1Property() {
+<b class="nc">&nbsp;		return arg1;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Object getArg1() {
+<b class="nc">&nbsp;		return arg1.get();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void setArg1(Object arg1) {
+<b class="nc">&nbsp;		this.arg1.set(arg1);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public StringBinding valueProperty() {
+<b class="nc">&nbsp;		return value;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public String getValue() {
+<b class="nc">&nbsp;		return value.get();</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

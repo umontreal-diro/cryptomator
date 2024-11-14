@@ -1,0 +1,214 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > RecoveryKeyDisplayController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.recoverykey</a>
+</div>
+
+<h1>Coverage Summary for Class: RecoveryKeyDisplayController (org.cryptomator.ui.recoverykey)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RecoveryKeyDisplayController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/34)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.recoverykey;
+&nbsp;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.print.PageLayout;
+&nbsp;import javafx.print.Printer;
+&nbsp;import javafx.print.PrinterJob;
+&nbsp;import javafx.scene.control.Button;
+&nbsp;import javafx.scene.input.Clipboard;
+&nbsp;import javafx.scene.input.ClipboardContent;
+&nbsp;import javafx.scene.text.Font;
+&nbsp;import javafx.scene.text.FontSmoothingType;
+&nbsp;import javafx.scene.text.FontWeight;
+&nbsp;import javafx.scene.text.Text;
+&nbsp;import javafx.scene.text.TextFlow;
+&nbsp;import javafx.stage.Stage;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;
+&nbsp;public class RecoveryKeyDisplayController implements FxController {
+&nbsp;
+<b class="nc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(RecoveryKeyDisplayController.class);</b>
+&nbsp;
+&nbsp;	private final Stage window;
+&nbsp;	private final String vaultName;
+&nbsp;	private final String recoveryKey;
+&nbsp;	private final ResourceBundle localization;
+&nbsp;	public Button copyButton;
+&nbsp;
+<b class="nc">&nbsp;	public RecoveryKeyDisplayController(Stage window, String vaultName, String recoveryKey, ResourceBundle localization) {</b>
+<b class="nc">&nbsp;		this.window = window;</b>
+<b class="nc">&nbsp;		this.vaultName = vaultName;</b>
+<b class="nc">&nbsp;		this.recoveryKey = recoveryKey;</b>
+<b class="nc">&nbsp;		this.localization = localization;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void printRecoveryKey() {
+<b class="nc">&nbsp;		PrinterJob job = PrinterJob.createPrinterJob();</b>
+<b class="nc">&nbsp;		if (job != null &amp;&amp; job.showPrintDialog(window)) {</b>
+<b class="nc">&nbsp;			PageLayout pageLayout = job.getJobSettings().getPageLayout();</b>
+&nbsp;
+<b class="nc">&nbsp;			String headingText = String.format(localization.getString(&quot;recoveryKey.printout.heading&quot;), vaultName);</b>
+<b class="nc">&nbsp;			Text heading = new Text(headingText);</b>
+<b class="nc">&nbsp;			heading.setFont(Font.font(&quot;serif&quot;, FontWeight.BOLD, 20));</b>
+<b class="nc">&nbsp;			heading.setFontSmoothingType(FontSmoothingType.LCD);</b>
+&nbsp;
+<b class="nc">&nbsp;			Text key = new Text(recoveryKey);</b>
+<b class="nc">&nbsp;			key.setFont(Font.font(&quot;serif&quot;, FontWeight.NORMAL, 16));</b>
+<b class="nc">&nbsp;			key.setFontSmoothingType(FontSmoothingType.GRAY);</b>
+&nbsp;
+<b class="nc">&nbsp;			TextFlow textFlow = new TextFlow();</b>
+<b class="nc">&nbsp;			textFlow.setPrefSize(pageLayout.getPrintableWidth(), pageLayout.getPrintableHeight());</b>
+<b class="nc">&nbsp;			textFlow.getChildren().addAll(heading, key);</b>
+<b class="nc">&nbsp;			textFlow.setLineSpacing(6);</b>
+&nbsp;
+<b class="nc">&nbsp;			if (job.printPage(textFlow)) {</b>
+<b class="nc">&nbsp;				LOG.info(&quot;Recovery key printed.&quot;);</b>
+<b class="nc">&nbsp;				job.endJob();</b>
+&nbsp;			} else {
+<b class="nc">&nbsp;				LOG.warn(&quot;Printing recovery key failed.&quot;);</b>
+&nbsp;			}
+&nbsp;		} else {
+<b class="nc">&nbsp;			LOG.info(&quot;Printing recovery key canceled by user.&quot;);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void copyRecoveryKey() {
+<b class="nc">&nbsp;		ClipboardContent clipboardContent = new ClipboardContent();</b>
+<b class="nc">&nbsp;		clipboardContent.putString(recoveryKey);</b>
+<b class="nc">&nbsp;		Clipboard.getSystemClipboard().setContent(clipboardContent);</b>
+<b class="nc">&nbsp;		LOG.info(&quot;Recovery key copied to clipboard.&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;		copyButton.setText(localization.getString(&quot;generic.button.copied&quot;));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void close() {
+<b class="nc">&nbsp;		window.close();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/* Getter/Setter */
+&nbsp;
+&nbsp;	public boolean isPrinterSupported() {
+<b class="nc">&nbsp;		return Printer.getDefaultPrinter() != null;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public String getRecoveryKey() {
+<b class="nc">&nbsp;		return recoveryKey;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public String getVaultName() {
+<b class="nc">&nbsp;		return vaultName;</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

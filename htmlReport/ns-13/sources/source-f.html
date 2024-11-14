@@ -1,0 +1,276 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > StartController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.health</a>
+</div>
+
+<h1>Coverage Summary for Class: StartController (org.cryptomator.ui.health)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StartController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/43)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">StartController$LoadingFailedException</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/44)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.health;
+&nbsp;
+&nbsp;import dagger.Lazy;
+&nbsp;import org.cryptomator.common.vaults.Vault;
+&nbsp;import org.cryptomator.common.vaults.VaultConfigCache;
+&nbsp;import org.cryptomator.cryptofs.VaultConfig;
+&nbsp;import org.cryptomator.cryptofs.VaultConfigLoadException;
+&nbsp;import org.cryptomator.cryptofs.VaultKeyInvalidException;
+&nbsp;import org.cryptomator.cryptolib.api.Masterkey;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;import org.cryptomator.ui.common.FxmlFile;
+&nbsp;import org.cryptomator.ui.common.FxmlScene;
+&nbsp;import org.cryptomator.ui.fxapp.FxApplicationWindows;
+&nbsp;import org.cryptomator.ui.keyloading.KeyLoadingStrategy;
+&nbsp;import org.cryptomator.ui.unlock.UnlockCancelledException;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import javax.inject.Inject;
+&nbsp;import javax.inject.Named;
+&nbsp;import javafx.application.Platform;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.scene.Scene;
+&nbsp;import javafx.stage.Stage;
+&nbsp;import java.util.concurrent.CompletableFuture;
+&nbsp;import java.util.concurrent.CompletionException;
+&nbsp;import java.util.concurrent.ExecutorService;
+&nbsp;import java.util.concurrent.atomic.AtomicReference;
+&nbsp;
+<b class="nc">&nbsp;@HealthCheckScoped</b>
+&nbsp;public class StartController implements FxController {
+&nbsp;
+<b class="nc">&nbsp;	private static final Logger LOG = LoggerFactory.getLogger(StartController.class);</b>
+&nbsp;
+&nbsp;	private final Stage window;
+&nbsp;	private final Stage unlockWindow;
+&nbsp;	private final VaultConfigCache vaultConfig;
+&nbsp;	private final KeyLoadingStrategy keyLoadingStrategy;
+&nbsp;	private final ExecutorService executor;
+&nbsp;	private final AtomicReference&lt;Masterkey&gt; masterkeyRef;
+&nbsp;	private final AtomicReference&lt;VaultConfig&gt; vaultConfigRef;
+&nbsp;	private final Lazy&lt;Scene&gt; checkScene;
+&nbsp;	private final FxApplicationWindows appWindows;
+&nbsp;
+&nbsp;	@Inject
+<b class="nc">&nbsp;	public StartController(@HealthCheckWindow Stage window, @HealthCheckWindow Vault vault, @HealthCheckWindow KeyLoadingStrategy keyLoadingStrategy, ExecutorService executor, AtomicReference&lt;Masterkey&gt; masterkeyRef, AtomicReference&lt;VaultConfig&gt; vaultConfigRef, @FxmlScene(FxmlFile.HEALTH_CHECK_LIST) Lazy&lt;Scene&gt; checkScene, FxApplicationWindows appWindows, @Named(&quot;unlockWindow&quot;) Stage unlockWindow) {</b>
+<b class="nc">&nbsp;		this.window = window;</b>
+<b class="nc">&nbsp;		this.unlockWindow = unlockWindow;</b>
+<b class="nc">&nbsp;		this.vaultConfig = vault.getVaultConfigCache();</b>
+<b class="nc">&nbsp;		this.keyLoadingStrategy = keyLoadingStrategy;</b>
+<b class="nc">&nbsp;		this.executor = executor;</b>
+<b class="nc">&nbsp;		this.masterkeyRef = masterkeyRef;</b>
+<b class="nc">&nbsp;		this.vaultConfigRef = vaultConfigRef;</b>
+<b class="nc">&nbsp;		this.checkScene = checkScene;</b>
+<b class="nc">&nbsp;		this.appWindows = appWindows;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void close() {
+<b class="nc">&nbsp;		LOG.trace(&quot;StartController.close()&quot;);</b>
+<b class="nc">&nbsp;		window.close();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@FXML
+&nbsp;	public void next() {
+<b class="nc">&nbsp;		LOG.trace(&quot;StartController.next()&quot;);</b>
+<b class="nc">&nbsp;		CompletableFuture.runAsync(this::loadKey, executor).whenCompleteAsync(this::loadedKey, Platform::runLater);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void loadKey() {
+<b class="nc">&nbsp;		assert !Platform.isFxApplicationThread();</b>
+&nbsp;		try {
+<b class="nc">&nbsp;			keyLoadingStrategy.use(this::verifyVaultConfig);</b>
+<b class="nc">&nbsp;		} catch (VaultConfigLoadException | UnlockCancelledException e) {</b>
+<b class="nc">&nbsp;			throw new LoadingFailedException(e);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private void verifyVaultConfig(KeyLoadingStrategy keyLoadingStrategy) throws VaultConfigLoadException {
+<b class="nc">&nbsp;		var unverifiedCfg = vaultConfig.getUnchecked();</b>
+<b class="nc">&nbsp;		try (var masterkey = keyLoadingStrategy.loadKey(unverifiedCfg.getKeyId())) {</b>
+<b class="nc">&nbsp;			var verifiedCfg = unverifiedCfg.verify(masterkey.getEncoded(), unverifiedCfg.allegedVaultVersion());</b>
+<b class="nc">&nbsp;			vaultConfigRef.set(verifiedCfg);</b>
+<b class="nc">&nbsp;			var old = masterkeyRef.getAndSet(masterkey.copy());</b>
+<b class="nc">&nbsp;			if (old != null) {</b>
+<b class="nc">&nbsp;				old.destroy();</b>
+&nbsp;			}
+<b class="nc">&nbsp;		}</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void loadedKey(Void unused, Throwable exception) {
+<b class="nc">&nbsp;		assert Platform.isFxApplicationThread();</b>
+<b class="nc">&nbsp;		if (exception instanceof LoadingFailedException) {</b>
+<b class="nc">&nbsp;			loadingKeyFailed(exception.getCause());</b>
+<b class="nc">&nbsp;		} else if (exception != null) {</b>
+<b class="nc">&nbsp;			loadingKeyFailed(exception);</b>
+&nbsp;		} else {
+<b class="nc">&nbsp;			LOG.debug(&quot;Loaded valid key&quot;);</b>
+<b class="nc">&nbsp;			unlockWindow.close();</b>
+<b class="nc">&nbsp;			window.setScene(checkScene.get());</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	private void loadingKeyFailed(Throwable t) {
+<b class="nc">&nbsp;		switch (t) {</b>
+<b class="nc">&nbsp;			case UnlockCancelledException e -&gt; {} // ok // TODO: rename to _ with JEP 443</b>
+<b class="nc">&nbsp;			case VaultKeyInvalidException e -&gt; { // TODO: rename to _ with JEP 443</b>
+<b class="nc">&nbsp;				LOG.error(&quot;Invalid key&quot;); // TODO: specific error screen</b>
+<b class="nc">&nbsp;				appWindows.showErrorWindow(e, window, null);</b>
+&nbsp;			}
+&nbsp;			default -&gt; {
+<b class="nc">&nbsp;				LOG.error(&quot;Failed to load key.&quot;, t);</b>
+<b class="nc">&nbsp;				appWindows.showErrorWindow(t, window, null);</b>
+&nbsp;			}
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/* internal types */
+&nbsp;
+&nbsp;	private static class LoadingFailedException extends CompletionException {
+&nbsp;
+&nbsp;		LoadingFailedException(Throwable cause) {
+<b class="nc">&nbsp;			super(cause);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

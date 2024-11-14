@@ -6,6 +6,7 @@ import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
@@ -40,5 +41,6 @@ public class IpcCommunicatorTest {
 			executor.shutdown();
 		}
 	}
+
 
 }

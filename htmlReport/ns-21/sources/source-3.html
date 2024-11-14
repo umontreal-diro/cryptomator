@@ -1,0 +1,224 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > UnlockModule</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.unlock</a>
+</div>
+
+<h1>Coverage Summary for Class: UnlockModule (org.cryptomator.ui.unlock)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UnlockModule</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/15)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.cryptomator.ui.unlock;
+&nbsp;
+&nbsp;import dagger.Binds;
+&nbsp;import dagger.Module;
+&nbsp;import dagger.Provides;
+&nbsp;import dagger.multibindings.IntoMap;
+&nbsp;import org.cryptomator.common.mount.IllegalMountPointException;
+&nbsp;import org.cryptomator.common.vaults.Vault;
+&nbsp;import org.cryptomator.ui.common.DefaultSceneFactory;
+&nbsp;import org.cryptomator.ui.common.FxController;
+&nbsp;import org.cryptomator.ui.common.FxControllerKey;
+&nbsp;import org.cryptomator.ui.common.FxmlFile;
+&nbsp;import org.cryptomator.ui.common.FxmlLoaderFactory;
+&nbsp;import org.cryptomator.ui.common.FxmlScene;
+&nbsp;import org.cryptomator.ui.common.StageFactory;
+&nbsp;import org.cryptomator.ui.keyloading.KeyLoadingComponent;
+&nbsp;import org.cryptomator.ui.keyloading.KeyLoadingStrategy;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;
+&nbsp;import javax.inject.Named;
+&nbsp;import javax.inject.Provider;
+&nbsp;import javafx.beans.property.ObjectProperty;
+&nbsp;import javafx.beans.property.SimpleObjectProperty;
+&nbsp;import javafx.scene.Scene;
+&nbsp;import javafx.stage.Modality;
+&nbsp;import javafx.stage.Stage;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;
+&nbsp;@Module(subcomponents = {KeyLoadingComponent.class})
+<b class="nc">&nbsp;abstract class UnlockModule {</b>
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@UnlockWindow
+&nbsp;	@UnlockScoped
+&nbsp;	static FxmlLoaderFactory provideFxmlLoaderFactory(Map&lt;Class&lt;? extends FxController&gt;, Provider&lt;FxController&gt;&gt; factories, DefaultSceneFactory sceneFactory, ResourceBundle resourceBundle) {
+<b class="nc">&nbsp;		return new FxmlLoaderFactory(factories, sceneFactory, resourceBundle);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@UnlockWindow
+&nbsp;	@UnlockScoped
+&nbsp;	static Stage provideStage(StageFactory factory, @UnlockWindow Vault vault, @Nullable @Named(&quot;unlockWindowOwner&quot;) Stage owner) {
+<b class="nc">&nbsp;		Stage stage = factory.create();</b>
+<b class="nc">&nbsp;		stage.setTitle(vault.getDisplayName());</b>
+<b class="nc">&nbsp;		stage.setResizable(false);</b>
+<b class="nc">&nbsp;		if (owner != null) {</b>
+<b class="nc">&nbsp;			stage.initOwner(owner);</b>
+<b class="nc">&nbsp;			stage.initModality(Modality.WINDOW_MODAL);</b>
+&nbsp;		} else {
+<b class="nc">&nbsp;			stage.initModality(Modality.APPLICATION_MODAL);</b>
+&nbsp;		}
+<b class="nc">&nbsp;		return stage;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@UnlockWindow
+&nbsp;	@UnlockScoped
+&nbsp;	static KeyLoadingStrategy provideKeyLoadingStrategy(KeyLoadingComponent.Builder compBuilder, @UnlockWindow Vault vault, @UnlockWindow Stage window) {
+<b class="nc">&nbsp;		return compBuilder.vault(vault).window(window).build().keyloadingStrategy();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@UnlockWindow
+&nbsp;	@UnlockScoped
+&nbsp;	static ObjectProperty&lt;IllegalMountPointException&gt; illegalMountPointException() {
+<b class="nc">&nbsp;		return new SimpleObjectProperty&lt;&gt;();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@FxmlScene(FxmlFile.UNLOCK_SUCCESS)
+&nbsp;	@UnlockScoped
+&nbsp;	static Scene provideUnlockSuccessScene(@UnlockWindow FxmlLoaderFactory fxmlLoaders) {
+<b class="nc">&nbsp;		return fxmlLoaders.createScene(FxmlFile.UNLOCK_SUCCESS);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@FxmlScene(FxmlFile.UNLOCK_INVALID_MOUNT_POINT)
+&nbsp;	@UnlockScoped
+&nbsp;	static Scene provideInvalidMountPointScene(@UnlockWindow FxmlLoaderFactory fxmlLoaders) {
+<b class="nc">&nbsp;		return fxmlLoaders.createScene(FxmlFile.UNLOCK_INVALID_MOUNT_POINT);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Provides
+&nbsp;	@FxmlScene(FxmlFile.UNLOCK_REQUIRES_RESTART)
+&nbsp;	@UnlockScoped
+&nbsp;	static Scene provideRestartRequiredScene(@UnlockWindow FxmlLoaderFactory fxmlLoaders) {
+<b class="nc">&nbsp;		return fxmlLoaders.createScene(FxmlFile.UNLOCK_REQUIRES_RESTART);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	// ------------------
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(UnlockSuccessController.class)
+&nbsp;	abstract FxController bindUnlockSuccessController(UnlockSuccessController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(UnlockInvalidMountPointController.class)
+&nbsp;	abstract FxController bindUnlockInvalidMountPointController(UnlockInvalidMountPointController controller);
+&nbsp;
+&nbsp;	@Binds
+&nbsp;	@IntoMap
+&nbsp;	@FxControllerKey(UnlockRequiresRestartController.class)
+&nbsp;	abstract FxController bindUnlockRequiresRestartController(UnlockRequiresRestartController controller);
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

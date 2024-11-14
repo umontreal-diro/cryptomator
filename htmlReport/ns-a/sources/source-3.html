@@ -1,0 +1,165 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AddVaultWizardComponent</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.cryptomator.ui.addvaultwizard</a>
+</div>
+
+<h1>Coverage Summary for Class: AddVaultWizardComponent (org.cryptomator.ui.addvaultwizard)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AddVaultWizardComponent</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">AddVaultWizardComponent$Builder</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/*******************************************************************************
+&nbsp; * Copyright (c) 2017 Skymatic UG (haftungsbeschränkt).
+&nbsp; * All rights reserved. This program and the accompanying materials
+&nbsp; * are made available under the terms of the accompanying LICENSE file.
+&nbsp; *******************************************************************************/
+&nbsp;package org.cryptomator.ui.addvaultwizard;
+&nbsp;
+&nbsp;import dagger.Lazy;
+&nbsp;import dagger.Subcomponent;
+&nbsp;import org.cryptomator.ui.common.FxmlFile;
+&nbsp;import org.cryptomator.ui.common.FxmlScene;
+&nbsp;
+&nbsp;import javafx.scene.Scene;
+&nbsp;import javafx.stage.Stage;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;
+&nbsp;@AddVaultWizardScoped
+&nbsp;@Subcomponent(modules = {AddVaultModule.class})
+&nbsp;public interface AddVaultWizardComponent {
+&nbsp;
+&nbsp;	@AddVaultWizardWindow
+&nbsp;	Stage window();
+&nbsp;
+&nbsp;	@FxmlScene(FxmlFile.ADDVAULT_NEW_NAME)
+&nbsp;	Lazy&lt;Scene&gt; sceneNew();
+&nbsp;	@FxmlScene(FxmlFile.ADDVAULT_EXISTING)
+&nbsp;	Lazy&lt;Scene&gt; sceneExisting();
+&nbsp;
+&nbsp;	default void showAddNewVaultWizard(ResourceBundle resourceBundle) {
+<b class="nc">&nbsp;		Stage stage = window();</b>
+<b class="nc">&nbsp;		stage.setScene(sceneNew().get());</b>
+<b class="nc">&nbsp;		stage.setTitle(resourceBundle.getString(&quot;addvaultwizard.new.title&quot;));</b>
+<b class="nc">&nbsp;		stage.sizeToScene();</b>
+<b class="nc">&nbsp;		stage.show();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	default void showAddExistingVaultWizard(ResourceBundle resourceBundle) {
+<b class="nc">&nbsp;		Stage stage = window();</b>
+<b class="nc">&nbsp;		stage.setScene(sceneExisting().get());</b>
+<b class="nc">&nbsp;		stage.setTitle(resourceBundle.getString(&quot;addvaultwizard.existing.title&quot;));</b>
+<b class="nc">&nbsp;		stage.sizeToScene();</b>
+<b class="nc">&nbsp;		stage.show();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Subcomponent.Builder
+&nbsp;	interface Builder {
+&nbsp;
+&nbsp;		AddVaultWizardComponent build();
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-10 15:12</div>
+</div>
+</body>
+</html>

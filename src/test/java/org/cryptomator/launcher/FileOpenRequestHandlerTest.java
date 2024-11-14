@@ -66,4 +66,30 @@ public class FileOpenRequestHandlerTest {
 		inTest.handleLaunchArgs(List.of("foo"));
 	}
 
+	/**
+	 * Teste le comportement de la méthode handleLaunchArgs lorsque des chemins valides et invalides sont fournis.
+	 * On s'attend à ce que seul le chemin valide soit ajouté à l'événement d'ouverture.
+	 */
+	@Test
+	@DisplayName("./cryptomator.exe valid path and invalid path")
+	public void testOpenArgsWithMixedPaths() {
+		// Arrange: Crée un système de fichiers simulé qui lance une InvalidPathException pour "invalidPath"
+		FileSystem fs = Mockito.mock(FileSystem.class);
+		Mockito.when(fs.getPath("validPath")).thenReturn(Paths.get("validPath")); // Configuration du chemin valide
+		Mockito.when(fs.getPath("invalidPath")).thenThrow(new InvalidPathException("invalidPath", "invalidPath is not a valid path")); // Configuration du chemin invalide
+
+		// Act: Appelle handleLaunchArgs avec un chemin valide et un chemin invalide
+		inTest.handleLaunchArgs(fs, List.of("validPath", "invalidPath"));
+
+		// Assert: Vérifie que l'événement a été ajouté à la queue et qu'il ne contient que le chemin valide
+		AppLaunchEvent evt = queue.poll();
+		Assertions.assertNotNull(evt, "On s'attend à ce qu'un AppLaunchEvent soit présent dans la queue."); // Vérifie que l'événement n'est pas nul
+
+		Collection<Path> paths = evt.pathsToOpen();
+		Assertions.assertEquals(1, paths.size(), "On s'attend à ce qu'il n'y ait qu'un seul chemin valide dans l'événement."); // Vérifie qu'il n'y a qu'un chemin
+		Assertions.assertTrue(paths.contains(Paths.get("validPath")), "On s'attend à ce que l'événement contienne le chemin valide."); // Vérifie que le chemin valide est présent
+		Assertions.assertFalse(paths.contains(Paths.get("invalidPath")), "On s'attend à ce que l'événement ne contienne pas le chemin invalide."); // Vérifie que le chemin invalide n'est pas présent
+	}
+
+
 }

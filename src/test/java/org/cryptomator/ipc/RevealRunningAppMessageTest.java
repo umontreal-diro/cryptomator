@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -26,5 +27,20 @@ public class RevealRunningAppMessageTest {
 				Assertions.fail("Received message of unexpected class");
 			}
 		}
+	}
+
+	// Test pour décoder un message malformé
+	@Test
+	public void testDecodeMalformedMessage() {
+		// Arrange: Crée un ByteBuffer contenant des données aléatoires
+		ByteBuffer buffer = ByteBuffer.wrap("randomData".getBytes());
+
+		// Act: Décode le message à partir du buffer
+		RevealRunningAppMessage message = RevealRunningAppMessage.decode(buffer);
+
+		// Assert
+		Assertions.assertNotNull(message, "Decoded message should not be null"); // Vérifie que le message décodé n'est pas nul
+		Assertions.assertEquals(IpcMessage.MessageType.REVEAL_RUNNING_APP, message.getMessageType(),
+				"Message type should be REVEAL_RUNNING_APP even with malformed data"); // Vérifie que le type de message est correct même avec des données malformées
 	}
 }
